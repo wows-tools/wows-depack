@@ -1,6 +1,6 @@
 # Introduction
 
-First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideals, and the tools used less than adequate.
+First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
 
 Also, I'm writting this after various findings, so the process seems quite straight forward. In reallity, it was full of dead ends and flows of ideas (good and bad) that came-up while staring at hexdumps for hours.
 
