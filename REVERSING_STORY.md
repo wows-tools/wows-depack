@@ -2,6 +2,8 @@
 
 First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is probably not the best approach.
 
+Also, I'm writting this after various findings, so the process seems quite straight forward. In reallity, it was full of dead ends and flows of ideas (good and bad) that came-up while staring at hexdumps for hours.
+
 ## Motivation
 
 I've always wanted to play around World of Warships game content for various reasons, from extracting things like armor layouts or in game parameters to the 3D models themselves.
@@ -22,9 +24,11 @@ My goals are:
 * Create a CLI tool with Linux/Unix as its main target
 * Create a library which can be reused (maybe through bindings) in other pieces of software.
 
-# Reverse process
+# Reverse Engineering process
 
-## First steps
+## Intial effort
+
+### Looking at the Game files
 
 I started this reverse process a while back, around 2 years ago, but lost interest. Consequently I only have very fuzzy memories of the initial steps I took, and the original findings.
 
@@ -100,7 +104,9 @@ spaces_naval_defense_0001.pkg:        data
 
 So mostly `data` i.e. unknown format, and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
 
-Next, lets try to see if we have some clear text strings in the files:
+### Investing the interesting files
+
+Next, lets try to see if we have some clear text strings in the files using the `strings` utility:
 
 ```shell
 kakwa@linux World of Warships/res_packages » strings *
@@ -117,36 +123,15 @@ O=z$
 dQz{4
 $Zm|
 $ZOc
-%gR:-
-kIw.
-gd4$
-`?Z+
-Q}>Q
-%+&C7
-cQO{
-;uNo
-_ab1?#
-UUvP&
-7`==
-E;wo`
-[}Z6T
-;mZu
-?iGvM
->+#{
-GimR\	|
-2(?O(
-Iq#G
-x~8_S
-flO~f
-'nV&
+nV&
 <4n5
 r>Zs%
 6?Iw
 KqM&u
-^C
+[...]
 ```
 
-Nada. So we are dealing with a completely binary format.
+Nada, that's just garbage. So we are dealing with a completely binary format.
 
 Next, lets try to compress a file:
 
@@ -177,7 +162,7 @@ kakwa@linux World of Warships/res_packages » hexdump -C vehicles_level4_usa_000
 [...]
 ```
 
-I hexdumped one of the file, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding patterns. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be very well mistaken, I might have just brute forced trying to uncompress using various tools). 
+I hexdumped one of the file, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the .pkg file. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be very well mistaken). In any case, [The Wikipedia page listing file signatures](https://en.wikipedia.org/wiki/List_of_file_signatures) is really useful, as well as Googling around candidate patterns.
 
 I ended-up creating [this tool](https://github.com/kakwa/brute-force-deflate) which tries to brute force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:
 
@@ -214,6 +199,148 @@ Note that I chose to name the files I managed to extract with the (approximate) 
 
 But I then lost interest, and didn't follow-up for two years. If I recall correctly I remember being discouraged by not being able to exploit the few 3D models/textures I managed to extract, so I left it as is for the time being.
 
-## Step 2
+## Follow-up effort
 
-TODO
+### Renewed interest
+
+Then, a few weeks ago, I 3D printed a [ship model from Thingiverse](https://www.thingiverse.com/thing:2479868) clearly imported from WoWs, and posted the result on [Reddit](https://www.reddit.com/r/WorldOfWarships/comments/10ozv6y/i_might_have_accidentally_created_t11_petro_3d/).
+
+In one of the comment, someone asked if it was possible to export other game models, which sparked my interest once again. FYI, a [plugin](https://github.com/ShadowyBandit/.geometry-converter) to import WoWs .geometry (Big World game engin format) into Blender, but it doesn't look functional at the moment.
+
+During the quick search, I also tried the Windows wows_unpack tool for the first time (I should really have started from there). This gave me some insights, in particular, the resource files having individual names and paths withing the .pkg files.
+
+So, we are dealing with what is roughly a custom archive format (a bit like a zip file). This means we can probably expect the following things:
+
+* a bunch of data blobs concatenated together, with the compressed data in these blobs.
+* an index with the file paths and some metadata containing possibly things like file types, file ids, offsets pointing to the correct data blob, checksums, etc.
+
+So let's take a look at the files again.
+
+### Investigating the .pkg files
+
+First, I copied over a few of the game files into a dedicated `res_unpack` directory to avoid breaking my install by accident.
+
+Then, let's stare at more hexdumps:
+
+```shell
+kakwa@tsingtao World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
+[...]
+000021e0  b7 df f2 d7 ff e4 4f bd  52 f6 39 be f5 4a 92 2f  |......O.R.9..J./|
+000021f0  d9 8a f4 ff 01 00 00 00  00 bf 00 45 5c 6c 36 00  |...........E\l6.|
+00002200  00 00 00 00 00 dd 97 cf  6e e2 30 10 c6 cf 54 ea  |........n.0...T.|
+00002210  3b 44 79 00 20 09 09 20  41 a5 22 ca 9f 83 b7 08  |;Dy. .. A.".....|
+00002220  38 ec cd 72 93 61 6b 6d  6c 47 ce a4 85 b7 5f 3b  |8..r.akmlG...._;|
+00002230  25 0b 6d 29 d5 ae ba 12  9b 63 26 33 e3 df f7 79  |%.m).....c&3...y|
+00002240  ec 28 03 26 b9 60 08 09  e1 79 9c 37 b7 22 bd b9  |.(.&.`...y.7."..|
+00002250  be 6a 0c 84 79 72 24 13  30 74 c9 82 de 92 7e b7  |.j..yr$.0t....~.|
+00002260  43 47 85 78 48 e1 01 80  8e 55 fc 93 da 42 d7 11  |CG.xH....U...B..|
+00002270  5c ce 93 14 c6 85 66 c8  95 1c ba 51 b3 6d a2 6c  |\.....f....Q.m.l|
+00002280  fb 3a ea 05 26 6c 3b 37  06 2f 0b 9a e8 be 3f 6a  |.:..&l;7./....?j|
+00002290  26 f3 8d d2 a6 19 ee 32  13 e0 a6 72 9f db fa 9d  |&......2...r....|
+000022a0  5c 52 b5 2c d6 69 be a8  7b c4 c7 25 c5 42 6b c0  |\R.,.i..{..%.Bk.|
+000022b0  8f 20 7b a7 21 43 13 b6  eb da 7c 19 b3 8c c5 1c  |. {.!C....|.....|
+000022c0  ad 37 87 94 a0 2a 3c fd  da 36 70 f2 47 9e 8d 81  |.7...*<..6p.G...|
+000022d0  e1 e3 dd 66 03 31 0e dd  8c 69 e4 71 0a 79 6b 0d  |...f.1...i.q.yk.|
+000022e0  29 64 4a 23 5d 57 a2 41  5b cf dd cf e4 75 43 7a  |)dJ#]W.A[....uCz|
+000022f0  9f 21 17 45 4e 17 9a 8b  f3 5b 70 46 dd 3f dd 82  |.!.EN....[pF.?..|
+00002300  de 1b c6 75 8d f6 60 4a  fc 5e 9f 12 f8 c1 50 2b  |...u..`J.^....P+|
+00002310  79 71 f6 5b bc ce 01 af  4e ce 2f 49 d4 e9 d3 65  |yq.[....N./I...e|
+00002320  79 b8 2f ce 77 0b 17 56  70 75 72 7d 44 fc b6 17  |y./.w..Vpur}D...|
+00002330  d2 99 c2 a5 4a fe e6 c2  f7 be c0 f6 f7 b5 36 35  |....J.........65|
+00002340  78 5f d7 18 40 a9 7b 9f  75 10 bf ca 40 83 51 a1  |x_..@.{.u...@.Q.|
+00002350  ad 8a b7 06 38 09 a4 6c  b7 82 78 e8 fa 4d 2f 74  |....8..l..x..M/t|
+00002360  1d a9 12 f8 56 76 98 2d  e8 e4 3b 25 e6 34 f1 2d  |....Vv.-..;%.4.-|
+00002370  7d f1 d4 6d fd d1 64 94  06 46 95 81 75 1a 8d 09  |}..m..d..F..u...|
+00002380  f1 83 80 4e cd 15 9f da  b1 38 37 1b dd d3 c2 3a  |...N.....87....:|
+00002390  5f 30 1b 67 f1 c2 03 5e  9d 9c 9f 13 3f 6a d3 95  |_0.g...^....?j..|
+000023a0  2a 64 f2 cc 9e 2e ef 36  b4 7c de 11 5f 9d bc 9f  |*d.....6.|.._...|
+000023b0  92 a0 6d bc 47 a6 f3 58  03 13 17 37 f7 16 d0 3b  |..m.G..X...7...;|
+000023c0  06 1c 31 44 f3 55 fa 2f  dd af 44 bf fe 2f f9 05  |..1D.U./..D../..|
+000023d0  00 00 00 00 6d b9 de c1  ad 0c 00 00 00 00 00 00  |....m...........|
+000023e0  7d cf cd 0d 80 20 0c 80  d1 b3 26 ce c2 02 84 8b  |}.... ....&.....|
+000023f0  c6 01 dc 00 b5 fe 24 85  12 5a f6 57 8c 92 70 f1  |......$..Z.W..p.|
+00002400  f8 b5 ef d0 ea 48 24 a6  6b 1b 0d de ce 08 ab 19  |.....H$.k.......|
+00002410  2d 32 68 f5 e5 b3 42 70  e0 85 73 94 32 5b 4c 2c  |-2h...Bp..s.2[L,|
+00002420  c9 f5 78 86 9b bf c3 4a  2c e4 82 65 fe 11 7c 9c  |..x....J,..e..|.|
+00002430  61 20 c4 1f b2 27 3f 91  58 a1 98 11 57 aa 44 3e  |a ...'?.X...W.D>|
+00002440  4d ab e7 97 0b 00 00 00  00 f1 d2 87 5a d2 00 00  |M...........Z...|
+00002450  00 00 00 00 00 ad 9c db  6e db b8 16 86 af 67 03  |........n.....g.|
+00002460  fb 1d 3c b9 2f 3a 3e e4  50 20 0d c0 48 8c ad 89  |..<./:>.P ..H...|
+00002470  2c 69 28 c9 4e 7a 23 b8  89 3b 35 26 89 03 c7 99  |,i(.Nz#..;5&....|
+00002480  ee be fd 26 75 32 29 2e  52 4b 72 2f 0a a4 16 fd  |...&u2).RKr/....|
+00002490  7f bf 28 72 69 f1 e4 cb  d7 dd fa 6d bd bf fa ef  |..(ri......m....|
+[...]
+```
+
+I noticed the 128 bits pattern `00 00 00 00 | xx xx xx xx | xx xx 00 00 | 00 00 00 00` repeating within the file (`|` used to cut every 32 bits).
+
+The starts and end of these small sections line-up pretty well with the data sections I managed to extract:
+
+```
+0000000001-00000021F6
+0000002206-00000023D1
+00000023E1-0000002446
+0000002456-00000031C8
+```
+
+We indeed have the first `00 00 [...]` pattern staring at offset 000021f4 and ending 00002205 which nearly matches 00000021F6 (end of first extracted file) and 0000002206 (start of second extracted file).
+The next pattern starts at 000023d0 and ends at 000023df, which again lines-up roughly with 00000023D1 and 00000023E1. And so on for all the sections.
+
+Note, my brute-force tool is most likely a bit buggy and probably adds a few +1 offsets here and there, also it is likely that the uncompressions overflows a bit beyond the actual compressed data. But it is good enough for purpose.
+
+Looking at the end of the file, we have this pattern repeating one final time:
+
+```
+0a16d3c0  79 b0 e2 a0 8e e3 a8 3c  4b d5 d4 51 a0 7b b2 a1  |y......<K..Q.{..|
+0a16d3d0  32 6b 36 bf fc ce 46 b6  1e d6 2d b8 94 98 ea 74  |2k6...F...-....t|
+0a16d3e0  ac 57 92 19 a0 2f 7a c5  43 23 1e 46 0e 1d a8 6f  |.W.../z.C#.F...o|
+0a16d3f0  9a fe f2 85 0e 6c 2f a4  8b 87 71 d4 5e 9a 8f d4  |.....l/...q.^...|
+0a16d400  41 0f eb 85 aa b4 41 f7  ab af 86 39 6a d7 db af  |A.....A....9j...|
+0a16d410  2a 24 8b 8f 8d 7f 6a f6  3f 00 00 00 00 6b ba c9  |*$....j.?....k..|
+0a16d420  70 eb 6c 00 00 00 00 00  00                       |p.l......|
+0a16d429
+(END)
+```
+
+Further more, the first uncompressed block seems to start right at the begining of the file, so there is probably no header section.
+
+### General format of the .pkg file
+
+Looking at a few other `.pkg`, this pattern seems to be shared accross all files.
+
+So we can deduce the format `.pkg` is a concatenated list of section like the following:
+
+```
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+|                                                                                               |
+|                              Compressed Data (RFC 1951/Deflate)                               |
+|                                                                                               |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
++====++====++====++====+ +====++====++====++====+====++====++====++====+ +====++====++====++====+
+| 00 || 00 || 00 || 00 | | XX || XX || XX || XX | XX || XX || 00 || 00 | | 00 || 00 || 00 || 00 |
++====++====++====++====+ +====++====++====++====+====++====++====++====+ +====++====++====++====+
+|<----- 0 padding ---->| |<--------- some kind of ID ----------------->| <----- 0 padding ----->|
+```
+
+Note that by this point, I'm making a lot of assumptions:
+
+* I'm assuming that `0 padding` 32 bits blocks are actually padding, but they could be fields which happened to be set to 0 most of the time
+* I'm a bit puzzled by the 16 bits  `00 00` at the end of `some kind of ID`
+* I'm also not completely sure if the block containing the data is always compressed using Deflate
+* I'm not even sure if this general file format is actually shared across all files.
+
+But let's go forward, this format seems common enough to still yeild good results. Plus we can always go back and revisit this interpretation.
+
+### What the ID might be
+
+Let's take a look at some of these:
+
+```
+00 00 00 00 | bf 00 45 5c | 6c 36 00 00 | 00 00 00 00
+00 00 00 00 | 6d b9 de c1 | ad 0c 00 00 | 00 00 00 00
+00 00 00 00 | f1 d2 87 5a | d2 00 00 00 | 00 00 00 00
+00 00 00 00 | 83 0a 72 88 | a3 5c 00 00 | 00 00 00 00
+00 00 00 00 | 92 ab 31 63 | 91 2a 00 00 | 00 00 00 00
+```
+
+So looking at these IDs, 
