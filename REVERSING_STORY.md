@@ -308,7 +308,7 @@ Further more, the first uncompressed block seems to start right at the begining 
 
 Looking at a few other `.pkg`, this pattern seems to be shared accross all files.
 
-So we can deduce the format `.pkg` is a concatenated list of section like the following:
+So we can deduce the format `.pkg` is a concatenated list of sections like the following:
 
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
