@@ -295,7 +295,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines-up r
 
 Note, my brute-force tool is most likely a bit buggy and probably adds a few +1 offsets here and there, also it is likely that the uncompressions overflows a bit beyond the actual compressed data. But it is good enough for purpose.
 
-Looking at the end of the file, we have this pattern repeating one final time:
+Looking at the end of the file, we have this pattern repeating one final time at the very end:
 
 ```
 0a16d3c0  79 b0 e2 a0 8e e3 a8 3c  4b d5 d4 51 a0 7b b2 a1  |y......<K..Q.{..|
