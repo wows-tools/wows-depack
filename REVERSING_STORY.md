@@ -36,6 +36,7 @@ Anyway, the first step was simply to look at the game files and see were the bul
 
 ```shell
 kakwa@linux Games/World of Warships » ls
+
 [...] api-ms-win-crt-runtime-l1-1-0.dll  concrt140.dll             msvcp140_codecvt_ids.dll  Reports               vcruntime140_1.dll
 [...] api-ms-win-crt-stdio-l1-1-0.dll    crashes                   msvcp140.dll              res_packages          vcruntime140.dll
 [...] api-ms-win-crt-string-l1-1-0.dll   currentrealm.txt          patche                    res_unpack            Wallpapers
@@ -47,6 +48,7 @@ kakwa@linux Games/World of Warships » ls
 [...] bin                                msvcp140_atomic_wait.dll  replays                   user_preferences.xml
 
 kakwa@linux Games/World of Warships » du -hd 1 | sort -h
+
 4.0K	./Reports
 12K	./patche
 2.8M	./Wallpapers
@@ -64,8 +66,7 @@ kakwa@linux Games/World of Warships » du -hd 1 | sort -h
 So here, the bulk of the data is in the `res_packages/` directory. Lets take a look:
 
 ```shell
-kakwa@linux Games/World of Warships » ls res_packages                                                                                                                                                                                                                                                                 130 ↵
-basecontent_0001.pkg           spaces_dock_dry_0001.pkg           spaces_greece_0001.pkg               spaces_sea_hope_0001.pkg              vehicles_level10_spain_0001.pkg      vehicles_level4_0001.pkg             vehicles_level6_panasia_0001.pkg     vehicles_level8_panamerica_0001.pkg
+kakwa@linux Games/World of Warships » ls res_packages                                                                                                                                                                                                                                                                 basecontent_0001.pkg           spaces_dock_dry_0001.pkg           spaces_greece_0001.pkg               spaces_sea_hope_0001.pkg              vehicles_level10_spain_0001.pkg      vehicles_level4_0001.pkg             vehicles_level6_panasia_0001.pkg     vehicles_level8_panamerica_0001.pkg
 camouflage_0001.pkg            spaces_dock_dunkirk_0001.pkg       spaces_honey_0001.pkg                spaces_shards_0001.pkg                vehicles_level10_uk_0001.pkg         vehicles_level4_ger_0001.pkg         vehicles_level6_premium_0001.pkg     vehicles_level8_panasia_0001.pkg
 [...]
 spaces_dock_1_april_0001.pkg   spaces_faroe_0001.pkg              spaces_ridge_0001.pkg                vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg         vehicles_level8_it_0001.pkg          z_vehicles_events_0001.pkg
@@ -76,6 +77,7 @@ spaces_dock_dragon_0001.pkg    spaces_gold_harbor_0001.pkg        spaces_rotterd
 Then use `file` to see if what type of files we are dealing with:
 ```shell
 kakwa@linux Games/World of Warships » cd res_packages 
+
 kakwa@linux World of Warships/res_packages » file *
 [...]
 spaces_dock_ny_0001.pkg:              data
@@ -83,17 +85,8 @@ spaces_dock_ocean_0001.pkg:           data
 spaces_dock_prem_0001.pkg:            Microsoft DirectDraw Surface (DDS): 4 x 4, compressed using DX10
 spaces_dock_rio_0001.pkg:             data
 spaces_dock_spb_0001.pkg:             data
-spaces_dock_table_0001.pkg:           data
-spaces_dock_twitch_0001.pkg:          data
-spaces_estuary_0001.pkg:              data
 spaces_exterior_0001.pkg:             data
 spaces_faroe_0001.pkg:                OpenPGP Secret Key
-spaces_fault_line_0001.pkg:           data
-spaces_gold_harbor_0001.pkg:          data
-spaces_greece_0001.pkg:               data
-spaces_honey_0001.pkg:                data
-spaces_ice_islands_0001.pkg:          data
-spaces_islands_0001.pkg:              data
 spaces_labyrinth_0001.pkg:            data
 spaces_lepve_0001.pkg:                data
 spaces_military_navigation_0001.pkg:  data
@@ -136,12 +129,16 @@ Nada, that's just garbage. So we are dealing with a completely binary format.
 Next, lets try to compress a file:
 
 ```shell
-kakwa@linux World of Warships/res_packages » ls -l vehicles_level4_usa_0001.pkg                                                                                                                                                                                                                                       130 ↵
+# Size before
+kakwa@linux World of Warships/res_packages » ls -l vehicles_level4_usa_0001.pkg                                                                                                                                                                                                                                      
 -rwxr-xr-x 1 kakwa kakwa 15356139 Jan 17 19:01 vehicles_level4_usa_0001.pkg
 
-gzip vehicles_level4_usa_0001.pkg
+# Compress
+kakwa@linux World of Warships/res_packages » gzip vehicles_level4_usa_0001.pkg
 
+# Size After
 ls -l vehicles_level4_usa_0001.pkg.gz 
+
 -rwxr-xr-x 1 kakwa kakwa 15332196 Jan 17 19:01 vehicles_level4_usa_0001.pkg.gz
 ```
 
@@ -151,6 +148,7 @@ Then, the process is a little fuzzy in my memory. But if I recall correctly, I d
 
 ```shell
 kakwa@linux World of Warships/res_packages » hexdump -C vehicles_level4_usa_0001.pkg | less
+
 00000000  95 58 7f 50 9b e7 7d 7f  f4 2a 24 e2 55 64 7c bb  |.X.P..}..*$.Ud|.|
 00000010  a4 be 5b 77 8d e6 45 0e  08 83 ba 5d b1 b7 b8 35  |..[w..E....]...5|
 00000020  4a 2f e9 71 d9 3f c4 e5  45 2a 05 a1 92 eb 9d 2a  |J/.q.?..E*.....*|
@@ -167,8 +165,11 @@ I hexdumped one of the file, looking for some pattern that would help me determi
 I ended-up creating [this tool](https://github.com/kakwa/brute-force-deflate) which tries to brute force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:
 
 ```shell
-kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout                                                                                                                                                                                                                          127 ↵
+# Extracting stuff
+kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout                                                                                 
+# look the file types we just extracted
 kakwa@linux World of Warships/res_packages » file systemout/* | tail
+
 systemout/000A15D8ED-000A15D8F3: ISO-8859 text, with no line terminators
 systemout/000A15D8F7-000A15EF9A: XML 1.0 document, ASCII text
 systemout/000A15EF9E-000A15EFA7: ISO-8859 text, with CR line terminators
@@ -180,7 +181,9 @@ systemout/000A16C784-000A16D41A: exported SGML document, ASCII text, with CRLF l
 systemout/000A16D41E-000A16D426: data
 systemout/bf-Xe4fzss:            empty
 
+# Look if we indeed got what "file" says it is
 kakwa@linux World of Warships/res_packages » head systemout/000A15EFAA-000A15F919 
+
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <root>
@@ -193,11 +196,15 @@ kakwa@linux World of Warships/res_packages » head systemout/000A15EFAA-000A15F9
         <Interface>DebugDrawEntity</Interface>
 ```
 
-Okay, we actually are able to extract actual files! But without the names, it's not that interesting.
+Okay, we actually are able to extract actual files!
 
-Note that I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: `000A165D8C-000A16C774`, start offset is `000A165D8C`, end is `000A16C774`). This makes it simpler to correlate each extracted files to section in the original file.
+...But without the names, it's not that interesting.
 
-But I then lost interest, and didn't follow-up for two years. If I recall correctly I remember being discouraged by not being able to exploit the few 3D models/textures I managed to extract, so I left it as is for the time being.
+Note that in my "brute-force deflate" tool, I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: `000A165D8C-000A16C774`, start offset is `000A165D8C`, end is `000A16C774`). This makes it simpler to correlate each extracted files to section in the original file.
+
+Going back to the reverse engineering, that was progress, but I then lost I interest, and didn't follow-up for two years.
+
+If I recall correctly I remember being discouraged by not being able to exploit the few 3D models/textures I managed to extract, so I left it as is for the time being.
 
 ## Follow-up effort
 
