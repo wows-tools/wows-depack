@@ -223,7 +223,7 @@ First, I copied over a few of the game files into a dedicated `res_unpack` direc
 Then, let's stare at more hexdumps:
 
 ```shell
-kakwa@tsingtao World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
+kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
 [...]
 000021e0  b7 df f2 d7 ff e4 4f bd  52 f6 39 be f5 4a 92 2f  |......O.R.9..J./|
 000021f0  d9 8a f4 ff 01 00 00 00  00 bf 00 45 5c 6c 36 00  |...........E\l6.|
@@ -343,4 +343,135 @@ Let's take a look at some of these:
 00 00 00 00 | 92 ab 31 63 | 91 2a 00 00 | 00 00 00 00
 ```
 
-So looking at these IDs, 
+So looking at these "IDs", here are the things to note:
+
+* they are rather random and high value, meaning they probably don't represent offsets.
+* they look too short (~48 bits) for any [hash algorithm](https://en.wikipedia.org/wiki/List_of_hash_functions).
+* their fix size doesn't indicate it's some kind of compressed data.
+
+So they are probably just... well... random IDs.
+
+Also, it means that `.pkg` files only contains the raw resource files bundled together. All the meta data associated with these files, most importantly their names are contained elsewhere.
+
+### Looking for the files metadata
+
+So it's back to looking at the game files. Hopefully the resources metadata are not embedded directly in the WoWs executable or one of its library.
+
+Let's look:
+
+```shell
+# List all files
+# then remove uninteresting bits like replays, crash, dlls, logs, .pkg or cef stuff (embedded Chrome used for the armory, inventory dockyard and clan base))
+
+kakwa@tsingtao Games/World of Warships » find ./ -type f | grep -v cef | grep -v replays | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log'  | grep -v '\.exe' | less
+[...]
+./bin/6775398/res/texts/pl/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/zh_tw/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/fr/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/nl/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/th/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/es/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/ru/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/zh/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/ja/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/en/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/de/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/es_mx/LC_MESSAGES/global.mo
+./bin/6775398/res/texts/zh_sg/LC_MESSAGES/global.mo
+./bin/6775398/res/camerasConsumer.xml
+./bin/6775398/bin32/paths.xml
+./bin/6775398/bin32/Licenses.txt
+./bin/6775398/bin32/monitor_config.json
+./bin/6775398/bin64/paths.xml
+./bin/6775398/bin64/Licenses.txt
+./bin/6775398/bin64/monitor_config.json
+./bin/6775398/idx/spaces_dock_dry.idx
+./bin/6775398/idx/vehicles_pve.idx
+./bin/6775398/idx/vehicles_level8_fr.idx
+./bin/6775398/idx/spaces_ocean.idx
+./bin/6775398/idx/vehicles_level8_panasia.idx
+./bin/6775398/idx/vehicles_level9_ned.idx
+./bin/6775398/idx/vehicles_level5_panasia.idx
+./bin/6775398/idx/spaces_sea_hope.idx
+./bin/6775398/idx/spaces_dock_hsf.idx
+[...]
+```
+
+
+Ohhh, these `.idx` files look promissing, specially their names match quite well the pkg files:
+
+```
+spaces_dock_hsf.idx -> spaces_dock_hsf_0001.pkg
+ehicles_level9_ned.idx -> vehicles_level9_ned_0001.pkg
+etc
+```
+
+Let's take a look:
+
+```shell
+kakwa@tsingtao bin/6775398/idx » strings -n 5 system_data.idx
+#%B'E
+#%B'E
+#%B'E
+E)zj'
+FM'lb
+%}n:b
+(	?A+
+c|'lY
+zc78'
+tKDStorage.bin
+waves_heights1.dds
+animatedMiscs.xml
+LowerDeck.dds
+[...]
+FoamMapLowFreq.dds
+tritanopia.dds
+color_correct_default.dds
+Color.dds
+Shimmer.dds
+highlight_noise.dds
+space_variation_dummy.dds
+waves_heights0.dds
+4F$)p
+E)zjp
+ |5*y
+FM'lp
+k4|W8
+%}n:p
+(	?A+
+c|'lp
+LrL)t
+atw|$
+:M+Xp
+F?mep
+wsystem_data_0001.pkg
+```
+
+Bingo, we have all the file names, and at the end, the name of the corresponding `.pkg` file.
+
+These `.idx` files, as the extension indicates, are our indexes containing all the file names and metadata.
+
+### bin directory and Game versions
+
+There are a few things to note about the `./bin` directory: it contains several sub-directory looking like that:
+
+```shell
+kakwa@tsingtao World of Warships/bin » du -hd 1 | sort -h
+12K	./5241351
+12K	./5315992
+12K	./5343985
+12K	./5450485
+12K	./5624555
+12K	./5771708
+12K	./5915585
+12K	./6081105
+12K	./6223574
+592M	./6623042
+594M	./6775398
+```
+
+This look a lot like incrementa build numbers, with WoWs keeping the latest published build 'N' and 'N-1' (the mostly empty directories are only containing left overs like logs or mods).
+
+We will need to take this into account, using the highest numbered sub-directory to get the most up to date indexes.
+
+### Index (.idx) file format
