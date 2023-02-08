@@ -947,4 +947,113 @@ But as it never varies in the set of index files we have here, we cannot really 
 
 At this point, the idea of downloading other Wargaming games like World of Tanks or World of Warplanes popped-up, maybe this will give complementary information regarding the unknown fields that starts to pile-up.
 
+But lets continue for now.
 
+EDIT: It's no help, World of Tanks and World of Warplanes simply pack their resources in `.zip` files...
+It's a wild guess, but I kind of expect WoWs to be the same in the futur.
+The WoWs packing format feels in fact somewhat legacy, custom and far less efficient than a standard & run of the mill `.zip` file. Not to mention using `.zip` files means removing one bit of code to maintain.
+
+The next value is again a 64 bits integer, it changes between each files.
+
+lets focus on one file:
+
+```
+[...]
+00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
+[...]
+```
+
+At first, I though it might be a file size, but quickly checking the index file size, I got:
+
+* index file size: 29043
+* value of this field in decimal: 15350
+
+Checking another file, I got 77461 and 44807.
+
+So no, it's not the index size. However it is suspisously ~1/2 of the file size, and after having stared at hexdumps for hours, I had another idea.
+
+The third chunk of the file is right after the bundle of dir/file name strings which varies in length wildly (e.i, it's not fixed length or a multiple of a fix length).
+
+We probably need an offset pointing to the start of this section in the header.
+
+And sure enough, looking where the bundle of strings stops, we get:
+
+```
+00003bd0  6f 69 73 65 2e 64 64 73  00 73 70 61 63 65 5f 76  |oise.dds.space_v|
+00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f ec  87 4a 28 d0 f7 c7 70 11  |0.dds....J(...p.|
+00003c10  03 07 0d 33 ed 77 1e 9b  ef 05 00 00 00 00 05 00  |...3.w..........|
+```
+
+Okay, the string bundle ends at 00003c05, that's quite near 3b f6, so this is certainly the offset to this third section or the end of the bundle of strings.
+
+Most likely, the offset is not from the start of the file, but from a specific in the header (this field? end of header?), that's why we get a -15 difference (0x00003c05 - 0x3bf6 = 0xF = 15). This -15 value is constant between file.
+
+So we have:
+```
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS || OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<------------ header size (?) -------->||<---- offset third section start ----->|
+```
+
+Last 64 bits:
+
+
+```shell
+kakwa@tsingtao 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
+[...]
+00000030  40 af 03 00 00 00 00 00  1b 00 00 00 00 00 00 00  |@...............|
+00000030  54 8d 1f 00 00 00 00 00  21 00 00 00 00 00 00 00  |T.......!.......|
+00000030  8e ae 00 00 00 00 00 00  17 00 00 00 00 00 00 00  |................|
+00000030  02 81 00 00 00 00 00 00  13 00 00 00 00 00 00 00  |................|
+00000030  c9 24 00 00 00 00 00 00  1f 00 00 00 00 00 00 00  |.$..............|
+[...]
+```
+
+So, we have a 64 bits integer, which is relatively low value. This means it's most like a size or an offset.
+
+If we pick one:
+
+```
+hexdump -C system_data.idx | less
+```
+[...]
+00000030  36 71 00 00 00 00 00 00  13 00 00 00 00 00 00 00  |6q..............|
+[...]
+```
+
+We can see that the `36 71 00 00 00 00 00 00`, 28982 once converted to decimal, is remarkably close to the file size (29043 bytes).
+
+From their, we can guess it might be three things:
+
+* the actual index file size
+* an offset to something at the end of the file
+* pointer to the end of the third section
+
+Lets note that for now, and figure out the finer details at implementation time.
+
+So, to recap, here is the header section format:
+
+```
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<----- magic ----->||<----- ???? ------>||<---- id/crc ----->||<----- ??????? --->|
+
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| FD | FD | FD | FD || FI | FI | FI | FI || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<file + dir count >||<-- file count --->||<-------------- ???? ------------------>|
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|<------------ header size (?) --------->||<----- offset third section start ----->|
+
++====+====+====+====+====+====+====+=====+
+| OE | OE | OE | OE | OE | OE | OE | OE  |
++====+====+====+====+====+====+====+=====+
+|<---- offset third section end -------->|
+```
