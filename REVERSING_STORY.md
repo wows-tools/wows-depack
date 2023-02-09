@@ -1002,7 +1002,7 @@ Last 64 bits:
 
 
 ```shell
-kakwa@tsingtao 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
+kakwa@linux 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
 [...]
 00000030  40 af 03 00 00 00 00 00  1b 00 00 00 00 00 00 00  |@...............|
 00000030  54 8d 1f 00 00 00 00 00  21 00 00 00 00 00 00 00  |T.......!.......|
@@ -1057,3 +1057,189 @@ So, to recap, here is the header section format:
 +====+====+====+====+====+====+====+=====+
 |<---- offset third section end -------->|
 ```
+
+### Format of the middle section
+
+Not much to say there.
+
+Here what it looks like:
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+[...]
+00002700  fb 14 00 00 00 00 00 00  74 d1 1b 8d f4 ff 7a ce  |........t.....z.|
+00002710  a4 eb 1b 3e 50 21 d8 74  4b 44 53 74 6f 72 61 67  |...>P!.tKDStorag|
+00002720  65 2e 62 69 6e 00 77 61  76 65 73 5f 68 65 69 67  |e.bin.waves_heig|
+00002730  68 74 73 31 2e 64 64 73  00 61 6e 69 6d 61 74 65  |hts1.dds.animate|
+[...]
+000028c0  74 73 2e 62 69 6e 00 6d  69 73 63 53 65 74 74 69  |ts.bin.miscSetti|
+000028d0  6e 67 73 2e 78 6d 6c 00  64 61 6d 61 67 65 5f 64  |ngs.xml.damage_d|
+000028e0  65 63 5f 32 5f 64 2e 64  64 32 00 64 61 6d 61 67  |ec_2_d.dd2.damag|
+000028f0  65 5f 64 65 63 5f 31 5f  65 2e 64 64 73 00 63 72  |e_dec_1_e.dds.cr|
+[...]
+00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
+00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+00003c20  00 00 01 00 00 00 f5 21  00 00 bf 00 45 5c 6c 36  |.......!....E\l6|
+```
+
+So it's a bunch of `\0` separated strings. The only thing interesting to note is that it's not a fixed size section.
+
+### Format of the third section
+
+
+Here what it looks like:
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+[...]
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
+00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+00003c20  00 00 01 00 00 00 f5 21  00 00 bf 00 45 5c 6c 36  |.......!....E\l6|
+00003c30  00 00 00 00 00 00 8f ec  87 4a 28 d0 f7 c7 70 11  |.........J(...p.|
+00003c40  03 07 0d 33 ed 77 1e 9b  ef 05 00 00 00 00 05 00  |...3.w..........|
+00003c50  00 00 01 00 00 00 15 15  01 00 03 77 63 97 3e ab  |...........wc.>.|
+00003c60  02 00 00 00 00 00 ad 70  a2 e7 ac 2c 4f 6b 70 11  |.......p...,Okp.|
+00003c70  03 07 0d 33 ed 77 05 22  00 00 00 00 00 00 05 00  |...3.w."........|
+00003c80  00 00 01 00 00 00 cb 01  00 00 6d b9 de c1 ad 0c  |..........m.....|
+00003c90  00 00 00 00 00 00 8e c7  6a 58 7c 86 62 33 70 11  |........jX|.b3p.|
+00003ca0  03 07 0d 33 ed 77 e0 23  00 00 00 00 00 00 05 00  |...3.w.#........|
+00003cb0  00 00 01 00 00 00 65 00  00 00 f1 d2 87 5a d2 00  |......e......Z..|
+00003cc0  00 00 00 00 00 00 8e 43  3d e9 cf 49 52 a4 70 11  |.......C=..IR.p.|
+00003cd0  03 07 0d 33 ed 77 4d 1f  6a 05 00 00 00 00 05 00  |...3.wM.j.......|
+00003ce0  00 00 01 00 00 00 bb 19  00 00 f7 53 4a b1 38 ab  |...........SJ.8.|
+00003cf0  00 00 00 00 00 00 0e 3c  9a 6d 22 de 7b da 70 11  |.......<.m".{.p.|
+00003d00  03 07 0d 33 ed 77 55 24  00 00 00 00 00 00 05 00  |...3.wU$........|
+00003d10  00 00 01 00 00 00 72 0d  00 00 83 0a 72 88 a3 5c  |......r.....r..\|
+00003d20  00 00 00 00 00 00 98 45  00 7a 16 6e 84 21 70 11  |.......E.z.n.!p.|
+00003d30  03 07 0d 33 ed 77 73 ce  cb 06 00 00 00 00 05 00  |...3.ws.........|
+00003d40  00 00 01 00 00 00 f9 b6  b7 00 ff 7e f7 7b 5b 30  |...........~.{[0|
+00003d50  b8 00 00 00 00 00 98 51  4a 00 2c 12 71 ad 70 11  |.......QJ.,.q.p.|
+00003d60  03 07 0d 33 ed 77 7e 63  75 05 00 00 00 00 05 00  |...3.w~cu.......|
+[...]
+00007100  00 00 01 00 00 00 6f 09  00 00 fc 56 94 f8 9a 37  |......o....V...7|
+00007110  00 00 00 00 00 00 21 67  ac 70 22 ec ca b8 70 11  |......!g.p"...p.|
+00007120  03 07 0d 33 ed 77 28 f9  15 0a 00 00 00 00 05 00  |...3.w(.........|
+00007130  00 00 01 00 00 00 0b 2d  00 00 03 bd b0 50 67 e9  |.......-.....Pg.|
+00007140  00 00 00 00 00 00 15 00  00 00 00 00 00 00 18 00  |................|
+00007150  00 00 00 00 00 00 70 11  03 07 0d 33 ed 77 73 79  |......p....3.wsy|
+00007160  73 74 65 6d 5f 64 61 74  61 5f 30 30 30 31 2e 70  |stem_data_0001.p|
+00007170  6b 67 00                                          |kg.|
+00007173
+(END)
+
+
+Right away, we can notice 3 things:
+
+* like before, it looks cyclical
+* it contains the IDs of the pkg file
+* it ends with the `.pkg` file name.
+
+One cycle probably contains other metadata about a packaged file.
+
+Lets try to first determine the size of these cycles.
+
+first, lets "reallign" the hexdump.
+
+Here the last file name strings ends at 00003c05 (last '\0'), which means 6 bytes.
+
+hexdump has a convinient `-s` (skip) option for that.
+
+```shell
+# lets skip the first 6 bytes to allign hexdump output
+kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
+[...]
+00003be6  6f 6e 5f 64 75 6d 6d 79  2e 64 64 73 00 77 61 76  |on_dummy.dds.wav|
+00003bf6  65 73 5f 68 65 69 67 68  74 73 30 2e 64 64 73 00  |es_heights0.dds.|
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+00003c66  ad 70 a2 e7 ac 2c 4f 6b  70 11 03 07 0d 33 ed 77  |.p...,Okp....3.w|
+[...]
+```
+
+Much nicer!
+
+With that, we immediately notice some cycle, with the `70 11 03 07 0d 33 ed 77` value.
+
+There are 6 x 64 = 384 bits between each `70 11 03 07 0d 33 ed 77` value.
+
+let's try to confirm that with the IDs.
+
+We are spotting the `bf 00 45 5c 6c 36` seen previously in the `.pkg` file. 384 bits later, we see `03 77 63 97 3e ab 02`.
+
+With a bit of digging (it's right in the middle of the `.pkg` file, and this ID is not neetly in a 64 bits aligned chunk because of the variable size of the Deflate blocks), we indeed find it.
+
+We have indeed a 384 bits cycle, which neetly fits in 3 lines of hexdump!
+
+So each of these is one record:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+```
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+```
+
+```
+00003c66  ad 70 a2 e7 ac 2c 4f 6b  70 11 03 07 0d 33 ed 77  |.p...,Okp....3.w|
+00003c76  05 22 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |."..............|
+00003c86  cb 01 00 00 6d b9 de c1  ad 0c 00 00 00 00 00 00  |....m...........|
+```
+
+```
+00003c96  8e c7 6a 58 7c 86 62 33  70 11 03 07 0d 33 ed 77  |..jX|.b3p....3.w|
+00003ca6  e0 23 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |.#..............|
+00003cb6  65 00 00 00 f1 d2 87 5a  d2 00 00 00 00 00 00 00  |e......Z........|
+```
+
+```
+00003cc6  8e 43 3d e9 cf 49 52 a4  70 11 03 07 0d 33 ed 77  |.C=..IR.p....3.w|
+00003cd6  4d 1f 6a 05 00 00 00 00  05 00 00 00 01 00 00 00  |M.j.............|
+00003ce6  bb 19 00 00 f7 53 4a b1  38 ab 00 00 00 00 00 00  |.....SJ.8.......|
+```
+
+All these records are from the same file,
+
+lets grab a few from other files:
+
+File 2:
+
+```
+0000f6fd  58 fe 65 b4 59 b6 b0 77  a4 8c 78 6a 58 aa 65 84  |X.e.Y..w..xjX.e.|
+0000f70d  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+0000f71d  bc 99 05 00 f4 3a 67 8b  80 00 08 00 00 00 00 00  |.....:g.........|
+```
+
+```
+0000f72d  a0 e5 c7 22 cc 49 d3 31  a4 8c 78 6a 58 aa 65 84  |...".I.1..xjX.e.|
+0000f73d  3e 9e 7e 05 00 00 00 00  05 00 00 00 01 00 00 00  |>.~.............|
+0000f74d  79 c6 03 00 dc b8 5f 80  80 00 08 00 00 00 00 00  |y....._.........|
+```
+
+
+File 3:
+
+```
+00002d0c  ed cf 33 f8 a5 94 53 56  0d a7 9c b9 bf 60 f5 3e  |..3...SV.....`.>|
+00002d1c  40 a8 08 07 00 00 00 00  00 00 00 00 00 00 00 00  |@...............|
+00002d2c  38 ab 00 00 5d cf 4e b6  38 ab 00 00 00 00 00 00  |8...].N.8.......|
+```
+
+```
+00002d3c  ed ea da 52 4e 8f 70 ed  0d a7 9c b9 bf 60 f5 3e  |...RN.p......`.>|
+00002d4c  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002d5c  98 00 00 00 a4 63 f2 9b  98 00 00 00 00 00 00 00  |.....c..........|
+```
+
+
