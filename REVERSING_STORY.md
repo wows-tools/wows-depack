@@ -1358,4 +1358,55 @@ So to recap, we have:
 |     32 bits       ||               64 bits                 ||      32 bits      |
 ```
 
+### The last bits
 
+So, okay, we have the core of the 3 part of the file.
+
+But we can see the last few bits don't follow this pattern (specially with the `.pkg` file name), which means we have a footer:
+
+```
+# Last block
+00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p"...p....3.w|
+00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
+00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
+# Footer
+00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
+00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
+00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
+```
+
+If we look at the content, we have 3 * 64 bits before the name starts (`73 79 73 74 65 6d 5f 64` for `system_d` in)
+
+Looking at it more closely, given all the `00`, it seems we have three 64 bits integers there.
+
+* `15 00 00 00 00 00 00 00`
+* `18 00 00 00 00 00 00 00`
+* `70 11 03 07 0d 33 ed 77`
+
+`70 11 03 07 0d 33 ed 77` is the "unknown 2" we saw previously, so still no luck, but lets name it the same way.
+
+
+`18 00 00 00 00 00 00 00` seems to have the same value accross all files, so probably not that important.
+
+The only one that varies accross files is the `15 00 00 00 00 00 00 00`, but always in the same kind of values around 0x15. in decimal it's 21.
+
+Strangely, `system_data_0001.pkg` is 20 chars long, 21 if we include the `\0` at the end.
+
+So we can deduce it's actually the `.pkg` file name string size.
+
+So we have
+
+```
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|<--------- size pkg file name -------->||<-------------- unknown 3 ------------->|
+|               64 bits                 ||                64 bits                 |
++=====+====+====+====+====+====+====+====+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|  UT | UT | UT | UT | UT | UT | UT | UT |             file name string
++=====+====+====+====+====+====+====+====+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|<-------------- unknown 2 ------------->|
+|                64 bits                 |
+```
+
+## Time to start the implementation!
