@@ -1128,6 +1128,7 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
 00007170  6b 67 00                                          |kg.|
 00007173
 (END)
+```
 
 
 Right away, we can notice 3 things:
