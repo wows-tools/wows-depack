@@ -1242,4 +1242,120 @@ File 3:
 00002d5c  98 00 00 00 a4 63 f2 9b  98 00 00 00 00 00 00 00  |.....c..........|
 ```
 
+Lets study:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+For the first 128 bits we get:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+```
+
+From the fact the last 64 bits are constant, we can deduce we have probably two 64 bits integers in the first 128 bits
+
+Once again, these are using all the available bits and seem rather random. It's difficult to link these to their role, so... lets simply ignore these for now.
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO || UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<------------ unknown 1 -------------->||<------------- unknow 2 -------------->|
+|               64 bits                 ||               64 bits                 |
+```
+
+Next 64 bits, we have a low value 64 bits integer, so most likely an offset. It is also suspiciously at `0x0` for the first record which is also the first data chunk in the `.pkg` file.
+
+So, it's most likely the start of a data chunk in a `.pkg` file. Looking at other records confirms that.
+
+Next, we have two extremely low value 32 bits (0x5 and 0x1). So once again, most likely some kind of enum, lets call them `type1` and `type2`.
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|<----------start offset pkg ---------->||<---- type 1 ----->||<----- type 2 ---->|
+|               64 bits                 ||     32 bits       ||      32 bits      |
+```
+
+For the Last 128 bits, we get the following:
+```
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+So, here, we see our `.pkg` ID (`bf 00 45 5c  6c 36`) right in the middle. Given its size, this ID is probably stored on 64 bits.
+
+After that, last 32 bits, we get a bunch of `00`, maybe a reserved field, but more likely some kind of padding.
+
+Before that, we get a low value 32 bits integer. When comparing with the `.pkg` file, `f5 21 00 00` is the offset where the first data chunk ends.
+
+
+So it's the end offset. But 32 bits seems rather small to store such offset (specially given the start offset is 64 bits. Also, for other data chunks, this doesn't line-up.
+
+However, it could very much be a relative offset (to the start of the data chunk).
+
+Lets validate that with the second record
+
+Record
+``` 
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+```
+More hexdump! (searching the data chunk using the `03 77 63 97  3e ab 02` ID and the start offset `1e 9b ef 05 00 00 00 00`, or `0x05ef9b1e` once we take endianess into account):
+
+```shell
+kakwa@linux World of Warships/res_packages » hexdump -C system_data_0001.pkg | less
+[...]
+05ef9b10  00 00 17 4b 28 42 80 40  00 00 00 00 00 00 8c 7d  |...K(B.@.......}|
+05ef9b20  3b 50 5d d9 b6 dd 7d b6  3e 76 15 b2 5f 20 89 04  |;P]...}.>v.._ ..|
+05ef9b30  55 bd 00 44 82 aa ec 7a  9c bd f7 79 45 57 39 40  |U..D...z...yEW9@|
+05ef9b40  90 d0 4e 8c c0 01 9d 21  48 e8 0c 41 a2 ce 10 24  |..N....!H..A...$|
+[...]
+05f0b010  d1 d7 52 b0 de cc fa 9c  2b 8d b5 57 a4 02 ff 1a  |..R.....+..W....|
+05f0b020  43 5d 2d 43 3f cc d1 0b  f8 88 92 a8 9f 5a 70 64  |C]-C?........Zpd|
+05f0b030  46 fb 7f 00 00 00 00 03  77 63 97 3e ab 02 00 00  |F.......wc.>....|
+05f0b040  00 00 00 94 b7 67 90 db  68 9e e6 d9 1f 36 62 6f  |.....g..h....6bo|
+05f0b050  6f 22 76 f6 62 e3 62 77  67 7a 7a ba ab bb 8c aa  |o"v.b.bwgzz.....|
+05f0b060  4a 52 95 5c ca a5 cf 64  d2 24 bd 27 41 d0 00 04  |JR.\...d.$.'A...|
+[...]
+```
+
+We indeed find the start of our data chunk at `05ef9b1e` (`8c` after a bunch of `00` on the first line).
+
+And looking for the `00 00 00 00 ID ID [...]` pattern in between the data chunks, we can determine the end of this chunk to be at `0x05f0b032`.
+
+Doing `0x05f0b032 - 0x05ef9b1e`, we get `0x11514`, that's almost our `15 15 01 00` once we swap endianess, and add `1`.
+
+```
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|<-- offset end --->||<------------- ID '.pkg' ------------->||<---- padding ---->|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+```
+
+So to recap, we have:
+
+```
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|<------------ unknown 1 -------------->||<-------------- unknown 2 ------------->|
+|               64 bits                 ||                64 bits                 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|<--------- start offset pkg ---------->||<---- type 1 ----->||<----- type 2 ---->|
+|               64 bits                 ||     32 bits       ||      32 bits      |
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|<-- offset end --->||<------------- ID '.pkg' ------------->||<---- padding ---->|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+```
+
 
