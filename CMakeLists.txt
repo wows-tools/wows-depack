@@ -1,27 +1,27 @@
 cmake_minimum_required (VERSION 2.6)
 
-project (bf-deflate)
+project (wows-depack)
 
 # Project version (sematic versionning)
-set(bf-deflate_VERSION_MAJOR 0)
-set(bf-deflate_VERSION_MINOR 1)
-set(bf-deflate_VERSION_PATCH 0)
+set(wows-depack_VERSION_MAJOR 0)
+set(wows-depack_VERSION_MINOR 1)
+set(wows-depack_VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 find_package(ZLIB REQUIRED)
 
-set(bf-deflate_VERSION ${bf-deflate_VERSION_MAJOR}.${bf-deflate_VERSION_MINOR}.${bf-deflate_VERSION_PATCH})
+set(wows-depack_VERSION ${wows-depack_VERSION_MAJOR}.${wows-depack_VERSION_MINOR}.${wows-depack_VERSION_PATCH})
 
 add_custom_target(tag
-    COMMAND git tag -a ${bf-deflate_VERSION} -m "tagging version ${bf-deflate_VERSION}"
-    COMMAND git push origin ${bf-deflate_VERSION}
+    COMMAND git tag -a ${wows-depack_VERSION} -m "tagging version ${wows-depack_VERSION}"
+    COMMAND git push origin ${wows-depack_VERSION}
 )
 
 
 # set version as a definition
-set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${bf-deflate_VERSION}\"'")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${bf-deflate_VERSION}\"'")
+set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${wows-depack_VERSION}\"'")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${wows-depack_VERSION}\"'")
 
 # Options
 option(DEBUG     "compile with debug symbol"    OFF)
@@ -81,9 +81,21 @@ include_directories(
     /sw/include/
 )
 
+add_library(wows-depack
+    ${SHARED}
+    lib/utils.c
+)
+
+set_target_properties(wows-depack
+    PROPERTIES
+    VERSION ${wows-depack_VERSION}
+    SOVERSION ${wows-depack_VERSION_MAJOR}
+)
+
+
 # Compile the executable
-add_executable(bf-deflate bf-deflate.c)
-target_link_libraries(bf-deflate
+add_executable(wows-depack-cli wows-depack.c)
+target_link_libraries(wows-depack
     ${ZLIB_LIBRARIES}
 ) 
 
@@ -96,7 +108,7 @@ if (NOT BIN_INSTALL_DIR)
 endif ()
 
 # install binaries and library
-INSTALL(TARGETS bf-deflate bf-deflate
+INSTALL(TARGETS wows-depack wows-depack
   RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
