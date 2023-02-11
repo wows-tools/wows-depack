@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
 
 project (wows-depack)
 
@@ -99,12 +99,24 @@ target_link_libraries(wows-depack
     ${ZLIB_LIBRARIES}
 ) 
 
+target_link_libraries(wows-depack-cli
+    wows-depack
+    ${ZLIB_LIBRARIES}
+)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall")
 
+if (NOT LIB_INSTALL_DIR)
+    set(LIB_INSTALL_DIR lib)
+endif ()
+
 if (NOT BIN_INSTALL_DIR)
     set(BIN_INSTALL_DIR bin)
+endif ()
+
+if (NOT INCLUDE_INSTALL_DIR)
+    set(INCLUDE_INSTALL_DIR include)
 endif ()
 
 # install binaries and library
