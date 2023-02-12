@@ -55,9 +55,12 @@ dkms.conf
 *.swp
 *.swo
 
+# binary
+wows-depack-cli
+
 # CMake stuff
 CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-wows-depack-cli
+install_manifest.txt

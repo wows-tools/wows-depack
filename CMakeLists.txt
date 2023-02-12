@@ -77,7 +77,7 @@ LINK_DIRECTORIES(
 include_directories(
     ./inc/
     ${ZLIB_INCLUDE_DIRS}
-    /usr/include/ 
+    /usr/include/
     /sw/include/
 )
 
@@ -97,7 +97,7 @@ set_target_properties(wows-depack
 add_executable(wows-depack-cli wows-depack.c)
 target_link_libraries(wows-depack
     ${ZLIB_LIBRARIES}
-) 
+)
 
 target_link_libraries(wows-depack-cli
     wows-depack
@@ -120,7 +120,7 @@ if (NOT INCLUDE_INSTALL_DIR)
 endif ()
 
 # install binaries and library
-INSTALL(TARGETS wows-depack wows-depack
+INSTALL(TARGETS wows-depack wows-depack-cli
   RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
