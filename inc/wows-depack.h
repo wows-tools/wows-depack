@@ -54,3 +54,4 @@ int wows_inflate(FILE *source, FILE *dest, long *read);
 void wows_zerr(int ret);
 int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
+int wows_parse_index(char *contents, size_t length);

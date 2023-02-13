@@ -84,6 +84,7 @@ include_directories(
 add_library(wows-depack
     ${SHARED}
     lib/utils.c
+    lib/index-parser.c
 )
 
 set_target_properties(wows-depack

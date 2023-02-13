@@ -15,6 +15,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <zlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
 #include "inc/wows-depack.h"
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
@@ -36,8 +41,8 @@ static char doc[] = "\nBrute force DEFLATE decompressor";
 
 static struct argp_option options[] = {
     {"input", 'i', "INPUT_INDEX", 0, "Input file"},
-    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
-    {"output", 'o', "OUTPUT_DIR", 0, "Output dir with the decompressed blobs"},
+//    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
+//    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed blobs"},
     {0}};
 
 /* A description of the arguments we accept. */
@@ -58,9 +63,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   case 'i':
     arguments->input = arg;
     break;
-  case 'o':
-    arguments->output = arg;
-    break;
   default:
     return ARGP_ERR_UNKNOWN;
   }
@@ -80,26 +82,19 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  if (args.output == NULL) {
-    fprintf(stderr, "error: no -o <output dir> arg\n");
-    return EXIT_FAILURE;
-  }
-  FILE *in = fopen(args.input, "r");
-  if (in == NULL) {
+  struct stat s;
+  int fd = open(args.input, O_RDONLY);
+  if (fd <= 0) {
     fprintf(stderr, "error: failed to open '%s'\n", args.input);
     return EXIT_FAILURE;
   }
 
-  int res = mkdir(args.output, 0700);
-  if (res != 0 && !wows_is_dir(args.output)) {
-    fprintf(stderr, "error: failed to create output '%s' dir: %s\n",
-            args.output, strerror(errno));
-    return EXIT_FAILURE;
-  } else {
-  }
-  /* avoid end-of-line conversions */
-  // SET_BINARY_MODE(stdin);
-  // SET_BINARY_MODE(stdout);
+  fstat (fd, &s);
 
-  return wows_inflate_all(in, args.output);
+  /* index content size */
+  size_t index_size = s.st_size;
+
+  char * index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+  return wows_parse_index(index_content, index_size);
 }
