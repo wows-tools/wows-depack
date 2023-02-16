@@ -1411,3 +1411,164 @@ So we have
 ```
 
 ## Time to start the implementation!
+
+### Defining the structures
+
+The first step is to define the structure matching what we saw previously.
+
+I will not copy all the structures here (see `inc/wows-depack.h` for that), but it looks like that:
+
+```
+// INDEX file header
+typedef struct {
+    char magic[4];
+    uint32_t unknown_1;
+    uint32_t id;
+    uint32_t unknown_2;
+    uint32_t file_plus_dir_count;
+    uint32_t file_count;
+    uint64_t unknown_3;
+    uint64_t header_size;
+    uint64_t offset_idx_data_section;
+    uint64_t offset_idx_footer_section;
+} WOWS_INDEX_HEADER;
+```
+
+### Start Parsing
+
+Important disclaimer: the code presented here is extremely unsafe for clarity. it has no error handling and is very suceptible to buffer overflows. This will be fixed in the final code, but don't copy the examples presented here.
+
+Initaly we will parse the index file and implement a human readable output. We will determine later what to do with the metadata we extract, for now, lets just display it.
+
+The first step is memory mapping the file content with `mmap`:
+
+```C
+// Open the index file
+int fd = open(args.input, O_RDONLY);
+
+// Recover the file size
+struct stat s;
+fstat(fd, &s);
+size_t index_size = s.st_size;
+
+// Map the whole content in memory
+char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
+```
+The second is to have an entry point to actually parse the thing:
+
+```C
+    WOWS_CONTEXT context;
+    context.debug = true;
+
+    // Start the parsing
+    return wows_parse_index(index_content, index_size, &context);
+```
+
+Here, I pass the memory mapped content of the header, its size (will be used in the futur to avoid overflows) and a `context` which will be used to pass parsing options and maintain "states" in the parsing if necessary.
+
+Within the `wows_parse_index` function, we basically do a bunch of pointer arythmetic to extract each sections of the index file:
+
+```C
+int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
+  // header section
+  WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
+
+  // Recover the start of the metadata array
+  WOWS_INDEX_METADATA_ENTRY *metadatas;
+  metadatas =
+      (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
+```
+
+Then, we do something with these sections, like for example:
+
+```C
+    // Parse & print each entry in the metadata section
+    for (i = 0; i < header->file_plus_dir_count; i++) {
+        if (context->debug) {
+            print_metadata_entry(&metadatas[i], i);
+        }
+    }
+```
+
+With `print_metadata_entry` looking like that:
+
+```C
+int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
+    printf("Metadata entry %d:\n", index);
+    printf("* file_type:                 %lu\n", entry->file_type_1);
+    printf("* offset_idx_file_name:      0x%lx\n", entry->offset_idx_file_name);
+    printf("* unknown_4:                 0x%lx\n", entry->unknown_4);
+    printf("* file_type_2:               0x%lx\n", entry->file_type_2);
+    return 0;
+}
+```
+
+### Re-interpreting/validating some field significations
+
+Once done, it gives us more confortable read:
+
+```
+Index Header Content:
+* magic:                     ISFP
+* unknown_1:                 0x2000000
+* id:                        0xb4399d91
+* unknown_2:                 0x40
+* file_plus_dir_count:       311
+* file_count:                284
+* unknown_3:                 1
+* header_size:               40
+* offset_idx_data_section:   0x3bf6
+* offset_idx_footer_section: 0x7136
+
+Metadata entry 0:
+* file_type:                 14
+* offset_idx_file_name:      0x26e0
+* unknown_4:                 0x93b6404fba9a0c8f
+* file_type_2:               0xdbb1a1d1b108b927
+
+Metadata entry 1:
+* file_type:                 19
+* offset_idx_file_name:      0x26ce
+* unknown_4:                 0xc7f7d0284a87ec8f
+* file_type_2:               0x74d821503e1beba4
+
+Metadata entry 2:
+* file_type:                 18
+* offset_idx_file_name:      0x26c1
+* unknown_4:                 0x6b4f2cace7a270ad
+* file_type_2:               0xdbb1a1d1b108b927
+
+Metadata entry 3:
+[...]
+
+Metadata entry 310:
+* file_type:                 19
+* offset_idx_file_name:      0x14fb
+* unknown_4:                 0xce7afff48d1bd174
+* file_type_2:               0x74d821503e1beba4
+```
+
+This permits to review our previous reverse and right away there are two interesting things to note:
+
+* There was a bit of an unknown regarding the number of metadata chunck: was it `file_count` or `file_plus_dir_count`? Now we are more certain it's `file_plus_dir_count` as its the larger value. If it was not, we would try parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.
+* `file_type` in metadata is not a file type/enum. The value are small, but quite varied, it's more likely the length of the file name.
+
+Lets check with the last entry:
+
+```
+Metadata entry 310:
+* file_type:                 19
+[...]
+```
+
+`hexdump -C system_data.idx| less`
+[...]
+00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
+00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+```
+
+The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
+
+So lets rename this field.
