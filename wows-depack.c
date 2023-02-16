@@ -94,7 +94,10 @@ int main(int argc, char **argv) {
   /* index content size */
   size_t index_size = s.st_size;
 
-  char * index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
+  char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-  return wows_parse_index(index_content, index_size);
+  WOWS_CONTEXT context;
+  context.debug = true;
+
+  return wows_parse_index(index_content, index_size, &context);
 }
