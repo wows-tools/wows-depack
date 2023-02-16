@@ -19,6 +19,14 @@ int print_header(WOWS_INDEX_HEADER *header) {
     return 0;
 }
 
+int print_footer(WOWS_INDEX_FOOTER *footer) {
+    printf("Index Footer Content:\n");
+    printf("* size_pkg_file_name:        %lu\n", footer->size_pkg_file_name);
+    printf("* unknown_7:                 0x%lx\n", footer->unknown_7);
+    printf("* unknown_6:                 0x%lx\n", footer->unknown_6);
+    return 0;
+}
+
 int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
     printf("Metadata entry %d:\n", index);
     printf("* file_name_size:            %lu\n", entry->file_name_size);
@@ -36,6 +44,15 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
     if (context->debug) {
         print_header(header);
+        printf("\n");
+    }
+
+    // Get the footer section
+    WOWS_INDEX_FOOTER *footer =
+        (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section +
+                              MAGIC_SECTION_OFFSET);
+    if (context->debug) {
+        print_footer(footer);
         printf("\n");
     }
 
