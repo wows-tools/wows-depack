@@ -1440,6 +1440,8 @@ Important disclaimer: the code presented here is extremely unsafe for clarity. i
 
 Initaly we will parse the index file and implement a human readable output. We will determine later what to do with the metadata we extract, for now, lets just display it.
 
+#### Mapping the file
+
 The first step is memory mapping the file content with `mmap`:
 
 ```C
@@ -1464,15 +1466,49 @@ The second is to have an entry point to actually parse the thing:
     return wows_parse_index(index_content, index_size, &context);
 ```
 
-Here, I pass the memory mapped content of the header, its size (will be used in the futur to avoid overflows) and a `context` which will be used to pass parsing options and maintain "states" in the parsing if necessary.
+Here, I pass the memory mapped content of the index, its size (will be used in the futur to avoid overflows) and a `context` which will be used to pass parsing options and maintain "states" in the parsing if necessary.
 
-Within the `wows_parse_index` function, we basically do a bunch of pointer arythmetic to extract each sections of the index file:
+#### Parsing the header section
+
 
 ```C
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
   // header section
   WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
+```
 
+We can print it with a few `printf`:
+
+```C
+int print_header(WOWS_INDEX_HEADER *header) {
+    printf("Index Header Content:\n");
+    printf("* magic:                     %.4s\n", (char *)&header->magic);
+    printf("* unknown_1:                 0x%x\n", header->unknown_1);
+    [...]
+    return 0;
+}
+```
+
+Output
+```
+Index Header Content:
+* magic:                     ISFP
+* unknown_1:                 0x2000000
+* id:                        0xb4399d91
+* unknown_2:                 0x40
+* file_plus_dir_count:       311
+* file_count:                284
+* unknown_3:                 1
+* header_size:               40
+* offset_idx_data_section:   0x3bf6
+* offset_idx_footer_section: 0x7136
+```
+
+#### Metadata entries
+
+Then, we can do a bunch of pointer arythmetic operation to extract the other sections of the index file:
+
+```C
   // Recover the start of the metadata array
   WOWS_INDEX_METADATA_ENTRY *metadatas;
   metadatas =
@@ -1503,23 +1539,12 @@ int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
 }
 ```
 
-### Re-interpreting/validating some field significations
+#### Re-interpreting/validating some field significations
 
 Once done, it gives us more confortable read:
 
 ```
-Index Header Content:
-* magic:                     ISFP
-* unknown_1:                 0x2000000
-* id:                        0xb4399d91
-* unknown_2:                 0x40
-* file_plus_dir_count:       311
-* file_count:                284
-* unknown_3:                 1
-* header_size:               40
-* offset_idx_data_section:   0x3bf6
-* offset_idx_footer_section: 0x7136
-
+[...]
 Metadata entry 0:
 * file_type:                 14
 * offset_idx_file_name:      0x26e0
@@ -1572,3 +1597,99 @@ Metadata entry 310:
 The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
 
 So lets rename this field.
+
+Now that we have fixed that, we can recover the file names of each entry:
+
+```C
+char *filename = (char *)entry;
+filename += entry->offset_idx_file_name;
+
+printf("* filename: %.*s\n", (int)entry->file_name_size, filename);
+```
+
+Nice:
+```
+Metadata entry 0:
+* file_name_size:            14
+* offset_idx_file_name:      0x26e0
+* unknown_4:                 0x93b6404fba9a0c8f
+* file_type_2:               0xdbb1a1d1b108b927
+* filename:                  KDStorage.bin
+
+Metadata entry 1:
+* file_name_size:            19
+* offset_idx_file_name:      0x26ce
+* unknown_4:                 0xc7f7d0284a87ec8f
+* file_type_2:               0x74d821503e1beba4
+* filename:                  waves_heights1.dds
+```
+
+#### Recovering the footer
+
+Now, lets try to recover the pieces of informations from the footer and the metadata chunks.
+
+First, I tried:
+
+```C
+WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section);
+print_footer(footer);
+```
+
+But the results seemed off:
+
+```
+Index Footer Content:
+* size_pkg_file_name:        50b0bd0300002d0b
+* unknown_7:                 0xe967
+* unknown_6:                 0x15
+```
+
+A file name size of `50b0bd0300002d0b` ? I don't think so.
+
+So let's look at it more closely.
+
+In the header, we have:
+
+```
+Index Header Content:
+[...]
+* offset_idx_footer_section: 0x7136
+[...]
+```
+The hexdump gives:
+
+```shell
+kakwa@tsingtao 6775398/idx » hexdump -s 6 -C system_data.idx| less
+[...]
+00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p"...p....3.w|
+00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
+00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
+
+00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
+00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
+00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
+```
+
+If our previous interpretation was correct, a simple offset from the start of the index file should be `0x7146`, not `0x7136`.
+
+Maybe we are missing some fields in the footer, but given the previous 128 bits at offset `0x7136` really look like the end of a pkg metadata entry, I doubt it.
+
+A more plausible explaination is that the offset is relative to the header `id` field at `0x10`.
+Maybe the `magic` + `unknown_1 bits`, i.e. the first 128 bits are considered to be a separate section.
+
+Anyway, lets just offset by 128 bits.
+
+```C
+#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
+
+// Get the footer section
+WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section + MAGIC_SECTION_OFFSET);
+```
+
+That's better:
+```
+Index Footer Content:
+* size_pkg_file_name:        23
+* unknown_7:                 0x18
+* unknown_6:                 0xb5a4fa9349d9fd0d
+```
