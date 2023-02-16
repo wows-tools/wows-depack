@@ -1,8 +1,9 @@
 #include <stdint.h>
+#include <stdbool.h>
 
 // INDEX file header
 typedef struct {
-	uint32_t magic;
+	uint32_t  magic;
 	uint32_t unknown_1;
 	uint32_t id;
 	uint32_t unknown_2;
@@ -49,9 +50,15 @@ typedef struct {
 } WOWS_PKG_ID_ENTRY;
 
 
+// Context for the parsing/file extraction
+typedef struct {
+	bool debug;
+} WOWS_CONTEXT;
+
 int wows_inflate(FILE *source, FILE *dest, long *read);
 int wows_inflate(FILE *source, FILE *dest, long *read);
 void wows_zerr(int ret);
 int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
-int wows_parse_index(char *contents, size_t length);
+
+int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context);
