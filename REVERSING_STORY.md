@@ -1624,6 +1624,42 @@ Metadata entry 1:
 * filename:                  waves_heights1.dds
 ```
 
+We have file names and directory names, for example:
+
+```
+[...]
+Metadata entry 10:
+* file_name_size:            11
+* offset_idx_file_name:      0x2654
+* unknown_4:                 0x46c008ccf65395e0
+* file_type_2:               0x46e29969bd85cf06
+* filename:                  space_defs
+
+Metadata entry 11:
+* file_name_size:            13
+* offset_idx_file_name:      0x263f
+* unknown_4:                 0x7213702d5e6899e0
+* file_type_2:               0x13d93873302ed14c
+* filename:                  aid_null.dds
+
+Metadata entry 12:
+* file_name_size:            16
+* offset_idx_file_name:      0x262c
+* unknown_4:                 0xa1a829d8713f89e0
+* file_type_2:               0xdbb1a1d1b108b927
+* filename:                  camouflages.xml
+[...]
+```
+
+There is something which should enable us to differenciate between the twos, maybe one of the unknown field.
+
+Also, we still need to figure out how the directory system works:
+
+* How directories & sub directories are composed (to get `<dir>/<sub dir>/<sub sub dir>/` paths)
+* How the path goes back to the root (`/`)
+
+We will not look at it here, but that's something to keep in mind.
+
 #### Recovering the footer
 
 Now, lets try to recover the pieces of informations from the footer and the metadata chunks.
@@ -1693,3 +1729,20 @@ Index Footer Content:
 * unknown_7:                 0x18
 * unknown_6:                 0xb5a4fa9349d9fd0d
 ```
+
+We can also recover the pkg file name as follows:
+
+```C
+char *pkg_filename = (char *)footer;
+pkg_filename += sizeof(WOWS_INDEX_FOOTER);
+printf("* pkg filename:              %.*s\n",
+       (int)footer->size_pkg_file_name, pkg_filename);
+```
+
+#### Mid-implementation though
+
+The code starts to be extremely unsafe for my tastes, in way too many sections, I trust the offsets and sizes provided by the index file.
+
+Once I'm finished with the first parsing implementation/dump, I really need to implement boundary checks.
+
+#### PKG Metadata entries
