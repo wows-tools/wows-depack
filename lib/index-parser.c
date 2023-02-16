@@ -18,11 +18,34 @@ int print_header(WOWS_INDEX_HEADER *header) {
 	return 0;
 }
 
+int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index){
+	printf("Metadata entry %d:\n", index);
+	printf("* file_type:                 %lu\n", entry->file_type_1);
+	printf("* offset_idx_file_name:      %lx\n", entry->offset_idx_file_name);
+	printf("* unknown_4:                 %lx\n", entry->unknown_4);
+	printf("* file_type_2:               %lu\n", entry->file_type_2);
+	return 0;
+	
+}
+
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
-	WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
 	// TODO overflow, check size
+
+	// Get the header section
+	WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
 	if (context->debug) {
 		print_header(header);
+	}
+
+
+	// TODO overflow, check size
+
+	// Recover the start of the metadata array
+	WOWS_INDEX_METADATA_ENTRY *metadatas;
+	metadatas = (WOWS_INDEX_METADATA_ENTRY *)contents + sizeof(WOWS_INDEX_HEADER);
+
+	if (context->debug) {
+		print_metadata_entry(metadatas, 0);
 	}
 	return 0;
 }
