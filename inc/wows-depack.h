@@ -15,6 +15,8 @@ typedef struct {
     uint64_t offset_idx_footer_section;
 } WOWS_INDEX_HEADER;
 
+#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
+
 // INDEX file metadata entry
 typedef struct {
     uint64_t file_name_size;
