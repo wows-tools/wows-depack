@@ -1745,4 +1745,22 @@ The code starts to be extremely unsafe for my tastes, in way too many sections, 
 
 Once I'm finished with the first parsing implementation/dump, I really need to implement boundary checks.
 
-#### PKG Metadata entries
+#### WOWS INDEX DATA FILE entries
+
+So, we basically do the same thing we did with the footer, but with the `offset_idx_data_section` field.
+
+And lets add the 128 bits from the start (hexdump gives us `0x3c06`, which is again a `0x10` difference with `0x3bf6`).
+
+```C
+    // Get pkg data pointer section
+    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
+        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
+                                       header->offset_idx_data_section +
+                                       MAGIC_SECTION_OFFSET);
+```
+
+From there, we are not sure if we have `header->file_plus_dir_count` or `header->file_count` entries. The latter seems more likely as this section points to the pkg files, but that's not a given.
+
+Also, we are unsure how one entry there is paired with a metadata entry. Maybe the order is simply the same in this array, maybe the matching is done through one of the unknown field.
+
+But first, lets dump the content.

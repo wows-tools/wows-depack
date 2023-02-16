@@ -60,7 +60,11 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         printf("\n");
     }
 
-    // TODO overflow, check size
+    // Get pkg data pointer section
+    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
+        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
+                                       header->offset_idx_data_section +
+                                       MAGIC_SECTION_OFFSET);
 
     // Recover the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
