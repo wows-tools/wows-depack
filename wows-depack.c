@@ -83,18 +83,20 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    struct stat s;
+    // Open the index file
     int fd = open(args.input, O_RDONLY);
     if (fd <= 0) {
         fprintf(stderr, "error: failed to open '%s'\n", args.input);
         return EXIT_FAILURE;
     }
 
+    // Recover the file size
+    struct stat s;
     fstat(fd, &s);
-
     /* index content size */
     size_t index_size = s.st_size;
 
+    // Map the whole content in memory
     char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
     WOWS_CONTEXT context;
