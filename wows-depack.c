@@ -41,63 +41,64 @@ static char doc[] = "\nBrute force DEFLATE decompressor";
 
 static struct argp_option options[] = {
     {"input", 'i', "INPUT_INDEX", 0, "Input file"},
-//    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
-//    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed blobs"},
+    //    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
+    //    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed
+    //    blobs"},
     {0}};
 
 /* A description of the arguments we accept. */
 static char args_doc[] = "-i INPUT_FILE -o OUTPUT_DIR";
 
 struct arguments {
-  char *args[2]; /* arg1 & arg2 */
-  char *output;
-  char *input;
+    char *args[2]; /* arg1 & arg2 */
+    char *output;
+    char *input;
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
-  /* Get the input argument from argp_parse, which we
-     know is a pointer to our arguments structure. */
-  struct arguments *arguments = (struct arguments *)state->input;
+    /* Get the input argument from argp_parse, which we
+       know is a pointer to our arguments structure. */
+    struct arguments *arguments = (struct arguments *)state->input;
 
-  switch (key) {
-  case 'i':
-    arguments->input = arg;
-    break;
-  default:
-    return ARGP_ERR_UNKNOWN;
-  }
-  return 0;
+    switch (key) {
+    case 'i':
+        arguments->input = arg;
+        break;
+    default:
+        return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
 }
 
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
-  struct arguments args;
-  args.input = NULL;
-  args.output = NULL;
-  argp_parse(&argp, argc, argv, 0, 0, &args);
+    struct arguments args;
+    args.input = NULL;
+    args.output = NULL;
+    argp_parse(&argp, argc, argv, 0, 0, &args);
 
-  if (args.input == NULL) {
-    fprintf(stderr, "error: no -i <input file> arg\n");
-    return EXIT_FAILURE;
-  }
+    if (args.input == NULL) {
+        fprintf(stderr, "error: no -i <input file> arg\n");
+        return EXIT_FAILURE;
+    }
 
-  struct stat s;
-  int fd = open(args.input, O_RDONLY);
-  if (fd <= 0) {
-    fprintf(stderr, "error: failed to open '%s'\n", args.input);
-    return EXIT_FAILURE;
-  }
+    struct stat s;
+    int fd = open(args.input, O_RDONLY);
+    if (fd <= 0) {
+        fprintf(stderr, "error: failed to open '%s'\n", args.input);
+        return EXIT_FAILURE;
+    }
 
-  fstat (fd, &s);
+    fstat(fd, &s);
 
-  /* index content size */
-  size_t index_size = s.st_size;
+    /* index content size */
+    size_t index_size = s.st_size;
 
-  char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-  WOWS_CONTEXT context;
-  context.debug = true;
+    WOWS_CONTEXT context;
+    context.debug = true;
 
-  return wows_parse_index(index_content, index_size, &context);
+    return wows_parse_index(index_content, index_size, &context);
 }
