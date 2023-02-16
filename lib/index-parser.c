@@ -21,20 +21,22 @@ int print_header(WOWS_INDEX_HEADER *header) {
 
 int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
     printf("Metadata entry %d:\n", index);
-    printf("* file_type:                 %lu\n", entry->file_type_1);
-    printf("* offset_idx_file_name:      %lx\n", entry->offset_idx_file_name);
-    printf("* unknown_4:                 %lx\n", entry->unknown_4);
-    printf("* file_type_2:               %lu\n", entry->file_type_2);
+    printf("* file_name_size:            %lu\n", entry->file_name_size);
+    printf("* offset_idx_file_name:      0x%lx\n", entry->offset_idx_file_name);
+    printf("* unknown_4:                 0x%lx\n", entry->unknown_4);
+    printf("* file_type_2:               0x%lx\n", entry->file_type_2);
     return 0;
 }
 
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // TODO overflow, check size
+    int i;
 
     // Get the header section
     WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
     if (context->debug) {
         print_header(header);
+        printf("\n");
     }
 
     // TODO overflow, check size
@@ -42,10 +44,19 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // Recover the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
     metadatas =
-        (WOWS_INDEX_METADATA_ENTRY *)contents + sizeof(WOWS_INDEX_HEADER);
+        (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
 
-    if (context->debug) {
-        print_metadata_entry(metadatas, 0);
+    for (i = 0; i < header->file_plus_dir_count; i++) {
+        WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
+        char *filename = (char *)entry;
+        filename += entry->offset_idx_file_name;
+        if (context->debug) {
+            print_metadata_entry(entry, i);
+            printf("* filename:                  %.*s\n",
+                   (int)entry->file_name_size, filename);
+            printf("\n");
+        }
     }
+
     return 0;
 }

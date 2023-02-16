@@ -17,7 +17,7 @@ typedef struct {
 
 // INDEX file metadata entry
 typedef struct {
-    uint64_t file_type_1;
+    uint64_t file_name_size;
     uint64_t offset_idx_file_name;
     uint64_t unknown_4;
     uint64_t file_type_2;
