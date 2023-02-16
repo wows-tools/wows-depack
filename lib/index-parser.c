@@ -51,8 +51,12 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     WOWS_INDEX_FOOTER *footer =
         (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section +
                               MAGIC_SECTION_OFFSET);
+    char *pkg_filename = (char *)footer;
+    pkg_filename += sizeof(WOWS_INDEX_FOOTER);
     if (context->debug) {
         print_footer(footer);
+        printf("* pkg filename:              %.*s\n",
+               (int)footer->size_pkg_file_name, pkg_filename);
         printf("\n");
     }
 
