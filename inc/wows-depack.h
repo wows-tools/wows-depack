@@ -39,7 +39,7 @@ typedef struct {
 
 // INDEX file footer
 typedef struct {
-    uint64_t size_pkg_file_name;
+    uint64_t pkg_file_name_size;
     uint64_t unknown_7;
     uint64_t unknown_6;
 } WOWS_INDEX_FOOTER;

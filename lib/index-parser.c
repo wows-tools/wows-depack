@@ -21,7 +21,7 @@ int print_header(WOWS_INDEX_HEADER *header) {
 
 int print_footer(WOWS_INDEX_FOOTER *footer) {
     printf("Index Footer Content:\n");
-    printf("* size_pkg_file_name:        %lu\n", footer->size_pkg_file_name);
+    printf("* pkg_file_name_size:        %lu\n", footer->pkg_file_name_size);
     printf("* unknown_7:                 0x%lx\n", footer->unknown_7);
     printf("* unknown_6:                 0x%lx\n", footer->unknown_6);
     return 0;
@@ -56,7 +56,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     if (context->debug) {
         print_footer(footer);
         printf("* pkg filename:              %.*s\n",
-               (int)footer->size_pkg_file_name, pkg_filename);
+               (int)footer->pkg_file_name_size, pkg_filename);
         printf("\n");
     }
 
