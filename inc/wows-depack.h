@@ -3,7 +3,7 @@
 
 // INDEX file header
 typedef struct {
-	uint32_t  magic;
+	char     magic[4];
 	uint32_t unknown_1;
 	uint32_t id;
 	uint32_t unknown_2;
