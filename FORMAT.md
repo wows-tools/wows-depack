@@ -21,9 +21,9 @@ The index file is composed of 5 sections:
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
 |       File metadata 1      | |
 |----------------------------| |
-|           [...]            | } file metadata (pointer to name, type, etc)
+|           [...]            | } metadata section (pointer to name, type, etc)
 |----------------------------| |
-|      File metadata N       | |
+|      File metadata Nfd     | |
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
@@ -31,15 +31,15 @@ The index file is composed of 5 sections:
 |----------------------------| |
 |           [...]            | } file names (`\0` separated strings)
 |----------------------------| |
-|        File Name N         | |
+|        File Name Nfd       | |
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
 |   File `.pkg` pointers 1   | |
 |----------------------------| |
-|           [...]            | } file pointers in the `.pkg` file (offsets)
+|           [...]            | }  pkg pointers section in the `.pkg` file (offsets)
 |----------------------------| |
-|   File `.pkg` pointers N   | |
+|   File `.pkg` pointers Nf  | |
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
@@ -77,18 +77,18 @@ The index file is composed of 5 sections:
 |               64 bits                  |
 ```
 
-| Field                     | Description                                                                                                                                    |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| magic                     | Magic bytes, always "ISFP"                                                                                                                     |
-| unknown_1                 | Unknown, always 0x2000000                                                                                                                      |
-| id                        | Unsure, unique per index file, not referenced elsewhere                                                                                        |
-| unknown_2                 | Unknown, always 0x40, maybe some offset                                                                                                        |
-| file_dir_count            | Number of files + directories, also number of entries in the metadata section                                                                  |
-| file_count                | Number of files                                                                                                                                |
-| unknown_3                 | Unknown, always '1', maybe the number of `pkg` file the index file references (the format hints that it might be supported, but it's not used) |
-| header_size               | Most likely the header size, always 40                                                                                                         |
-| offset_idx_data_section   | Offset to the pkg data section, the offset is computed from `file_plus_dir_count` so `0x10` needs to be added                                  |
-| offset_idx_footer_section | Offset to the footer section, the offset is computed from `file_plus_dir_count` so  `0x10` needs to be added                                   |
+| Field                      |  size   | Description                                                                                                                                     |
+|----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `magic`                    | 32 bits | Magic bytes, always "ISFP"                                                                                                                      |
+| `unknown_1`                | 32 bits | Unknown, always 0x2000000                                                                                                                       |
+| `id`                       | 32 bits | Unsure, unique per index file, not referenced anywhere else                                                                                     |
+| `unknown_2`                | 32 bits | Unknown, always 0x40, maybe some offset                                                                                                         |
+| `file_dir_count`           | 32 bits | Number of files + directories (Nfd), also number of entries in the metadata section and the file names section                                  |
+| `file_count`               | 32 bits | Number of files (Nf), also the number of entries in the file pkg pointers section                                                               |
+| `unknown_3`                | 64 bits | Unknown, always '1', maybe the number of `.pkg` file the index file references (the format hints that it might be supported, but it's not used) |
+| `header_size`              | 64 bits | Most likely the header size, always 40                                                                                                          |
+| `offset_idx_data_section`  | 64 bits | Offset to the pkg data section, the offset is computed from `file_plus_dir_count` so `0x10` needs to be added                                   |
+| `offset_idx_footer_section`| 64 bits | Offset to the footer section, the offset is computed from `file_plus_dir_count` so  `0x10` needs to be added                                    |
 
 ### File metadata (repeated for each file and directory):
 
