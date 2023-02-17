@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#pragma pack(1)
+
 // INDEX file header
 typedef struct {
     char magic[4];
