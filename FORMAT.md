@@ -1,6 +1,6 @@
 # Format
 
-The WoWs resources are packed into something similar to a `.zip` archive (WoT and WoWPs actually used zip files).
+The WoWs resources are packed into something similar to a `.zip` archive (WoT and WoWPs actually use zip files).
 
 Each archive is actually separated in two files:
 
