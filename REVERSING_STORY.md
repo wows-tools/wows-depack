@@ -1763,4 +1763,120 @@ From there, we are not sure if we have `header->file_plus_dir_count` or `header-
 
 Also, we are unsure how one entry there is paired with a metadata entry. Maybe the order is simply the same in this array, maybe the matching is done through one of the unknown field.
 
-But first, lets dump the content.
+But first, lets dump the content with some `printf`:
+
+```
+Data file entry [0]:
+* unknown_5:                 0x93b6404fba9a0c8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x21f5
+* id_pkg_data_chunk:         0x366c
+* padding:                   0x4a87ec8f
+
+Data file entry [1]:
+* unknown_5:                 0x77ed330d07031170
+* unknown_6:                 0x5ef9b1e
+* offset_pkg_data_chunk:     0x100000005
+* type_1:                    0x11515
+* type_2:                    0x97637703
+* size_pkg_data_chunk:       0x2ab3e
+* id_pkg_data_chunk:         0x6b4f2cace7a270ad
+* padding:                   0x7031170
+[...]
+```
+
+Humm, that doesn't look righ... Why is the padding not the expected `0x0`? Also why the first entry looks mostly ok, except the padding, and the rest is garbage.
+
+First, I double-check the `WOWS_INDEX_DATA_FILE_ENTRY` field sizes, and it was ok.
+
+Then, I remembered that compilers can add padding to have all the fields properly aligned in memory, this helps with performances.
+
+To avoid that, we need to add:
+
+```C
+#pragma pack(1)
+```
+
+Now the output looks like that:
+
+```
+* unknown_5:                 0x93b6404fba9a0c8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x21f5
+* id_pkg_data_chunk:         0x366c5c4500bf
+* padding:                   0x0
+
+Data file entry [1]:
+* unknown_5:                 0xc7f7d0284a87ec8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x5ef9b1e
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x11515
+* id_pkg_data_chunk:         0x2ab3e97637703
+* padding:                   0x0
+
+Data file entry [2]:
+* unknown_5:                 0x6b4f2cace7a270ad
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x2205
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x1cb
+* id_pkg_data_chunk:         0xcadc1deb96d
+* padding:                   0x0
+```
+
+That's much better.
+
+But this small issue raises a number of issues with my method of parsing. Casting to structs comes with numerous issues, from overflows to endianess.
+
+This is not that critical here since we are just trying to have a rough prototype, but on a more critical software, that's not a good idea.
+
+After this prototype, it might be a good idea to start learning Rust ^^.
+
+Also, if we try to parse `header->file_plus_dir_count` entries, we get the following:
+
+```
+Data file entry [283]:
+* unknown_5:                 0xb8caec2270ac6721
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0xa15f928
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x2d0b
+* id_pkg_data_chunk:         0xe96750b0bd03
+* padding:                   0x0
+
+Data file entry [284]:
+* unknown_5:                 0x15
+* unknown_6:                 0x18
+* offset_pkg_data_chunk:     0x77ed330d07031170
+* type_1:                    0x74737973
+* type_2:                    0x645f6d65
+* size_pkg_data_chunk:       0x5f617461
+* id_pkg_data_chunk:         0x676b702e31303030
+* padding:                   0x0
+
+Data file entry [285]:
+* unknown_5:                 0x0
+* unknown_6:                 0x0
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x0
+* type_2:                    0x0
+* size_pkg_data_chunk:       0x0
+* id_pkg_data_chunk:         0x0
+* padding:                   0x0
+```
+
+The entry `283` is ok. This is 284th entry since we start at `0`, which is exactly `header->file_count`. The next one has weird values and the rest just `0`.
+
+So `header->file_count` is indeed the number of entries in this section.
+
+#### Matching the metadata entries with the pkg file entries
