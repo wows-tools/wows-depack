@@ -23,14 +23,14 @@ typedef struct {
 typedef struct {
     uint64_t file_name_size;
     uint64_t offset_idx_file_name;
-    uint64_t unknown_4;
-    uint64_t file_type_2;
+    uint64_t id;
+    uint64_t parent_id;
 } WOWS_INDEX_METADATA_ENTRY;
 
 // INDEX file pkg data pointer entry
 typedef struct {
-    uint64_t unknown_5;
-    uint64_t unknown_6;
+    uint64_t metadata_id;
+    uint64_t footer_id;
     uint64_t offset_pkg_data_chunk;
     uint32_t type_1;
     uint32_t type_2;
@@ -43,7 +43,7 @@ typedef struct {
 typedef struct {
     uint64_t pkg_file_name_size;
     uint64_t unknown_7;
-    uint64_t unknown_6;
+    uint64_t id;
 } WOWS_INDEX_FOOTER;
 
 // PKG file ID + padding
