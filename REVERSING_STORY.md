@@ -1928,3 +1928,59 @@ Data file entry [65]:
 * unknown_5:                 0x1011b17d9304bb39
 [...]
 ```
+
+So the link is established through these fields. These are simply random, unique ID for each entry.
+
+In fact `unknown_4` and `unknown_5` are not the only fields leveraging this.
+
+Looking at `file_type_2` values, we get something like that:
+
+
+```shell
+kakwa@tsingtao GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'           
+
+[...]
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  LowerAftTrans.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  MidBarbette.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  Bulkhead.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  MidBelt.dds
+--
+[...]
+--
+* unknown_4:                 0x937f155e4baaf562
+* filename:                  armour
+--
+[...]
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  Bottom.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrBig.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrMid.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrSm.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  DoubleBottom.dds
+--
+[...]
+```
+
+Ok, `file_type_2` is not a file type at all, it's the `id` (`unknown_4` right now) of just one node that really looks like a directory.
+
+`file_type_2` should probably renamed `parent_id` or something.
+
+Also, `unknown_6` follows the same logic, it's the id of the footer entry (side note: maybe the format supports having one index for several files).
+
