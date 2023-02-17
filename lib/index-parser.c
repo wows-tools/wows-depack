@@ -23,7 +23,7 @@ int print_footer(WOWS_INDEX_FOOTER *footer) {
     printf("Index Footer Content:\n");
     printf("* pkg_file_name_size:        %lu\n", footer->pkg_file_name_size);
     printf("* unknown_7:                 0x%lx\n", footer->unknown_7);
-    printf("* unknown_6:                 0x%lx\n", footer->unknown_6);
+    printf("* id:                        0x%lx\n", footer->id);
     return 0;
 }
 
@@ -31,15 +31,15 @@ int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
     printf("Metadata entry [%d]:\n", index);
     printf("* file_name_size:            %lu\n", entry->file_name_size);
     printf("* offset_idx_file_name:      0x%lx\n", entry->offset_idx_file_name);
-    printf("* unknown_4:                 0x%lx\n", entry->unknown_4);
-    printf("* file_type_2:               0x%lx\n", entry->file_type_2);
+    printf("* id:                        0x%lx\n", entry->id);
+    printf("* parent_id:                 0x%lx\n", entry->parent_id);
     return 0;
 }
 
 int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry, int index) {
     printf("Data file entry [%d]:\n", index);
-    printf("* unknown_5:                 0x%lx\n", entry->unknown_5);
-    printf("* unknown_6:                 0x%lx\n", entry->unknown_6);
+    printf("* metadata_id:               0x%lx\n", entry->metadata_id);
+    printf("* footer_id:                 0x%lx\n", entry->footer_id);
     printf("* offset_pkg_data_chunk:     0x%lx\n",
            entry->offset_pkg_data_chunk);
     printf("* type_1:                    0x%x\n", entry->type_1);

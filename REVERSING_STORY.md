@@ -1695,7 +1695,7 @@ Index Header Content:
 The hexdump gives:
 
 ```shell
-kakwa@tsingtao 6775398/idx » hexdump -s 6 -C system_data.idx| less
+kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
 [...]
 00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p"...p....3.w|
 00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
@@ -1880,3 +1880,51 @@ The entry `283` is ok. This is 284th entry since we start at `0`, which is exact
 So `header->file_count` is indeed the number of entries in this section.
 
 #### Matching the metadata entries with the pkg file entries
+
+The fact that from one side we have `header->file_count` and `header->file_plus_dir_count` on the other means it's not a simple index matching.
+
+Lets investigate the unknown fields:
+
+```
+[...]
+Data file entry [279]:
+* unknown_5:                 0xce7afff48d1bd174
+* unknown_6:                 0x77ed330d07031170
+[...]
+
+Data file entry [280]:
+* unknown_5:                 0x199e99feb0c986f8
+* unknown_6:                 0x77ed330d07031170
+[...]
+```
+
+`unknown_6` is always the same, not really interesting.
+
+`unknown_5` on the contrary is specific to each entry:
+
+```shell
+kakwa@linux GitHub/wows-depack (main) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep 'unknown_5' | sort | uniq -c
+[...]
+      1 * unknown_5:                 0x14b002d7c2835863
+      1 * unknown_5:                 0x15a7b41a61f65f9c
+      1 * unknown_5:                 0x15fcab5401f27f56
+      1 * unknown_5:                 0x18a0d0dc4b05f8fa
+      1 * unknown_5:                 0x192a05120f00553e
+[...]
+```
+
+The values however are present two times, one in the Metadata entry, the other in the data file entry:
+
+```
+Metadata entry [72]:
+[...]
+* unknown_4:                 0x1011b17d9304bb39
+[...]
+```
+
+```
+Data file entry [65]:
+[...]
+* unknown_5:                 0x1011b17d9304bb39
+[...]
+```
