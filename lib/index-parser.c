@@ -8,7 +8,7 @@ int print_header(WOWS_INDEX_HEADER *header) {
     printf("* unknown_1:                 0x%x\n", header->unknown_1);
     printf("* id:                        0x%x\n", header->id);
     printf("* unknown_2:                 0x%x\n", header->unknown_2);
-    printf("* file_plus_dir_count:       %u\n", header->file_plus_dir_count);
+    printf("* file_dir_count:            %u\n", header->file_dir_count);
     printf("* file_count:                %u\n", header->file_count);
     printf("* unknown_3:                 %lu\n", header->unknown_3);
     printf("* header_size:               %lu\n", header->header_size);
@@ -40,12 +40,11 @@ int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry, int index) {
     printf("Data file entry [%d]:\n", index);
     printf("* metadata_id:               0x%lx\n", entry->metadata_id);
     printf("* footer_id:                 0x%lx\n", entry->footer_id);
-    printf("* offset_pkg_data_chunk:     0x%lx\n",
-           entry->offset_pkg_data_chunk);
+    printf("* offset_pkg_data:           0x%lx\n", entry->offset_pkg_data);
     printf("* type_1:                    0x%x\n", entry->type_1);
     printf("* type_2:                    0x%x\n", entry->type_2);
-    printf("* size_pkg_data_chunk:       0x%x\n", entry->size_pkg_data_chunk);
-    printf("* id_pkg_data_chunk:         0x%lx\n", entry->id_pkg_data_chunk);
+    printf("* size_pkg_data:             0x%x\n", entry->size_pkg_data);
+    printf("* id_pkg_data:               0x%lx\n", entry->id_pkg_data);
     printf("* padding:                   0x%x\n", entry->padding);
     return 0;
 }
@@ -82,7 +81,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     }
 
     // Print the metadata entries
-    for (i = 0; i < header->file_plus_dir_count; i++) {
+    for (i = 0; i < header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
         char *filename = (char *)entry;
         filename += entry->offset_idx_file_name;
