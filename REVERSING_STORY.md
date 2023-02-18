@@ -2029,7 +2029,7 @@ The index file is composed of 5 sections:
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V
 ```
 
-### Header
+#### Header
 
 ```   
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
@@ -2070,7 +2070,7 @@ The index file is composed of 5 sections:
 | `offset_idx_data_section`  | 64 bits | Offset to the pkg data section, the offset is computed from `file_plus_dir_count` so `0x10` needs to be added                                   |
 | `offset_idx_footer_section`| 64 bits | Offset to the footer section, the offset is computed from `file_plus_dir_count` so  `0x10` needs to be added                                    |
 
-### File metadata 
+#### File metadata 
 
 This section is repeated for each file and directory (`header->file_dir_count`).
 
@@ -2097,7 +2097,7 @@ This section is repeated for each file and directory (`header->file_dir_count`).
 | `id`                   | 64 bits | Unique ID of the metadata record                                                          |
 | `parent_id`            | 64 bits | ID of the potential parent record (in particular, a directory record)                     |
 
-### File names section
+#### File names section
 
 This section is just `\0` separated list of strings:
 ```
@@ -2106,7 +2106,7 @@ This section is just `\0` separated list of strings:
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
 [...repeat...]
 ```
-### File ".pkg" pointers
+#### File ".pkg" pointers
 
 This section  is repeated for each file (`header->file_count`).
 
@@ -2142,7 +2142,7 @@ This section  is repeated for each file (`header->file_count`).
 | `id_pkg_data`     | 64 bits | ID of the data section in the `.pkg` file                       |
 | `padding`         | 32 bits | Always `0x00000000`                                             |
 
-### Footer
+#### Footer
 
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
@@ -2164,7 +2164,7 @@ This section  is repeated for each file (`header->file_count`).
 | `unknown_7`          | 64 bits | unknown, looks like an ID                         |
 | `id`                 | 64 bits | ID of the footer entry                            |
 
-## PKG format
+#### PKG format
 
 The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.
 
