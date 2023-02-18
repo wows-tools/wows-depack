@@ -1937,7 +1937,7 @@ Looking at `file_type_2` values, we get something like that:
 
 
 ```shell
-kakwa@tsingtao GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'           
+kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'           
 
 [...]
 --
@@ -2188,3 +2188,34 @@ The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1
 | `padding_1`       | 32 bits | Always `0x00000000` |
 | `id_pkg_data`     | 64 bits | ID of the data blob |
 | `padding_2`       | 32 bits | Always `0x00000000` |
+
+### Back to the implementation
+
+#### Small tangent
+
+By this point, I was a bit intrigued by the `type_1` and `type_2` fields in the `pkg` pointer sections.
+
+```shell
+kakwa@linux GitHub/wows-depack (main) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do ./wows-depack-cli -i "$i"| grep 'type_[12]:'  ;done | sort -n | uniq -c | sort -n
+
+  57265 * type_1:                    0x0
+  57265 * type_2:                    0x0
+ 232089 * type_1:                    0x5
+ 232089 * type_2:                    0x1
+```
+
+Ok, it seems that `(type_1, type_2)` can either have the `(0x0, 0x0)` values, or the `(0x5, 0x1)` values. In most cases, it's the latter.
+
+Looking at a few `(0x0, 0x0)`, a common file with such values are `.png`.
+
+It's a bit of a wild guess, but these might be compression levels. `(0x0, 0x0)`, ie no compression would be logical for `.png` as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.
+
+For now, lets just keep that in mind, we will revisit it later.
+
+#### Glueing the entries together
+
+So, we have metadata entries which can be linked together, we have pkg pointer entries which are linked to metadata entries and footer entries.
+
+It's time to link all that together.
+
+To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.
