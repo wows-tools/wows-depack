@@ -87,7 +87,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     pkg_filename += sizeof(WOWS_INDEX_FOOTER);
 
     // Print the header
-    if (context->debug) {
+    if (context->debug_level & DEBUG_RAW_RECORD) {
         print_header(header);
         printf("\n");
     }
@@ -102,7 +102,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         char *filename = (char *)entry;
         filename += entry->offset_idx_file_name;
         hashmap_set(map, entry);
-        if (context->debug) {
+        if (context->debug_level & DEBUG_RAW_RECORD) {
             print_metadata_entry(entry, i);
             printf("* filename:                  %.*s\n",
                    (int)entry->file_name_size, filename);
@@ -113,14 +113,14 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // Print the pkg file entries
     for (i = 0; i < header->file_count; i++) {
         WOWS_INDEX_DATA_FILE_ENTRY *entry = &data_file_entry[i];
-        if (context->debug) {
+        if (context->debug_level & DEBUG_RAW_RECORD) {
             print_data_file_entry(entry, i);
             printf("\n");
         }
     }
 
     // Print the footer
-    if (context->debug) {
+    if (context->debug_level & DEBUG_RAW_RECORD) {
         print_footer(footer);
         printf("* pkg filename:              %.*s\n",
                (int)footer->pkg_file_name_size, pkg_filename);
