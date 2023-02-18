@@ -100,7 +100,8 @@ int main(int argc, char **argv) {
     char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
     WOWS_CONTEXT context;
-    context.debug_level = DEBUG_RAW_RECORD | DEBUG_FILE_LISTING;
+    // context.debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
+    context.debug_level = DEBUG_FILE_LISTING;
 
     return wows_parse_index(index_content, index_size, &context);
 }
