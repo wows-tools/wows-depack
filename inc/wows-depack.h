@@ -9,7 +9,7 @@ typedef struct {
     uint32_t unknown_1;
     uint32_t id;
     uint32_t unknown_2;
-    uint32_t file_plus_dir_count;
+    uint32_t file_dir_count;
     uint32_t file_count;
     uint64_t unknown_3;
     uint64_t header_size;
@@ -31,11 +31,11 @@ typedef struct {
 typedef struct {
     uint64_t metadata_id;
     uint64_t footer_id;
-    uint64_t offset_pkg_data_chunk;
+    uint64_t offset_pkg_data;
     uint32_t type_1;
     uint32_t type_2;
-    uint32_t size_pkg_data_chunk;
-    uint64_t id_pkg_data_chunk;
+    uint32_t size_pkg_data;
+    uint64_t id_pkg_data;
     uint32_t padding;
 } WOWS_INDEX_DATA_FILE_ENTRY;
 
@@ -49,7 +49,7 @@ typedef struct {
 // PKG file ID + padding
 typedef struct {
     uint32_t padding_1;
-    uint64_t id_pkg_data_chunk;
+    uint64_t id;
     uint32_t padding_2;
 } WOWS_PKG_ID_ENTRY;
 
