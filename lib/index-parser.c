@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "wows-depack.h"
+#include "hashmap.h"
 
 int print_header(WOWS_INDEX_HEADER *header) {
     printf("Index Header Content:\n");
@@ -49,6 +50,17 @@ int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry, int index) {
     return 0;
 }
 
+int metadata_compare(const void *a, const void *b, void *udata) {
+    const WOWS_INDEX_METADATA_ENTRY *ma = a;
+    const WOWS_INDEX_METADATA_ENTRY *mb = b;
+    return ma->id > mb->id;
+}
+
+uint64_t metadata_hash(const void *item, uint64_t seed0, uint64_t seed1) {
+    const WOWS_INDEX_METADATA_ENTRY *meta = item;
+    return meta->id;
+}
+
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // TODO overflow, check size
     int i;
@@ -80,11 +92,16 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         printf("\n");
     }
 
+    struct hashmap *map =
+        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY), header->file_dir_count,
+                    0, 0, metadata_hash, metadata_compare, NULL, NULL);
+
     // Print the metadata entries
     for (i = 0; i < header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
         char *filename = (char *)entry;
         filename += entry->offset_idx_file_name;
+        hashmap_set(map, entry);
         if (context->debug) {
             print_metadata_entry(entry, i);
             printf("* filename:                  %.*s\n",
@@ -109,6 +126,8 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
                (int)footer->pkg_file_name_size, pkg_filename);
         printf("\n");
     }
+
+    hashmap_free(map);
 
     return 0;
 }
