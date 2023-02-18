@@ -2219,3 +2219,102 @@ So, we have metadata entries which can be linked together, we have pkg pointer e
 It's time to link all that together.
 
 To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.
+
+Once done, the output now looks like that:
+
+
+```
+File entry [259]:
+* metadata_id:               0xc90b3d356989c551
+* footer_id:                 0x77ed330d07031170
+* offset_pkg_data:           0x5d30db8
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data:             0x89667
+* id_pkg_data:               0xaab740ef4f6a6
+* padding:                   0x0
+* file_name_size:            18
+* offset_idx_file_name:      0x164e
+* id:                        0xc90b3d356989c551
+* parent_id:                 0xeb7ddcfb5178376
+* filename:                  snow_tiles_ah.dds
+parent [1]:
+* file_name_size:            8
+* offset_idx_file_name:      0x19cf
+* id:                        0xeb7ddcfb5178376
+* parent_id:                 0xb220a7743c83e638
+* filename:                  weather
+parent [2]:
+* file_name_size:            5
+* offset_idx_file_name:      0x16a3
+* id:                        0xb220a7743c83e638
+* parent_id:                 0x3837637adc4586b1
+* filename:                  maps
+parent [3]:
+* file_name_size:            7
+* offset_idx_file_name:      0x1746
+* id:                        0x3837637adc4586b1
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  system
+```
+
+This entry is for the following path: `/system/maps/weather/snow_tiles_ah.dds`
+
+This should be enough now to start thinking about the actual tool and how it will be implemented.
+
+#### Another tangent
+
+The goal is in the end is to parse all the index files, so it got me curious about the IDs across the different files.
+
+Looking at the dumps, `content` is a fairly common directory name, present in a lot of the index files.
+
+And if we look at these records, we get:
+
+
+```
+kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do echo $i; ./wows-depack-cli -i "$i" |grep -B 5  '* filename:                  content$';done|less                                                                                                                 130 ↵
+
+/home/kakwa/Games/World of Warships/bin/6775398/idx/basecontent.idx
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0x470b7
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0x470b7
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+[...]
+/home/kakwa/Games/World of Warships/bin/6775398/idx/camouflage.idx
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [4]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+[...]
+```
+
+Interestingly `id` is always `0xa33046442d8327fc` (and also `parent_id` is `0xdbb1a1d1b108b927`). This will make implementation a bit easier.
+
+However, it raises an interesting question: how this `id` is generated? Is it completely random? Or is it derived from the path/name?
+
+It's not really critical to read files, but might be important to write content if we ever get to that.
