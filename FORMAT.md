@@ -1,13 +1,53 @@
 # Format
 
-The WoWs resources are packed into something similar to a `.zip` archive (WoT and WoWPs actually use zip files).
+## Introduction
+
+The WoWs resources are packed into something similar to a `.zip` archive (WoTs and WoWPs actually use zip files).
 
 Each archive is actually separated in two files:
 
 * a `.pkg` containing the compressed files concatenated together. This file is in the `res_package/` directory.
 * a `.idx` containing the index of the files contained in the `.pkg` and their metadata (name, path, type, etc). This file is located in the `./bin/<build_number>/idx/` directory.
 
+## Disclaimer
+
+This documentation has been created through reverse engineering, consequently errors and inaccuracies are not unlikely.
+
+## Convention
+
+A **byte/8 bits** is represented as follows:
+```
++====+
+| XX |
++====+
+```
+
+A **variable length field** (ex: strings) is represented as follows:
+
+```
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|           Field            |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+```
+
+The boundary between two fields is marked as follows:
+
+```
+...=++=...
+    ||
+...=++=...
+```
+
+
+## Misc
+
+
+Integers (offset and size in particular) are `Big Endian`.
+
+Strings seems limited to ASCII and are `\0` terminated.
+
 ## Index file
+
 
 ### General format
 
@@ -46,8 +86,6 @@ The index file is composed of 5 sections:
 |           Footer           | } index footer (corresponding `.pkg` file name)
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V
 ```
-
-
 
 ### Header
 
@@ -90,7 +128,9 @@ The index file is composed of 5 sections:
 | `offset_idx_data_section`  | 64 bits | Offset to the pkg data section, the offset is computed from `file_plus_dir_count` so `0x10` needs to be added                                   |
 | `offset_idx_footer_section`| 64 bits | Offset to the footer section, the offset is computed from `file_plus_dir_count` so  `0x10` needs to be added                                    |
 
-### File metadata (repeated for each file and directory):
+### File metadata
+
+This section is repeated for each file and directory (`header->file_dir_count`).
 
 ```
 +====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
@@ -108,7 +148,16 @@ The index file is composed of 5 sections:
 [...repeat...]
 ```
 
-File names repeated for each file/dir (just `\0` separated strings):
+| Field                  | Size    | Description                                                                               |
+|------------------------|---------|-------------------------------------------------------------------------------------------|
+| `file_name_size`       | 64 bits | Size of the file name string                                                              |
+| `offset_idx_file_name` | 64 bits | Offset from the start of the current metadata record to the start of the file name string |
+| `id`                   | 64 bits | Unique ID of the metadata record                                                          |
+| `parent_id`            | 64 bits | ID of the potential parent record (in particular, a directory record)                     |
+
+### File names section
+
+This section is just `\0` separated list of strings:
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
 |             file name string         | 00 |
@@ -116,7 +165,10 @@ File names repeated for each file/dir (just `\0` separated strings):
 [...repeat...]
 ```
 
-File `.pkg` pointers (repeated for each file):
+### File ".pkg" pointers
+
+This section  is repeated for each file (`header->file_count`).
+
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
 | UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
@@ -138,21 +190,38 @@ File `.pkg` pointers (repeated for each file):
 [...repeat...]
 ```
 
-Footer:
+| Field             | Size    | Description                                                     |
+|-------------------|---------|-----------------------------------------------------------------|
+| `metadata_id`     | 64 bits | ID of the corresponding metadata entry                          |
+| `footer_id`       | 64 bits | ID of the footer entry (only one entry possible in practice)    |
+| `offset_pkg_data` | 64 bits | Offset to the compressed data from the start of the `.pkg` file |
+| `type_1`          | 32 bits | Some kind of type, role unknown                                 |
+| `type_2`          | 32 bits | Some kind of type, role unknown                                 |
+| `size_pkg_data`   | 32 bits | Size of the compressed data section in the `.pkg` file          |
+| `id_pkg_data`     | 64 bits | ID of the data section in the `.pkg` file                       |
+| `padding`         | 32 bits | Always `0x00000000`                                             |
+
+### Footer
+
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
 | UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
-|<--------- pkg_file_name_size -------->||<-------------- unknown 7 ------------->|
+|<--------- pkg_file_name_size -------->||<-------------- unknown_7 ------------->|
 |               64 bits                 ||                64 bits                 |
 
 +====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
-| UT | UT | UT | UT | UT | UT | UT | UT ||             file name string
+| UT | UT | UT | UT | UT | UT | UT | UT ||             pkg_file_name_string
 +====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
 |<----------------- id ----------------->|
 |                64 bits                 |
-
 ```
+
+| Field                | Size    | Description                                       |
+|----------------------|---------|---------------------------------------------------|
+| `pkg_file_name_size` | 64 bits | Size of the corresponding `.pkg` file name string |
+| `unknown_7`          | 64 bits | unknown, looks like an ID                         |
+| `id`                 | 64 bits | ID of the footer entry                            |
 
 ## PKG format
 
@@ -172,3 +241,9 @@ The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1
 
 [...repeat...]
 ```
+
+| Field             | Size    | Description         |
+|-------------------|---------|---------------------|
+| `padding_1`       | 32 bits | Always `0x00000000` |
+| `id_pkg_data`     | 64 bits | ID of the data blob |
+| `padding_2`       | 32 bits | Always `0x00000000` |
