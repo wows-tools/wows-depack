@@ -3,6 +3,9 @@
 
 #pragma pack(1)
 
+#define DEBUG_RAW_RECORD (1 << 0)
+#define DEBUG_FILE_LISTING (1 << 1)
+
 // INDEX file header
 typedef struct {
     char magic[4];
@@ -55,7 +58,7 @@ typedef struct {
 
 // Context for the parsing/file extraction
 typedef struct {
-    bool debug;
+    uint8_t debug_level;
 } WOWS_CONTEXT;
 
 int wows_inflate(FILE *source, FILE *dest, long *read);
