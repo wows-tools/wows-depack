@@ -29,37 +29,58 @@ uint64_t dir_inode_hash(const void *item, uint64_t seed0, uint64_t seed1) {
     return meta->id;
 }
 
-// FIXME potential buffer overflow, add boundary checks
-char *get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry) {
+int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index,
+                          char **out) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
-    return filename;
+    // Check that the string is actually within the index boundaries
+    returnOutIndex(filename, filename + entry->file_name_size, index);
+    // Check that it is null terminated
+    if (filename[entry->file_name_size - 1] != '\0') {
+        return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
+    }
+    *out = filename;
+    return 0;
 }
 
-// FIXME potential buffer overflow, add boundary checks
-char *get_footer_filename(WOWS_INDEX_FOOTER *footer) {
+int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
+                        char **out) {
     char *pkg_filename = (char *)footer;
     pkg_filename += sizeof(WOWS_INDEX_FOOTER);
-    return pkg_filename;
+    // Check that the string is actually within the index boundaries
+    returnOutIndex(pkg_filename, pkg_filename + footer->pkg_file_name_size,
+                   index);
+    // Check that it is null terminated
+    if (pkg_filename[footer->pkg_file_name_size - 1] != '\0') {
+        return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
+    }
+    *out = pkg_filename;
+    return 0;
 }
 
-WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode){
-	WOWS_DIR_INODE *dir_inode = calloc(sizeof(WOWS_DIR_INODE), 1);
-	dir_inode->type = WOWS_INODE_TYPE_DIR;
-	dir_inode->id = metadata_id;
-	dir_inode->index_file_index = current_index_context;
-	dir_inode->parent_inode = parent_inode;
-	dir_inode->children_inodes = hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, dir_inode_hash, dir_inode_compare, NULL, NULL);
-	return dir_inode;
+WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id,
+                               uint32_t current_index_context,
+                               WOWS_DIR_INODE *parent_inode) {
+    WOWS_DIR_INODE *dir_inode = calloc(sizeof(WOWS_DIR_INODE), 1);
+    dir_inode->type = WOWS_INODE_TYPE_DIR;
+    dir_inode->id = metadata_id;
+    dir_inode->index_file_index = current_index_context;
+    dir_inode->parent_inode = parent_inode;
+    dir_inode->children_inodes =
+        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0,
+                    dir_inode_hash, dir_inode_compare, NULL, NULL);
+    return dir_inode;
 }
 
-WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode){
-	WOWS_FILE_INODE *file_inode = calloc(sizeof(WOWS_FILE_INODE), 1);
-	file_inode->type = WOWS_INODE_TYPE_FILE;
-	file_inode->id = metadata_id;
-	file_inode->index_file_index = current_index_context;
-	file_inode->parent_inode = parent_inode;
-	return file_inode;
+WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id,
+                                 uint32_t current_index_context,
+                                 WOWS_DIR_INODE *parent_inode) {
+    WOWS_FILE_INODE *file_inode = calloc(sizeof(WOWS_FILE_INODE), 1);
+    file_inode->type = WOWS_INODE_TYPE_FILE;
+    file_inode->id = metadata_id;
+    file_inode->index_file_index = current_index_context;
+    file_inode->parent_inode = parent_inode;
+    return file_inode;
 }
 
 // Context init function
@@ -121,6 +142,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
     return 0;
 }
 
+// Add the parsed index to the context list
 uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
     context->indexes = realloc(context->indexes, context->index_count + 1);
     context->indexes[context->index_count] = index;
@@ -128,6 +150,7 @@ uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
     return context->index_count;
 }
 
+// Get the dir/subdir path of a given file entry
 int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
              int *depth, WOWS_INDEX_METADATA_ENTRY **entries) {
     struct hashmap *map = context->metadata_map;
@@ -175,15 +198,11 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     uint32_t current_index_context = add_index_context(context, index);
 
     // Debugging output if necessary
-    // TODO, pass directly the WOWS_INDEX *index instead of each fields
     if (context->debug_level & DEBUG_RAW_RECORD) {
-        print_debug_raw(index->header, index->metadata, index->data_file_entry,
-                        index->footer);
+        print_debug_raw(index);
     }
-    // TODO, pass directly the WOWS_INDEX *index instead of each fields
     if (context->debug_level & DEBUG_FILE_LISTING) {
-        print_debug_files(index->header, index->metadata,
-                          index->data_file_entry, index->footer, map);
+        print_debug_files(index, map);
     }
 
     // Construct the inode tree
@@ -203,14 +222,15 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         WOWS_INDEX_METADATA_ENTRY *parent_entries[WOWS_DIR_MAX_LEVEL];
         get_path(context, mentry, &depth, parent_entries);
 
-	// Insert the parent directories if necessary
-	WOWS_DIR_INODE *parent_inode = context->root;
-	for (int j = depth; j > -1; j--) {
-		uint64_t metadata_id = parent_entries[j]->id;
-		parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode);
-	}
-	uint64_t metadata_id = mentry->id;
-	init_file_inode(metadata_id, current_index_context, parent_inode);
+        // Insert the parent directories if necessary
+        WOWS_DIR_INODE *parent_inode = context->root;
+        for (int j = depth; j > -1; j--) {
+            uint64_t metadata_id = parent_entries[j]->id;
+            parent_inode = init_dir_inode(metadata_id, current_index_context,
+                                          parent_inode);
+        }
+        uint64_t metadata_id = mentry->id;
+        init_file_inode(metadata_id, current_index_context, parent_inode);
     }
     return 0;
 }

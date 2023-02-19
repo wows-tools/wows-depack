@@ -48,10 +48,11 @@ int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry) {
     return 0;
 }
 
-int print_debug_raw(WOWS_INDEX_HEADER *header,
-                    WOWS_INDEX_METADATA_ENTRY *metadatas,
-                    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry,
-                    WOWS_INDEX_FOOTER *footer) {
+int print_debug_raw(WOWS_INDEX *index) {
+    WOWS_INDEX_HEADER *header = index->header;
+    WOWS_INDEX_METADATA_ENTRY *metadatas = index->metadata;
+    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry = index->data_file_entry;
+    WOWS_INDEX_FOOTER *footer = index->footer;
     int i;
     // Print the header
     printf("Index Header Content:\n");
@@ -63,8 +64,14 @@ int print_debug_raw(WOWS_INDEX_HEADER *header,
         WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
         printf("Metadata entry [%d]:\n", i);
         print_metadata_entry(entry);
-        printf("* filename:                  %.*s\n",
-               (int)entry->file_name_size, get_metadata_filename(entry));
+        char *filename;
+        int ret = get_metadata_filename(entry, index, &filename);
+        if (ret == 0) {
+            printf("* filename:                  %.*s\n",
+                   (int)entry->file_name_size, filename);
+        } else {
+            printf("* pkg filename:              Error %d\n", ret);
+        }
         printf("\n");
     }
 
@@ -77,21 +84,24 @@ int print_debug_raw(WOWS_INDEX_HEADER *header,
     }
 
     // Print the footer
-    char *pkg_filename = (char *)footer;
-    pkg_filename += sizeof(WOWS_INDEX_FOOTER);
 
     printf("Index Footer Content:\n");
     print_footer(footer);
-    printf("* pkg filename:              %.*s\n",
-           (int)footer->pkg_file_name_size, pkg_filename);
+    char *pkg_filename;
+    int ret = get_footer_filename(footer, index, &pkg_filename);
+    if (ret == 0) {
+        printf("* pkg filename:              %.*s\n",
+               (int)footer->pkg_file_name_size, pkg_filename);
+    } else {
+        printf("* pkg filename:              Error %d\n", ret);
+    }
     printf("\n");
     return 0;
 }
 
-int print_debug_files(WOWS_INDEX_HEADER *header,
-                      WOWS_INDEX_METADATA_ENTRY *metadatas,
-                      WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry,
-                      WOWS_INDEX_FOOTER *footer, struct hashmap *map) {
+int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
+    WOWS_INDEX_HEADER *header = index->header;
+    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry = index->data_file_entry;
     int i;
     // Print the actual files
     for (i = 0; i < header->file_count; i++) {
@@ -107,8 +117,15 @@ int print_debug_files(WOWS_INDEX_HEADER *header,
         printf("File entry [%d]:\n", i);
         print_data_file_entry(fentry);
         print_metadata_entry(mentry);
-        printf("* filename:                  %.*s\n",
-               (int)mentry->file_name_size, get_metadata_filename(mentry));
+        char *filename;
+        int ret = get_metadata_filename(mentry, index, &filename);
+
+        if (ret == 0) {
+            printf("* filename:                  %.*s\n",
+                   (int)mentry->file_name_size, filename);
+        } else {
+            printf("* pkg filename:              Error %d\n", ret);
+        }
         WOWS_INDEX_METADATA_ENTRY *m_parent_entry_search =
             &(WOWS_INDEX_METADATA_ENTRY){.id = mentry->parent_id};
         WOWS_INDEX_METADATA_ENTRY **mparent_entry =
@@ -118,9 +135,16 @@ int print_debug_files(WOWS_INDEX_HEADER *header,
         while (mparent_entry != NULL && level < WOWS_DIR_MAX_LEVEL) {
             printf("parent [%d]:\n", level);
             print_metadata_entry(*mparent_entry);
-            printf("* filename:                  %.*s\n",
-                   (int)mentry->file_name_size,
-                   get_metadata_filename(*mparent_entry));
+            char *filename;
+            int ret = get_metadata_filename(*mparent_entry, index, &filename);
+
+            if (ret == 0) {
+                printf("* filename:                  %.*s\n",
+                       (int)mentry->file_name_size, filename);
+            } else {
+                printf("* pkg filename:              Error %d\n", ret);
+            }
+
             mentry_search =
                 &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
             mparent_entry = NULL;
