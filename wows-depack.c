@@ -28,17 +28,15 @@
 
 const char *argp_program_version = BFD_VERSION;
 
-const char *argp_program_bug_address =
-    "Pierre-Francois Carpentier <carpentier.pf@gmail.com>";
+const char *argp_program_bug_address = "Pierre-Francois Carpentier <carpentier.pf@gmail.com>";
 
 static char doc[] = "\nBrute force DEFLATE decompressor";
 
-static struct argp_option options[] = {
-    {"input", 'i', "INPUT_INDEX", 0, "Input file"},
-    //    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
-    //    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed
-    //    blobs"},
-    {0}};
+static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input file"},
+                                       //    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
+                                       //    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed
+                                       //    blobs"},
+                                       {0}};
 
 /* A description of the arguments we accept. */
 static char args_doc[] = "-i INPUT_FILE -o OUTPUT_DIR";

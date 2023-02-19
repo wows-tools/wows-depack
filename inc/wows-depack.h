@@ -17,12 +17,13 @@
 
 // Context for the parsing/file extraction
 typedef struct {
-    uint8_t debug_level;          // Debug level for logging
-    void *root;         // Root Inode (WOWS_DIR_INODE * root;)
-    void *metadata_map; // Global Metadata hashmap (struct hashmap *metadata_map;)
-    void *file_map;     // Global File hashmap (struct hashmap *file_map;)
-    void *current_dir;  // Current directory (WOWS_DIR_INODE *current_dir;)
-    void **indexes; // Array of structures representing each index file (void **indexes;)
+    uint8_t debug_level;  // Debug level for logging
+    void *root;           // Root Inode (WOWS_DIR_INODE * root;)
+    void *metadata_map;   // Global Metadata hashmap (struct hashmap *metadata_map;)
+    void *file_map;       // Global File hashmap (struct hashmap *file_map;)
+    void *current_dir;    // Current directory (WOWS_DIR_INODE *current_dir;)
+    void **indexes;       // Array of structures representing each index file (void
+                          // **indexes;)
     uint32_t index_count; // Size of the array
 } WOWS_CONTEXT;
 

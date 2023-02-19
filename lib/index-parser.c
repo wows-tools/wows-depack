@@ -24,8 +24,7 @@ int file_compare(const void *a, const void *b, void *udata) {
 }
 
 uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1) {
-    const WOWS_INDEX_DATA_FILE_ENTRY *file =
-        *(WOWS_INDEX_DATA_FILE_ENTRY **)item;
+    const WOWS_INDEX_DATA_FILE_ENTRY *file = *(WOWS_INDEX_DATA_FILE_ENTRY **)item;
     return file->metadata_id;
 }
 
@@ -40,8 +39,7 @@ uint64_t dir_inode_hash(const void *item, uint64_t seed0, uint64_t seed1) {
     return hashmap_sip(inode->name, strlen(inode->name), seed0, seed1);
 }
 
-int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index,
-                          char **out) {
+int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
     // Check that the file name is not too long
@@ -58,8 +56,7 @@ int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index,
     return 0;
 }
 
-int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
-                        char **out) {
+int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index, char **out) {
     char *pkg_filename = (char *)footer;
     pkg_filename += sizeof(WOWS_INDEX_FOOTER);
     // Check that the file name is not too long
@@ -67,8 +64,7 @@ int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
         return WOWS_ERROR_PATH_TOO_LONG;
     }
     // Check that the string is actually within the index boundaries
-    returnOutIndex(pkg_filename, pkg_filename + footer->pkg_file_name_size,
-                   index);
+    returnOutIndex(pkg_filename, pkg_filename + footer->pkg_file_name_size, index);
     // Check that it is null terminated
     if (pkg_filename[footer->pkg_file_name_size - 1] != '\0') {
         return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
@@ -77,23 +73,18 @@ int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
     return 0;
 }
 
-WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id,
-                               uint32_t current_index_context,
-                               WOWS_DIR_INODE *parent_inode) {
+WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode) {
     WOWS_DIR_INODE *dir_inode = calloc(sizeof(WOWS_DIR_INODE), 1);
     dir_inode->type = WOWS_INODE_TYPE_DIR;
     dir_inode->id = metadata_id;
     dir_inode->index_file_index = current_index_context;
     dir_inode->parent_inode = parent_inode;
     dir_inode->children_inodes =
-        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0,
-                    dir_inode_hash, dir_inode_compare, NULL, NULL);
+        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, dir_inode_hash, dir_inode_compare, NULL, NULL);
     return dir_inode;
 }
 
-WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id,
-                                 uint32_t current_index_context,
-                                 WOWS_DIR_INODE *parent_inode) {
+WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode) {
     WOWS_FILE_INODE *file_inode = calloc(sizeof(WOWS_FILE_INODE), 1);
     file_inode->type = WOWS_INODE_TYPE_FILE;
     file_inode->id = metadata_id;
@@ -106,10 +97,8 @@ WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id,
 WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
     context->metadata_map =
-        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, metadata_hash,
-                    metadata_compare, NULL, NULL);
-    context->file_map = hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0,
-                                    0, file_hash, file_compare, NULL, NULL);
+        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, metadata_hash, metadata_compare, NULL, NULL);
+    context->file_map = hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, file_hash, file_compare, NULL, NULL);
     context->debug_level = debug_level;
     context->root = init_dir_inode(WOWS_ROOT_INODE, WOWS_ROOT_INODE, NULL);
     return context;
@@ -135,31 +124,24 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
 
     // Get the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
-    metadatas =
-        (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
+    metadatas = (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
     index->metadata = metadatas;
     // Check metadatas section boundaries
-    returnOutIndex((char *)metadatas,
-                   (char *)&metadatas[header->file_dir_count], index);
+    returnOutIndex((char *)metadatas, (char *)&metadatas[header->file_dir_count], index);
 
     // Get the start pkg data pointer section
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
-        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
-                                       header->offset_idx_data_section +
-                                       MAGIC_SECTION_OFFSET);
+        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents + header->offset_idx_data_section + MAGIC_SECTION_OFFSET);
     index->data_file_entry = data_file_entry;
     // Check data_file_entries section boundaries
-    returnOutIndex((char *)data_file_entry,
-                   (char *)&data_file_entry[header->file_count], index);
+    returnOutIndex((char *)data_file_entry, (char *)&data_file_entry[header->file_count], index);
 
     // Get the footer section
     WOWS_INDEX_FOOTER *footer =
-        (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section +
-                              MAGIC_SECTION_OFFSET);
+        (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section + MAGIC_SECTION_OFFSET);
     index->footer = footer;
     // Check footer section boundaries
-    returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER),
-                   index);
+    returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER), index);
     *index_in = index;
     return 0;
 }
@@ -173,25 +155,21 @@ uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
 }
 
 // Get the dir/subdir path of a given file entry
-int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
-             int *depth, WOWS_INDEX_METADATA_ENTRY **entries) {
+int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry, int *depth,
+             WOWS_INDEX_METADATA_ENTRY **entries) {
     struct hashmap *map = context->metadata_map;
     int level = 0;
     *depth = level;
 
     WOWS_INDEX_METADATA_ENTRY *mentry_search;
 
-    WOWS_INDEX_METADATA_ENTRY *m_parent_entry_search =
-        &(WOWS_INDEX_METADATA_ENTRY){.id = mentry->parent_id};
-    WOWS_INDEX_METADATA_ENTRY **mparent_entry =
-        (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &m_parent_entry_search);
+    WOWS_INDEX_METADATA_ENTRY *m_parent_entry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = mentry->parent_id};
+    WOWS_INDEX_METADATA_ENTRY **mparent_entry = (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &m_parent_entry_search);
 
     while (mparent_entry != NULL && level < WOWS_DIR_MAX_LEVEL) {
-        mentry_search =
-            &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
+        mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
         mparent_entry = NULL;
-        mparent_entry =
-            (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
+        mparent_entry = (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
         if (mparent_entry == NULL) {
             *depth = level;
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
@@ -247,8 +225,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     for (i = 0; i < index->header->file_count; i++) {
         WOWS_INDEX_DATA_FILE_ENTRY *fentry = &index->data_file_entry[i];
         hashmap_set(context->file_map, &fentry);
-        WOWS_INDEX_METADATA_ENTRY *mentry_search =
-            &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
+        WOWS_INDEX_METADATA_ENTRY *mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
 
         void *res = hashmap_get(context->metadata_map, &mentry_search);
         if (res == NULL) {
@@ -259,16 +236,14 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         // Get the path branch (all the parent directory branch)
         int depth;
         WOWS_INDEX_METADATA_ENTRY **parent_entries;
-        parent_entries =
-            calloc(WOWS_DIR_MAX_LEVEL, sizeof(WOWS_INDEX_METADATA_ENTRY *));
+        parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(WOWS_INDEX_METADATA_ENTRY *));
         get_path(context, mentry, &depth, parent_entries);
 
         // Insert the parent directories if necessary
         WOWS_DIR_INODE *parent_inode = context->root;
         for (int j = (depth - 1); j > -1; j--) {
             uint64_t metadata_id = parent_entries[j]->id;
-            parent_inode = init_dir_inode(metadata_id, current_index_context,
-                                          parent_inode);
+            parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode);
         }
         uint64_t metadata_id = mentry->id;
         init_file_inode(metadata_id, current_index_context, parent_inode);
