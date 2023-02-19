@@ -85,6 +85,7 @@ add_library(wows-depack
     ${SHARED}
     lib/utils.c
     lib/index-parser.c
+    lib/index-printer.c
     lib/hashmap.c
 )
 
