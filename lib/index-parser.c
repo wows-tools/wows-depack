@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "wows-depack.h"
 #include "hashmap.h"
 
@@ -162,8 +163,6 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
 }
 
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
-    // TODO overflow, check size
-
     int i;
     struct hashmap *map = context->metadata_map;
 
@@ -175,6 +174,13 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // Get the header section
     WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
     index->header = header;
+    // Check header section boundaries
+    returnOutIndex((char *)header, contents + sizeof(WOWS_INDEX_HEADER), index);
+
+    // Check that the magic do match
+    if (strncmp(header->magic, "ISFP", 4) != 0) {
+        return WOWS_ERROR_BAD_MAGIC;
+    }
 
     // Get the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
@@ -182,12 +188,19 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
     index->metadata = metadatas;
 
+    // Check metadatas section boundaries
+    returnOutIndex((char *)metadatas,
+                   (char *)&metadatas[header->file_dir_count], index);
+
     // Get the start pkg data pointer section
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
         (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
                                        header->offset_idx_data_section +
                                        MAGIC_SECTION_OFFSET);
     index->data_file_entry = data_file_entry;
+    // Check data_file_entries section boundaries
+    returnOutIndex((char *)data_file_entry,
+                   (char *)&data_file_entry[header->file_count], index);
 
     // Get the footer section
     WOWS_INDEX_FOOTER *footer =
@@ -195,8 +208,9 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
                               MAGIC_SECTION_OFFSET);
 
     index->footer = footer;
-
-    // char *pkg_filename = get_footer_filename(footer);
+    // Check footer section boundaries
+    returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER),
+                   index);
 
     // Index all the metadata entries into an hmap
     for (i = 0; i < header->file_dir_count; i++) {
@@ -213,6 +227,16 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     }
 
     return 0;
+}
+
+bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
+    if ((index->start_address > start) || (index->end_address < start)) {
+        return true;
+    }
+    if ((index->start_address > end) || (index->end_address < end)) {
+        return true;
+    }
+    return false;
 }
 
 int wows_free_context(WOWS_CONTEXT *) {

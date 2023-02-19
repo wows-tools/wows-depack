@@ -4,6 +4,18 @@
 
 #pragma pack(1)
 
+/* Errors */
+
+#define WOWS_ERROR_CORRUPTED_FILE (1 << 0)
+#define WOWS_ERROR_BAD_MAGIC (1 << 1)
+
+#define returnOutIndex(start, end, index)                                      \
+    if (checkOutOfIndex(start, end, index)) {                                  \
+        return WOWS_ERROR_CORRUPTED_FILE;                                      \
+    }
+
+/* ---------- */
+
 /* Structures describing the file format */
 
 #define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
@@ -123,3 +135,4 @@ int wows_inflate(FILE *source, FILE *dest, long *read);
 void wows_zerr(int ret);
 int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
+bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
