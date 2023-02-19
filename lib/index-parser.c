@@ -16,6 +16,18 @@ uint64_t metadata_hash(const void *item, uint64_t seed0, uint64_t seed1) {
     return meta->id;
 }
 
+int file_compare(const void *a, const void *b, void *udata) {
+    const WOWS_INDEX_DATA_FILE_ENTRY *fa = *(WOWS_INDEX_DATA_FILE_ENTRY **)a;
+    const WOWS_INDEX_DATA_FILE_ENTRY *fb = *(WOWS_INDEX_DATA_FILE_ENTRY **)b;
+    return fa->metadata_id > fb->metadata_id;
+}
+
+uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1) {
+    const WOWS_INDEX_DATA_FILE_ENTRY *file =
+        *(WOWS_INDEX_DATA_FILE_ENTRY **)item;
+    return file->metadata_id;
+}
+
 int dir_inode_compare(const void *a, const void *b, void *udata) {
     // TODO
     const WOWS_INDEX_METADATA_ENTRY *ma = *(WOWS_INDEX_METADATA_ENTRY **)a;
@@ -86,19 +98,22 @@ WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id,
 // Context init function
 WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
-    struct hashmap *map =
+    context->metadata_map =
         hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, metadata_hash,
                     metadata_compare, NULL, NULL);
-    context->metadata_map = map;
+    context->file_map = hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0,
+                                    0, file_hash, file_compare, NULL, NULL);
     context->debug_level = debug_level;
     context->root = init_dir_inode(WOWS_ROOT_INODE, WOWS_ROOT_INODE, NULL);
     return context;
 }
 
+// Map the different section of the index file content to an index struct
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
     index->start_address = contents;
     index->end_address = contents + length;
+    index->length = length;
 
     // Get the header section
     WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
@@ -179,9 +194,9 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
     return 0;
 }
 
+// Index Parser function
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     int i;
-    struct hashmap *map = context->metadata_map;
 
     WOWS_INDEX *index;
     int err = map_index_file(contents, length, &index);
@@ -192,7 +207,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // Index all the metadata entries into an hmap
     for (i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &index->metadata[i];
-        hashmap_set(map, &entry);
+        hashmap_set(context->metadata_map, &entry);
     }
 
     uint32_t current_index_context = add_index_context(context, index);
@@ -202,16 +217,17 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         print_debug_raw(index);
     }
     if (context->debug_level & DEBUG_FILE_LISTING) {
-        print_debug_files(index, map);
+        print_debug_files(index, context->metadata_map);
     }
 
     // Construct the inode tree
     for (i = 0; i < index->header->file_count; i++) {
         WOWS_INDEX_DATA_FILE_ENTRY *fentry = &index->data_file_entry[i];
+        hashmap_set(context->file_map, &fentry);
         WOWS_INDEX_METADATA_ENTRY *mentry_search =
             &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
 
-        void *res = hashmap_get(map, &mentry_search);
+        void *res = hashmap_get(context->metadata_map, &mentry_search);
         if (res == NULL) {
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
         }
@@ -250,5 +266,7 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
 
 int wows_free_context(WOWS_CONTEXT *context) {
     // TODO
+    hashmap_free(context->metadata_map);
+    hashmap_free(context->file_map);
     return 0;
 }

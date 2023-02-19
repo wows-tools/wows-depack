@@ -105,4 +105,5 @@ int main(int argc, char **argv) {
     // context->debug_level = DEBUG_FILE_LISTING;
 
     return wows_parse_index(index_content, index_size, context);
+    wows_free_context(context);
 }
