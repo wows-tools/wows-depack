@@ -82,6 +82,8 @@ typedef struct {
 
 /* Simple Inode representation of the tree */
 
+#define WOWS_ROOT_INODE 0
+
 #define WOWS_INODE_TYPE_DIR 0
 #define WOWS_INODE_TYPE_FILE 1
 
@@ -132,7 +134,7 @@ typedef struct {
     WOWS_DIR_INODE *root;         // Root Inode
     struct hashmap *metadata_map; // Global Metadata hashmap
     WOWS_DIR_INODE *current_dir;  // Current directory
-    WOWS_INDEX *indexes;  // Array of structures representing each index file
+    WOWS_INDEX **indexes; // Array of structures representing each index file
     uint32_t index_count; // Size of the array
 } WOWS_CONTEXT;
 
