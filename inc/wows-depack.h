@@ -9,6 +9,8 @@
 // Maximum number of directories in a path (protection against infinite loops)
 // In practice, the observed maximum depth is 7. 32 should be more than enough
 #define WOWS_DIR_MAX_LEVEL 32
+// Put some limits on the file name size
+#define WOWS_PATH_MAX 4096
 
 /* ---------- */
 
@@ -19,6 +21,7 @@
 #define WOWS_ERROR_MISSING_METADATA_ENTRY 3
 #define WOWS_ERROR_MAX_LEVEL_REACHED 4
 #define WOWS_ERROR_NON_ZERO_TERMINATED_STRING 5
+#define WOWS_ERROR_PATH_TOO_LONG 6
 
 #define returnOutIndex(start, end, index)                                      \
     if (checkOutOfIndex(start, end, index)) {                                  \
@@ -93,6 +96,7 @@ typedef struct {
     uint8_t type; // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
     uint64_t id;  // id of the corresponding metadata item
     uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
+    char *name;                // Name of the file/dir
 } WOWS_BASE_INODE;
 
 // Dir inode
@@ -109,6 +113,7 @@ typedef struct WOWS_FILE_INODE {
     uint8_t type;              // always WOWS_FILE_INODE
     uint64_t id;               // id of the corresponding metadata item
     uint32_t index_file_index; // context index of the index file
+    char *name;                // Name of the file/dir
     struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
 } WOWS_FILE_INODE;
 

@@ -29,22 +29,24 @@ uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1) {
 }
 
 int dir_inode_compare(const void *a, const void *b, void *udata) {
-    // TODO
-    const WOWS_INDEX_METADATA_ENTRY *ma = *(WOWS_INDEX_METADATA_ENTRY **)a;
-    const WOWS_INDEX_METADATA_ENTRY *mb = *(WOWS_INDEX_METADATA_ENTRY **)b;
-    return ma->id > mb->id;
+    const WOWS_BASE_INODE *ia = *(WOWS_BASE_INODE **)a;
+    const WOWS_BASE_INODE *ib = *(WOWS_BASE_INODE **)b;
+    return strcmp(ia->name, ib->name);
 }
 
 uint64_t dir_inode_hash(const void *item, uint64_t seed0, uint64_t seed1) {
-    // TODO
-    const WOWS_INDEX_METADATA_ENTRY *meta = *(WOWS_INDEX_METADATA_ENTRY **)item;
-    return meta->id;
+    const WOWS_BASE_INODE *inode = *(WOWS_BASE_INODE **)item;
+    return hashmap_sip(inode->name, strlen(inode->name), seed0, seed1);
 }
 
 int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index,
                           char **out) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
+    // Check that the file name is not too long
+    if (entry->file_name_size > WOWS_PATH_MAX) {
+        return WOWS_ERROR_PATH_TOO_LONG;
+    }
     // Check that the string is actually within the index boundaries
     returnOutIndex(filename, filename + entry->file_name_size, index);
     // Check that it is null terminated
@@ -59,6 +61,10 @@ int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
                         char **out) {
     char *pkg_filename = (char *)footer;
     pkg_filename += sizeof(WOWS_INDEX_FOOTER);
+    // Check that the file name is not too long
+    if (footer->pkg_file_name_size > WOWS_PATH_MAX) {
+        return WOWS_ERROR_PATH_TOO_LONG;
+    }
     // Check that the string is actually within the index boundaries
     returnOutIndex(pkg_filename, pkg_filename + footer->pkg_file_name_size,
                    index);
@@ -169,7 +175,7 @@ uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
 int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
              int *depth, WOWS_INDEX_METADATA_ENTRY **entries) {
     struct hashmap *map = context->metadata_map;
-    int level = -1;
+    int level = 0;
     *depth = level;
 
     WOWS_INDEX_METADATA_ENTRY *mentry_search;
@@ -186,11 +192,13 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
         mparent_entry =
             (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
         if (mparent_entry == NULL) {
+            *depth = level;
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
         }
-        level++;
         entries[level] = *mparent_entry;
+        level++;
     }
+    *depth = level;
     return 0;
 }
 
@@ -200,14 +208,28 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
 
     WOWS_INDEX *index;
     int err = map_index_file(contents, length, &index);
+
     if (err != 0) {
         return err;
     }
 
+    char *filler;
+
     // Index all the metadata entries into an hmap
     for (i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &index->metadata[i];
+        // Check that we can correctly recover the file names
+        int ret = get_metadata_filename(entry, index, &filler);
+        if (ret != 0) {
+            return ret;
+        }
         hashmap_set(context->metadata_map, &entry);
+    }
+
+    // Check that we can correctly recover the file names
+    int ret = get_footer_filename(index->footer, index, &filler);
+    if (ret != 0) {
+        return ret;
     }
 
     uint32_t current_index_context = add_index_context(context, index);
@@ -242,7 +264,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
 
         // Insert the parent directories if necessary
         WOWS_DIR_INODE *parent_inode = context->root;
-        for (int j = depth; j > -1; j--) {
+        for (int j = (depth - 1); j > -1; j--) {
             uint64_t metadata_id = parent_entries[j]->id;
             parent_inode = init_dir_inode(metadata_id, current_index_context,
                                           parent_inode);
