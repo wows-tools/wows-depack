@@ -1,9 +1,3 @@
-/* Heavily based on zpipe.c from zlib */
-
-/* zpipe.c: example of proper use of zlib's inflate() and deflate()
-   Not copyrighted -- provided to the public domain
-   Version 1.4  11 December 2005  Mark Adler */
-
 #define _POSIX_C_SOURCE 200809L
 
 #include <argp.h>

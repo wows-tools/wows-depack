@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "wows-depack.h"
+#include "wows-depack-private.h"
 #include "hashmap.h"
 
 int print_header(WOWS_INDEX_HEADER *header) {
