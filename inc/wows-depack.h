@@ -6,9 +6,9 @@
 
 /* Limits */
 
-#define WOWS_DIR_MAX_LEVEL                                                     \
-    128 // Maximum number of directories in a path (protection against infinite
-        // loops)
+// Maximum number of directories in a path (protection against infinite loops)
+// In practice, the observed maximum depth is 7. 32 should be more than enough
+#define WOWS_DIR_MAX_LEVEL 32
 
 /* ---------- */
 

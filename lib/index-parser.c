@@ -154,6 +154,8 @@ uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
 int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
              int *depth, WOWS_INDEX_METADATA_ENTRY **entries) {
     struct hashmap *map = context->metadata_map;
+    int level = -1;
+    *depth = level;
 
     WOWS_INDEX_METADATA_ENTRY *mentry_search;
 
@@ -162,7 +164,6 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
     WOWS_INDEX_METADATA_ENTRY **mparent_entry =
         (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &m_parent_entry_search);
 
-    int level = -1;
     while (mparent_entry != NULL && level < WOWS_DIR_MAX_LEVEL) {
         mentry_search =
             &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
@@ -172,10 +173,9 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry,
         if (mparent_entry == NULL) {
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
         }
-        entries[level] = *mparent_entry;
         level++;
+        entries[level] = *mparent_entry;
     }
-    *depth = level;
     return 0;
 }
 
@@ -219,7 +219,9 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
 
         // Get the path branch (all the parent directory branch)
         int depth;
-        WOWS_INDEX_METADATA_ENTRY *parent_entries[WOWS_DIR_MAX_LEVEL];
+        WOWS_INDEX_METADATA_ENTRY **parent_entries;
+        parent_entries =
+            calloc(WOWS_DIR_MAX_LEVEL, sizeof(WOWS_INDEX_METADATA_ENTRY *));
         get_path(context, mentry, &depth, parent_entries);
 
         // Insert the parent directories if necessary
@@ -231,6 +233,7 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         }
         uint64_t metadata_id = mentry->id;
         init_file_inode(metadata_id, current_index_context, parent_inode);
+        free(parent_entries);
     }
     return 0;
 }
