@@ -120,6 +120,7 @@ typedef struct WOWS_INDEX {
     WOWS_INDEX_FOOTER *footer;
     char *start_address;
     char *end_address;
+    size_t length;
 } WOWS_INDEX;
 
 /* ---------- */
@@ -134,6 +135,7 @@ typedef struct {
     uint8_t debug_level;          // Debug level for logging
     WOWS_DIR_INODE *root;         // Root Inode
     struct hashmap *metadata_map; // Global Metadata hashmap
+    struct hashmap *file_map;     // Global File hashmap
     WOWS_DIR_INODE *current_dir;  // Current directory
     WOWS_INDEX **indexes; // Array of structures representing each index file
     uint32_t index_count; // Size of the array
