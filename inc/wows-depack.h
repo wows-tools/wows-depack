@@ -1,7 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "hashmap.h"
 
 #pragma pack(1)
+
+/* Structures describing the file format */
+
+#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
 
 // INDEX file header
 typedef struct {
@@ -16,8 +21,6 @@ typedef struct {
     uint64_t offset_idx_data_section;
     uint64_t offset_idx_footer_section;
 } WOWS_INDEX_HEADER;
-
-#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
 
 // INDEX file metadata entry
 typedef struct {
@@ -53,13 +56,9 @@ typedef struct {
     uint32_t padding_2;
 } WOWS_PKG_ID_ENTRY;
 
-#define DEBUG_RAW_RECORD (1 << 0)
-#define DEBUG_FILE_LISTING (1 << 1)
+/* ---------- */
 
-// Context for the parsing/file extraction
-typedef struct {
-    uint8_t debug_level;
-} WOWS_CONTEXT;
+/* Simple Inode representation of the tree */
 
 #define FILE_INODE (1 << 0)
 #define DIR_INODE (1 << 1)
@@ -85,9 +84,42 @@ typedef struct {
     struct WOWS_DIR_INODE *parent_inode;
 } WOWS_FILE_INODE;
 
+// Index File structure
+typedef struct {
+    WOWS_INDEX_HEADER *header;
+    WOWS_INDEX_METADATA_ENTRY *metadata;
+    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry;
+    WOWS_INDEX_FOOTER *footer;
+    char *start_address;
+    char *end_address;
+} WOWS_INDEX;
+
+/* ---------- */
+
+/* Parsing/Extract Context */
+
+#define DEBUG_RAW_RECORD (1 << 0)
+#define DEBUG_FILE_LISTING (1 << 1)
+
+// Context for the parsing/file extraction
+typedef struct {
+    uint8_t debug_level;          // Debug level for logging
+    WOWS_DIR_INODE *root;         // Root Inode
+    struct hashmap *metadata_map; // Global Metadata hashmap
+    WOWS_DIR_INODE *current_dir;  // Current directory
+    WOWS_INDEX *indexes;  // Array of structures representing each index file
+    uint32_t index_count; // Size of the array
+} WOWS_CONTEXT;
+
+/* ---------- */
+
+WOWS_CONTEXT *wows_init_context(uint8_t debug_level);
+int wows_free_context(WOWS_CONTEXT *);
+
+int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context);
+
+// TODO remove from the header
 int wows_inflate(FILE *source, FILE *dest, long *read);
 void wows_zerr(int ret);
 int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
-
-int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context);
