@@ -149,3 +149,19 @@ void wows_zerr(int ret);
 int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
+
+char *get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry);
+char *get_footer_filename(WOWS_INDEX_FOOTER *footer);
+
+int print_header(WOWS_INDEX_HEADER *header);
+int print_footer(WOWS_INDEX_FOOTER *footer);
+int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry);
+int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry);
+int print_debug_raw(WOWS_INDEX_HEADER *header,
+                    WOWS_INDEX_METADATA_ENTRY *metadatas,
+                    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry,
+                    WOWS_INDEX_FOOTER *footer);
+int print_debug_files(WOWS_INDEX_HEADER *header,
+                      WOWS_INDEX_METADATA_ENTRY *metadatas,
+                      WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry,
+                      WOWS_INDEX_FOOTER *footer, struct hashmap *map);
