@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include "wows-depack.h"
 #include "hashmap.h"
@@ -61,6 +62,12 @@ char *get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
     return filename;
+}
+
+char *get_footer_filename(WOWS_INDEX_FOOTER *footer) {
+    char *pkg_filename = (char *)footer;
+    pkg_filename += sizeof(WOWS_INDEX_FOOTER);
+    return pkg_filename;
 }
 
 int print_debug_raw(WOWS_INDEX_HEADER *header,
@@ -144,35 +151,54 @@ int print_debug_files(WOWS_INDEX_HEADER *header,
     return 0;
 }
 
+WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
+    WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
+    struct hashmap *map =
+        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, metadata_hash,
+                    metadata_compare, NULL, NULL);
+    context->metadata_map = map;
+    context->debug_level = debug_level;
+    return context;
+}
+
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // TODO overflow, check size
+
     int i;
+    struct hashmap *map = context->metadata_map;
+
+    WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
+
+    index->start_address = contents;
+    index->end_address = contents + length;
 
     // Get the header section
     WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
+    index->header = header;
 
     // Get the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
     metadatas =
         (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
+    index->metadata = metadatas;
 
-    // Get the start  pkg data pointer section
+    // Get the start pkg data pointer section
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
         (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
                                        header->offset_idx_data_section +
                                        MAGIC_SECTION_OFFSET);
+    index->data_file_entry = data_file_entry;
 
     // Get the footer section
     WOWS_INDEX_FOOTER *footer =
         (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section +
                               MAGIC_SECTION_OFFSET);
-    char *pkg_filename = (char *)footer;
-    pkg_filename += sizeof(WOWS_INDEX_FOOTER);
+
+    index->footer = footer;
+
+    // char *pkg_filename = get_footer_filename(footer);
 
     // Index all the metadata entries into an hmap
-    struct hashmap *map =
-        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), header->file_dir_count,
-                    0, 0, metadata_hash, metadata_compare, NULL, NULL);
     for (i = 0; i < header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
         hashmap_set(map, &entry);
@@ -186,7 +212,10 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         print_debug_files(header, metadatas, data_file_entry, footer, map);
     }
 
-    hashmap_free(map);
+    return 0;
+}
 
+int wows_free_context(WOWS_CONTEXT *) {
+    // TODO
     return 0;
 }
