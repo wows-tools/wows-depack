@@ -97,6 +97,7 @@ typedef struct WOWS_DIR_INODE {
     uint8_t type;                        // always WOWS_DIR_INODE
     uint64_t id;                         // id of the corresponding metadata item
     uint32_t index_file_index;           // index of the index in WOWS_CONTEXT.indexes
+    char *name;                          // Name of the file/dir
     struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
     struct hashmap *children_inodes;     // children inodes (directories or files)
 } WOWS_DIR_INODE;
