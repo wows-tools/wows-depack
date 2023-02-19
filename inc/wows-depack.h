@@ -7,7 +7,7 @@
 /* Limits */
 
 #define WOWS_DIR_MAX_LEVEL                                                     \
-    128 // Maximum number of directory in a path (protection against infinite
+    128 // Maximum number of directories in a path (protection against infinite
         // loops)
 
 /* ---------- */
@@ -82,32 +82,35 @@ typedef struct {
 
 /* Simple Inode representation of the tree */
 
-#define FILE_INODE (1 << 0)
-#define DIR_INODE (1 << 1)
+#define WOWS_INODE_TYPE_DIR 0
+#define WOWS_INODE_TYPE_FILE 1
 
 // Base inode
 typedef struct {
-    uint8_t type;
-    uint64_t id;
+    uint8_t type; // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
+    uint64_t id;  // id of the corresponding metadata item
+    uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
 } WOWS_BASE_INODE;
 
 // Dir inode
 typedef struct WOWS_DIR_INODE {
-    uint8_t type;
-    uint64_t id;
-    struct WOWS_DIR_INODE *parent_inode;
-    struct WOWS_DIR_INODE *children_inodes[];
+    uint8_t type;              // always WOWS_DIR_INODE
+    uint64_t id;               // id of the corresponding metadata item
+    uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
+    struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
+    struct hashmap *children_inodes; // children inodes (directories or files)
 } WOWS_DIR_INODE;
 
 // file inode
-typedef struct {
-    uint8_t type;
-    uint64_t id;
-    struct WOWS_DIR_INODE *parent_inode;
+typedef struct WOWS_FILE_INODE {
+    uint8_t type;              // always WOWS_FILE_INODE
+    uint64_t id;               // id of the corresponding metadata item
+    uint32_t index_file_index; // context index of the index file
+    struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
 } WOWS_FILE_INODE;
 
 // Index File structure
-typedef struct {
+typedef struct WOWS_INDEX {
     WOWS_INDEX_HEADER *header;
     WOWS_INDEX_METADATA_ENTRY *metadata;
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry;

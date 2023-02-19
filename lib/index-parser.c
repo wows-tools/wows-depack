@@ -211,7 +211,6 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     WOWS_INDEX_FOOTER *footer =
         (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section +
                               MAGIC_SECTION_OFFSET);
-
     index->footer = footer;
     // Check footer section boundaries
     returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER),
@@ -223,10 +222,10 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         hashmap_set(map, &entry);
     }
 
+    // Debugging output if necessary
     if (context->debug_level & DEBUG_RAW_RECORD) {
         print_debug_raw(header, metadatas, data_file_entry, footer);
     }
-
     if (context->debug_level & DEBUG_FILE_LISTING) {
         print_debug_files(header, metadatas, data_file_entry, footer, map);
     }
