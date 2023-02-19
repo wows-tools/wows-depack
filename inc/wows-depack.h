@@ -4,10 +4,20 @@
 
 #pragma pack(1)
 
+/* Limits */
+
+#define WOWS_DIR_MAX_LEVEL                                                     \
+    128 // Maximum number of directory in a path (protection against infinite
+        // loops)
+
+/* ---------- */
+
 /* Errors */
 
-#define WOWS_ERROR_CORRUPTED_FILE (1 << 0)
-#define WOWS_ERROR_BAD_MAGIC (1 << 1)
+#define WOWS_ERROR_CORRUPTED_FILE 1
+#define WOWS_ERROR_BAD_MAGIC 2
+#define WOWS_ERROR_MISSING_METADATA_ENTRY 3
+#define WOWS_ERROR_MAX_LEVEL_REACHED 4
 
 #define returnOutIndex(start, end, index)                                      \
     if (checkOutOfIndex(start, end, index)) {                                  \

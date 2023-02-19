@@ -59,12 +59,14 @@ uint64_t metadata_hash(const void *item, uint64_t seed0, uint64_t seed1) {
     return meta->id;
 }
 
+// FIXME potential buffer overflow, add boundary checks
 char *get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
     return filename;
 }
 
+// FIXME potential buffer overflow, add boundary checks
 char *get_footer_filename(WOWS_INDEX_FOOTER *footer) {
     char *pkg_filename = (char *)footer;
     pkg_filename += sizeof(WOWS_INDEX_FOOTER);
@@ -121,8 +123,12 @@ int print_debug_files(WOWS_INDEX_HEADER *header,
         WOWS_INDEX_DATA_FILE_ENTRY *fentry = &data_file_entry[i];
         WOWS_INDEX_METADATA_ENTRY *mentry_search =
             &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
-        WOWS_INDEX_METADATA_ENTRY *mentry =
-            *(WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
+        void *res = hashmap_get(map, &mentry_search);
+        if (res == NULL) {
+            return WOWS_ERROR_MISSING_METADATA_ENTRY;
+        }
+        WOWS_INDEX_METADATA_ENTRY *mentry = *(WOWS_INDEX_METADATA_ENTRY **)res;
+
         printf("File entry [%d]:\n", i);
         print_data_file_entry(fentry);
         print_metadata_entry(mentry);
@@ -134,7 +140,7 @@ int print_debug_files(WOWS_INDEX_HEADER *header,
             (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map,
                                                       &m_parent_entry_search);
         int level = 1;
-        while (mparent_entry != NULL) {
+        while (mparent_entry != NULL && level < WOWS_DIR_MAX_LEVEL) {
             printf("parent [%d]:\n", level);
             print_metadata_entry(*mparent_entry);
             printf("* filename:                  %.*s\n",
@@ -187,7 +193,6 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     metadatas =
         (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
     index->metadata = metadatas;
-
     // Check metadatas section boundaries
     returnOutIndex((char *)metadatas,
                    (char *)&metadatas[header->file_dir_count], index);
@@ -239,7 +244,7 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     return false;
 }
 
-int wows_free_context(WOWS_CONTEXT *) {
+int wows_free_context(WOWS_CONTEXT *context) {
     // TODO
     return 0;
 }
