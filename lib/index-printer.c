@@ -15,10 +15,8 @@ int print_header(WOWS_INDEX_HEADER *header) {
     printf("* file_count:                %u\n", header->file_count);
     printf("* unknown_3:                 %lu\n", header->unknown_3);
     printf("* header_size:               %lu\n", header->header_size);
-    printf("* offset_idx_data_section:   0x%lx\n",
-           header->offset_idx_data_section);
-    printf("* offset_idx_footer_section: 0x%lx\n",
-           header->offset_idx_footer_section);
+    printf("* offset_idx_data_section:   0x%lx\n", header->offset_idx_data_section);
+    printf("* offset_idx_footer_section: 0x%lx\n", header->offset_idx_footer_section);
     return 0;
 }
 
@@ -68,8 +66,7 @@ int print_debug_raw(WOWS_INDEX *index) {
         char *filename;
         int ret = get_metadata_filename(entry, index, &filename);
         if (ret == 0) {
-            printf("* filename:                  %.*s\n",
-                   (int)entry->file_name_size, filename);
+            printf("* filename:                  %.*s\n", (int)entry->file_name_size, filename);
         } else {
             printf("* pkg filename:              Error %d\n", ret);
         }
@@ -91,8 +88,7 @@ int print_debug_raw(WOWS_INDEX *index) {
     char *pkg_filename;
     int ret = get_footer_filename(footer, index, &pkg_filename);
     if (ret == 0) {
-        printf("* pkg filename:              %.*s\n",
-               (int)footer->pkg_file_name_size, pkg_filename);
+        printf("* pkg filename:              %.*s\n", (int)footer->pkg_file_name_size, pkg_filename);
     } else {
         printf("* pkg filename:              Error %d\n", ret);
     }
@@ -107,8 +103,7 @@ int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
     // Print the actual files
     for (i = 0; i < header->file_count; i++) {
         WOWS_INDEX_DATA_FILE_ENTRY *fentry = &data_file_entry[i];
-        WOWS_INDEX_METADATA_ENTRY *mentry_search =
-            &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
+        WOWS_INDEX_METADATA_ENTRY *mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
         void *res = hashmap_get(map, &mentry_search);
         if (res == NULL) {
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
@@ -122,16 +117,13 @@ int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
         int ret = get_metadata_filename(mentry, index, &filename);
 
         if (ret == 0) {
-            printf("* filename:                  %.*s\n",
-                   (int)mentry->file_name_size, filename);
+            printf("* filename:                  %.*s\n", (int)mentry->file_name_size, filename);
         } else {
             printf("* pkg filename:              Error %d\n", ret);
         }
-        WOWS_INDEX_METADATA_ENTRY *m_parent_entry_search =
-            &(WOWS_INDEX_METADATA_ENTRY){.id = mentry->parent_id};
+        WOWS_INDEX_METADATA_ENTRY *m_parent_entry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = mentry->parent_id};
         WOWS_INDEX_METADATA_ENTRY **mparent_entry =
-            (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map,
-                                                      &m_parent_entry_search);
+            (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &m_parent_entry_search);
         int level = 1;
         while (mparent_entry != NULL && level < WOWS_DIR_MAX_LEVEL) {
             printf("parent [%d]:\n", level);
@@ -140,17 +132,14 @@ int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
             int ret = get_metadata_filename(*mparent_entry, index, &filename);
 
             if (ret == 0) {
-                printf("* filename:                  %.*s\n",
-                       (int)mentry->file_name_size, filename);
+                printf("* filename:                  %.*s\n", (int)mentry->file_name_size, filename);
             } else {
                 printf("* pkg filename:              Error %d\n", ret);
             }
 
-            mentry_search =
-                &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
+            mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = (*mparent_entry)->parent_id};
             mparent_entry = NULL;
-            mparent_entry =
-                (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
+            mparent_entry = (WOWS_INDEX_METADATA_ENTRY **)hashmap_get(map, &mentry_search);
             level++;
         }
         printf("\n");

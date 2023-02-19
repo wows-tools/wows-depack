@@ -16,9 +16,9 @@
 
 /* Errors */
 
-#define returnOutIndex(start, end, index)                                      \
-    if (checkOutOfIndex(start, end, index)) {                                  \
-        return WOWS_ERROR_CORRUPTED_FILE;                                      \
+#define returnOutIndex(start, end, index)                                                                              \
+    if (checkOutOfIndex(start, end, index)) {                                                                          \
+        return WOWS_ERROR_CORRUPTED_FILE;                                                                              \
     }
 
 /* ---------- */
@@ -86,27 +86,27 @@ typedef struct {
 
 // Base inode
 typedef struct {
-    uint8_t type; // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
-    uint64_t id;  // id of the corresponding metadata item
+    uint8_t type;              // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
+    uint64_t id;               // id of the corresponding metadata item
     uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
     char *name;                // Name of the file/dir
 } WOWS_BASE_INODE;
 
 // Dir inode
 typedef struct WOWS_DIR_INODE {
-    uint8_t type;              // always WOWS_DIR_INODE
-    uint64_t id;               // id of the corresponding metadata item
-    uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
+    uint8_t type;                        // always WOWS_DIR_INODE
+    uint64_t id;                         // id of the corresponding metadata item
+    uint32_t index_file_index;           // index of the index in WOWS_CONTEXT.indexes
     struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
-    struct hashmap *children_inodes; // children inodes (directories or files)
+    struct hashmap *children_inodes;     // children inodes (directories or files)
 } WOWS_DIR_INODE;
 
 // file inode
 typedef struct WOWS_FILE_INODE {
-    uint8_t type;              // always WOWS_FILE_INODE
-    uint64_t id;               // id of the corresponding metadata item
-    uint32_t index_file_index; // context index of the index file
-    char *name;                // Name of the file/dir
+    uint8_t type;                        // always WOWS_FILE_INODE
+    uint64_t id;                         // id of the corresponding metadata item
+    uint32_t index_file_index;           // context index of the index file
+    char *name;                          // Name of the file/dir
     struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
 } WOWS_FILE_INODE;
 
@@ -129,10 +129,8 @@ int wows_is_dir(const char *path);
 int wows_inflate_all(FILE *in, char *outdir);
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
 
-int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index,
-                          char **out);
-int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index,
-                        char **out);
+int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out);
+int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index, char **out);
 
 int print_header(WOWS_INDEX_HEADER *header);
 int print_footer(WOWS_INDEX_FOOTER *footer);
