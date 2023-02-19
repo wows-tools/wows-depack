@@ -3,9 +3,6 @@
 
 #pragma pack(1)
 
-#define DEBUG_RAW_RECORD (1 << 0)
-#define DEBUG_FILE_LISTING (1 << 1)
-
 // INDEX file header
 typedef struct {
     char magic[4];
@@ -56,12 +53,38 @@ typedef struct {
     uint32_t padding_2;
 } WOWS_PKG_ID_ENTRY;
 
+#define DEBUG_RAW_RECORD (1 << 0)
+#define DEBUG_FILE_LISTING (1 << 1)
+
 // Context for the parsing/file extraction
 typedef struct {
     uint8_t debug_level;
 } WOWS_CONTEXT;
 
-int wows_inflate(FILE *source, FILE *dest, long *read);
+#define FILE_INODE (1 << 0)
+#define DIR_INODE (1 << 1)
+
+// Base inode
+typedef struct {
+    uint8_t type;
+    uint64_t id;
+} WOWS_BASE_INODE;
+
+// Dir inode
+typedef struct WOWS_DIR_INODE {
+    uint8_t type;
+    uint64_t id;
+    struct WOWS_DIR_INODE *parent_inode;
+    struct WOWS_DIR_INODE *children_inodes[];
+} WOWS_DIR_INODE;
+
+// file inode
+typedef struct {
+    uint8_t type;
+    uint64_t id;
+    struct WOWS_DIR_INODE *parent_inode;
+} WOWS_FILE_INODE;
+
 int wows_inflate(FILE *source, FILE *dest, long *read);
 void wows_zerr(int ret);
 int wows_is_dir(const char *path);
