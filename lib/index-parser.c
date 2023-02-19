@@ -30,6 +30,7 @@ char *get_footer_filename(WOWS_INDEX_FOOTER *footer) {
     return pkg_filename;
 }
 
+// Context init function
 WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
     struct hashmap *map =
@@ -40,12 +41,8 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     return context;
 }
 
-int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
-    int i;
-    struct hashmap *map = context->metadata_map;
-
+int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
-
     index->start_address = contents;
     index->end_address = contents + length;
 
@@ -87,19 +84,36 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
     // Check footer section boundaries
     returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER),
                    index);
+    *index_in = index;
+    return 0;
+}
+
+int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
+    int i;
+    struct hashmap *map = context->metadata_map;
+
+    WOWS_INDEX *index;
+    int err = map_index_file(contents, length, &index);
+    if (err != 0) {
+        return err;
+    }
 
     // Index all the metadata entries into an hmap
-    for (i = 0; i < header->file_dir_count; i++) {
-        WOWS_INDEX_METADATA_ENTRY *entry = &metadatas[i];
+    for (i = 0; i < index->header->file_dir_count; i++) {
+        WOWS_INDEX_METADATA_ENTRY *entry = &index->metadata[i];
         hashmap_set(map, &entry);
     }
 
     // Debugging output if necessary
+    // TODO, pass directly the WOWS_INDEX *index instead of each fields
     if (context->debug_level & DEBUG_RAW_RECORD) {
-        print_debug_raw(header, metadatas, data_file_entry, footer);
+        print_debug_raw(index->header, index->metadata, index->data_file_entry,
+                        index->footer);
     }
+    // TODO, pass directly the WOWS_INDEX *index instead of each fields
     if (context->debug_level & DEBUG_FILE_LISTING) {
-        print_debug_files(header, metadatas, data_file_entry, footer, map);
+        print_debug_files(index->header, index->metadata,
+                          index->data_file_entry, index->footer, map);
     }
 
     return 0;
