@@ -12,6 +12,7 @@
 #define WOWS_ERROR_UNKNOWN 7
 
 /* Debug levels */
+#define NO_DEBUG 0
 #define DEBUG_RAW_RECORD (1 << 0)
 #define DEBUG_FILE_LISTING (1 << 1)
 /* ---------- */
@@ -37,3 +38,6 @@ int wows_free_context(WOWS_CONTEXT *);
 
 /* parse one file */
 int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context);
+
+/* print the directory tree */
+int wows_tree(WOWS_CONTEXT *context);

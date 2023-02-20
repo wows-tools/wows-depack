@@ -91,11 +91,16 @@ int main(int argc, char **argv) {
     // Map the whole content in memory
     char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-    WOWS_CONTEXT *context = wows_init_context(DEBUG_FILE_LISTING);
-    context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
+    WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
+    // context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_FILE_LISTING;
 
-    return wows_parse_index(index_content, index_size, context);
+    int ret = wows_parse_index(index_content, index_size, context);
+    if (ret != 0) {
+        return ret;
+    }
+    wows_tree(context);
     wows_free_context(context);
+    return 0;
 }

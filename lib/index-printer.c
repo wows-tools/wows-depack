@@ -150,17 +150,24 @@ int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
 bool dir_inode_print(const void *item, void *udata) {
     int level = *((int *)udata);
     level++;
-    print_inode_tree((WOWS_BASE_INODE *)item, level);
+    print_inode_tree(*(WOWS_BASE_INODE **)item, level);
     return true;
 }
 
 int print_inode_tree(WOWS_BASE_INODE *inode, int level) {
+    for (int i = 1; i < level; i++) {
+        printf(" | ");
+    }
+    if (level != 0) {
+        printf(" |-");
+    }
+
     if (inode->type == WOWS_INODE_TYPE_FILE) {
         WOWS_DIR_INODE *file_inode = (WOWS_DIR_INODE *)inode;
-        printf("%.*s%s\n", level, "  ", file_inode->name);
+        printf("* %s\n", file_inode->name);
     }
     if (inode->type == WOWS_INODE_TYPE_DIR) {
-        printf("%.*s%s/\n", level, "  ", inode->name);
+        printf("-%s/\n", inode->name);
         WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
         struct hashmap *map = dir_inode->children_inodes;
         hashmap_scan(map, dir_inode_print, &level);
