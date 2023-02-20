@@ -120,6 +120,7 @@ typedef struct WOWS_INDEX {
     char *start_address;
     char *end_address;
     size_t length;
+    char *index_file_path;
 } WOWS_INDEX;
 
 /* ---------- */

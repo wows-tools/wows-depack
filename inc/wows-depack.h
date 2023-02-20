@@ -11,6 +11,7 @@
 #define WOWS_ERROR_PATH_TOO_LONG 6
 #define WOWS_ERROR_UNKNOWN 7
 #define WOWS_ERROR_ID_COLLISION_FILE_DIR 8
+#define WOWS_ERROR_FILE_OPEN_FAILURE 9
 
 /* Debug levels */
 #define NO_DEBUG 0
@@ -34,10 +35,18 @@ typedef struct {
 
 /* Parser context init/free */
 WOWS_CONTEXT *wows_init_context(uint8_t debug_level);
+
+/* Free function */
 int wows_free_context(WOWS_CONTEXT *);
+
+/* Free function in case you use the raw wows_parse_index_buffer */
+int wows_free_context_no_munmap(WOWS_CONTEXT *context);
 /* ---------- */
 
 /* parse one file */
+int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
+
+/* low level, parse a memory buffer directly */
 int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context);
 
 /* print the directory tree */
