@@ -145,7 +145,7 @@ int free_inode_tree(WOWS_BASE_INODE *inode);
 bool iter_inode_free(const void *item, void *udata);
 bool dir_inode_print(const void *item, void *udata);
 WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name);
-
+int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry, int *depth, WOWS_INDEX_METADATA_ENTRY **entries);
 int metadata_compare(const void *a, const void *b, void *udata);
 uint64_t metadata_hash(const void *item, uint64_t seed0, uint64_t seed1);
 int file_compare(const void *a, const void *b, void *udata);
@@ -153,3 +153,10 @@ uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1);
 int dir_inode_compare(const void *a, const void *b, void *udata);
 uint64_t dir_inode_hash(const void *item, uint64_t seed0, uint64_t seed1);
 int build_inode_tree(WOWS_INDEX *index, int current_index_context, WOWS_CONTEXT *context);
+WOWS_DIR_INODE *init_root_inode();
+int add_child_inode(WOWS_DIR_INODE *parent_inode, WOWS_BASE_INODE *inode);
+WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name);
+WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
+                               WOWS_CONTEXT *context);
+WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
+                                 WOWS_CONTEXT *context);
