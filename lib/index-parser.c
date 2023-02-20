@@ -273,6 +273,11 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         }
         hashmap_set(context->metadata_map, &entry);
     }
+    // Do the same for all the file entries
+    for (int i = 0; i < index->header->file_count; i++) {
+        WOWS_INDEX_DATA_FILE_ENTRY *fentry = &index->data_file_entry[i];
+        hashmap_set(context->file_map, &fentry);
+    }
 
     // Check that we can correctly recover the file names
     int ret = get_footer_filename(index->footer, index, &filler);
@@ -290,19 +295,26 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         print_debug_files(index, context->metadata_map);
     }
 
-    // Construct the inode tree
-    for (i = 0; i < index->header->file_count; i++) {
-        WOWS_INDEX_DATA_FILE_ENTRY *fentry = &index->data_file_entry[i];
-        hashmap_set(context->file_map, &fentry);
-        WOWS_INDEX_METADATA_ENTRY *mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
+    err = build_inode_tree(index, current_index_context, context);
+    return ret;
+}
 
+// Construct the inode tree
+int build_inode_tree(WOWS_INDEX *index, int current_index_context, WOWS_CONTEXT *context) {
+    // Iterate on all individual files (aka the leaf on our dir/file tree).
+    // To do so, we iterate on all the entries of the file section
+    for (int i = 0; i < index->header->file_count; i++) {
+        WOWS_INDEX_DATA_FILE_ENTRY *fentry = &index->data_file_entry[i];
+
+        // Recover the metadata entry corresponding to our file in the metadata map
+        WOWS_INDEX_METADATA_ENTRY *mentry_search = &(WOWS_INDEX_METADATA_ENTRY){.id = fentry->metadata_id};
         void *res = hashmap_get(context->metadata_map, &mentry_search);
         if (res == NULL) {
             return WOWS_ERROR_MISSING_METADATA_ENTRY;
         }
         WOWS_INDEX_METADATA_ENTRY *mentry = *(WOWS_INDEX_METADATA_ENTRY **)res;
 
-        // Get the path branch (all the parent directory branch)
+        // Get the path branch (all the parent directories up to the root)
         int depth;
         WOWS_INDEX_METADATA_ENTRY **parent_entries;
         parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(WOWS_INDEX_METADATA_ENTRY *));
@@ -310,27 +322,33 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
 
         // Insert the parent directories if necessary
         WOWS_DIR_INODE *parent_inode = context->root;
+        // We go in reverse to start from the root to the immediate parent directory of the file
         for (int j = (depth - 1); j > -1; j--) {
+            // We try to get the directory from the current dir (parent_inode)
             char *name;
             get_metadata_filename(parent_entries[j], index, &name);
             WOWS_DIR_INODE *existing_inode = (WOWS_DIR_INODE *)get_child(parent_inode, name);
+
+            // If the directory inode doesn't exist, we need to create it
             if (existing_inode == NULL) {
-                // If the parent inode doesn't exist, we need to create it
                 uint64_t metadata_id = parent_entries[j]->id;
                 parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode, context);
                 if (parent_inode == NULL) {
+                    // For some unknown reason, we failed to create the new inode
                     return WOWS_ERROR_UNKNOWN;
                 }
-            } else {
-                // Strangely, got the wrong inode type
-                // This means there are some id collision between file and dir
+            }
+            // Otherwise we just go through it
+            else {
                 if (existing_inode->type != WOWS_INODE_TYPE_DIR) {
+                    // This is a strange error case, we got the wrong inode type
+                    // This means there are some id collision between file and dir
                     return WOWS_ERROR_ID_COLLISION_FILE_DIR;
                 }
-                // Otherwise we just go through it
                 parent_inode = existing_inode;
             }
         }
+        // Finaly, create the file inode to the directory it belongs to.
         uint64_t metadata_id = mentry->id;
         WOWS_FILE_INODE *file_inode = init_file_inode(metadata_id, current_index_context, parent_inode, context);
         if (file_inode == NULL) {
