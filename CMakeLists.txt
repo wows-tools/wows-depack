@@ -87,6 +87,7 @@ add_library(wows-depack
     lib/index-parser.c
     lib/index-printer.c
     lib/hashmap.c
+    lib/hashmap-helpers.c
 )
 
 set_target_properties(wows-depack
