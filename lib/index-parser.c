@@ -121,7 +121,13 @@ WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_cont
     dir_inode->name = name;
     dir_inode->children_inodes =
         hashmap_new(sizeof(WOWS_BASE_INODE *), 0, 0, 0, dir_inode_hash, dir_inode_compare, NULL, NULL);
-    add_child_inode(parent_inode, (WOWS_BASE_INODE *)dir_inode);
+
+    if (parent_inode != NULL) {
+        add_child_inode(parent_inode, (WOWS_BASE_INODE *)dir_inode);
+    } else {
+        free(dir_inode);
+        return NULL;
+    }
     return dir_inode;
 }
 
@@ -147,6 +153,9 @@ WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_co
     file_inode->parent_inode = parent_inode;
     if (parent_inode != NULL) {
         add_child_inode(parent_inode, (WOWS_BASE_INODE *)file_inode);
+    } else {
+        free(file_inode);
+        return NULL;
     }
     return file_inode;
 }
@@ -307,12 +316,20 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
                     return WOWS_ERROR_UNKNOWN;
                 }
             } else {
+		// Strangely, got the wrong inode type
+		// This means there are some id collision between file and dir
+                if (existing_inode->type != WOWS_INODE_TYPE_DIR) {
+                    return WOWS_ERROR_ID_COLLISION_FILE_DIR;
+                }
                 // Otherwise we just go through it
                 parent_inode = existing_inode;
             }
         }
         uint64_t metadata_id = mentry->id;
-        init_file_inode(metadata_id, current_index_context, parent_inode, context);
+        WOWS_FILE_INODE *file_inode = init_file_inode(metadata_id, current_index_context, parent_inode, context);
+        if (file_inode == NULL) {
+            return WOWS_ERROR_UNKNOWN;
+        }
         free(parent_entries);
     }
     return 0;
