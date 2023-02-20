@@ -341,11 +341,6 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
     return 0;
 }
 
-int wows_tree(WOWS_CONTEXT *context) {
-    print_inode_tree(context->root, 0);
-    return 0;
-}
-
 // Check that start and end of section is withing the boundary of the mmaped file
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     if ((index->start_address > start) || (index->end_address < start)) {

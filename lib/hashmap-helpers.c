@@ -5,7 +5,6 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-
 /* Hashmap helpers for the different hashmaps stored in the context) */
 
 /* metadata hashmap */
@@ -31,7 +30,6 @@ uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1) {
     const WOWS_INDEX_DATA_FILE_ENTRY *file = *(WOWS_INDEX_DATA_FILE_ENTRY **)item;
     return file->metadata_id;
 }
-
 
 /* inode children hashmap */
 int dir_inode_compare(const void *a, const void *b, void *udata) {
