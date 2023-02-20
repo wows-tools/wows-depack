@@ -145,3 +145,10 @@ int free_inode_tree(WOWS_BASE_INODE *inode);
 bool iter_inode_free(const void *item, void *udata);
 bool dir_inode_print(const void *item, void *udata);
 WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name);
+
+int metadata_compare(const void *a, const void *b, void *udata);
+uint64_t metadata_hash(const void *item, uint64_t seed0, uint64_t seed1);
+int file_compare(const void *a, const void *b, void *udata);
+uint64_t file_hash(const void *item, uint64_t seed0, uint64_t seed1);
+int dir_inode_compare(const void *a, const void *b, void *udata);
+uint64_t dir_inode_hash(const void *item, uint64_t seed0, uint64_t seed1);
