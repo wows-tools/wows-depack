@@ -140,5 +140,7 @@ int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry);
 int print_debug_files(WOWS_INDEX *index, struct hashmap *map);
 int print_debug_raw(WOWS_INDEX *index);
 int print_inode_tree(WOWS_BASE_INODE *inode, int level);
+int free_inode_tree(WOWS_BASE_INODE *inode);
+bool iter_inode_free(const void *item, void *udata);
 bool dir_inode_print(const void *item, void *udata);
 WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name);
