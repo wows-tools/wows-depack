@@ -246,7 +246,7 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry, int *dept
 }
 
 // Index Parser function
-int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
+int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context) {
     int i;
 
     WOWS_INDEX *index;

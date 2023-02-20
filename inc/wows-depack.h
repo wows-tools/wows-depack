@@ -38,7 +38,7 @@ int wows_free_context(WOWS_CONTEXT *);
 /* ---------- */
 
 /* parse one file */
-int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context);
+int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context);
 
 /* print the directory tree */
 int wows_tree(WOWS_CONTEXT *context);

@@ -96,12 +96,12 @@ int main(int argc, char **argv) {
     // context->debug_level = DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_FILE_LISTING;
 
-    int ret = wows_parse_index(index_content, index_size, context);
+    int ret = wows_parse_index_buffer(index_content, index_size, NULL, context);
     if (ret != 0) {
         wows_free_context(context);
         return ret;
     }
-    wows_free_context(context);
     wows_tree(context);
+    wows_free_context(context);
     return 0;
 }
