@@ -1,8 +1,27 @@
+#define _POSIX_C_SOURCE 200809L
+// TODO clean-up this mess
+#include <string.h>
 #include <stddef.h>
-#include <stdlib.h>
+#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
+
+#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
+#include <fcntl.h>
+#include <io.h>
+#define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+#else
+#define SET_BINARY_MODE(file)
+#endif
+
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
@@ -245,12 +264,31 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry, int *dept
     return 0;
 }
 
+int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context) {
+    // Open the index file
+    int fd = open(index_file_path, O_RDONLY);
+    if (fd <= 0) {
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    // Recover the file size
+    struct stat s;
+    fstat(fd, &s);
+    /* index content size */
+    size_t length = s.st_size;
+
+    // Map the whole content in memory
+    char *content = mmap(0, length, PROT_READ, MAP_PRIVATE, fd, 0);
+    return wows_parse_index_buffer(content, length, index_file_path, context);
+}
+
 // Index Parser function
 int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context) {
     int i;
 
     WOWS_INDEX *index;
     int err = map_index_file(contents, length, &index);
+    index->index_file_path = index_file_path;
 
     if (err != 0) {
         return err;
@@ -341,6 +379,7 @@ int wows_tree(WOWS_CONTEXT *context) {
     return 0;
 }
 
+// Check that start and end of section is withing the boundary of the mmaped file
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     if ((index->start_address > start) || (index->end_address < start)) {
         return true;
@@ -351,13 +390,20 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     return false;
 }
 
+// Free the whole context, including un-mmaping the index files;
 int wows_free_context(WOWS_CONTEXT *context) {
-    free_inode_tree(context->root);
     for (int i = 0; i < context->index_count; i++) {
         WOWS_INDEX *index = context->indexes[i];
         munmap(index->start_address, index->length);
         free(index);
     }
+    return wows_free_context_no_munmap(context);
+    return 0;
+}
+
+// Free without the un-mmapping (in case the index is loaded in another fashion)
+int wows_free_context_no_munmap(WOWS_CONTEXT *context) {
+    free_inode_tree(context->root);
     free(context->indexes);
     hashmap_free(context->metadata_map);
     hashmap_free(context->file_map);
@@ -365,6 +411,7 @@ int wows_free_context(WOWS_CONTEXT *context) {
     return 0;
 }
 
+// Helper functions to free the inode tree
 bool iter_inode_free(const void *item, void *udata) {
     free_inode_tree(*(WOWS_BASE_INODE **)item);
     return true;
