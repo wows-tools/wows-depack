@@ -81,7 +81,10 @@ int add_child_inode(WOWS_DIR_INODE *parent_inode, WOWS_BASE_INODE *inode) {
 WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name) {
     WOWS_BASE_INODE *ientry_search = &(WOWS_BASE_INODE){.name = name};
     void *res = hashmap_get(inode->children_inodes, &ientry_search);
-    return (WOWS_BASE_INODE *)res;
+    if (res == NULL) {
+        return NULL;
+    }
+    return *(WOWS_BASE_INODE **)res;
 }
 
 WOWS_DIR_INODE *init_root_inode() {
@@ -117,7 +120,7 @@ WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_cont
     dir_inode->parent_inode = parent_inode;
     dir_inode->name = name;
     dir_inode->children_inodes =
-        hashmap_new(sizeof(WOWS_INDEX_METADATA_ENTRY *), 0, 0, 0, dir_inode_hash, dir_inode_compare, NULL, NULL);
+        hashmap_new(sizeof(WOWS_BASE_INODE *), 0, 0, 0, dir_inode_hash, dir_inode_compare, NULL, NULL);
     add_child_inode(parent_inode, (WOWS_BASE_INODE *)dir_inode);
     return dir_inode;
 }
@@ -293,34 +296,30 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
         // Insert the parent directories if necessary
         WOWS_DIR_INODE *parent_inode = context->root;
         for (int j = (depth - 1); j > -1; j--) {
-            uint64_t metadata_id = parent_entries[j]->id;
-            parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode, context);
-            // char *name;
-            // get_metadata_filename(parent_entries[j], index, &name);
-            // printf("%s/", name);
-            // printf("par: %s/\n", parent_inode->name);
-            // printf("cur: %s/\n", name);
-            // fflush(stdout);
-            // WOWS_DIR_INODE *existing_inode = (WOWS_DIR_INODE *)get_child(parent_inode, name);
-            // if (existing_inode == NULL) {
-            //     // If the parent inode doesn't exist, we need to create it
-            //     uint64_t metadata_id = parent_entries[j]->id;
-            //     parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode, context);
-            //     if (parent_inode == NULL) {
-            //         return WOWS_ERROR_UNKNOWN;
-            //     }
-            // } else {
-            //     // Otherwise we just go through it
-            //     parent_inode = existing_inode;
-            // }
+            char *name;
+            get_metadata_filename(parent_entries[j], index, &name);
+            WOWS_DIR_INODE *existing_inode = (WOWS_DIR_INODE *)get_child(parent_inode, name);
+            if (existing_inode == NULL) {
+                // If the parent inode doesn't exist, we need to create it
+                uint64_t metadata_id = parent_entries[j]->id;
+                parent_inode = init_dir_inode(metadata_id, current_index_context, parent_inode, context);
+                if (parent_inode == NULL) {
+                    return WOWS_ERROR_UNKNOWN;
+                }
+            } else {
+                // Otherwise we just go through it
+                parent_inode = existing_inode;
+            }
         }
         uint64_t metadata_id = mentry->id;
         init_file_inode(metadata_id, current_index_context, parent_inode, context);
         free(parent_entries);
-        // char *name;
-        // get_metadata_filename(mentry, index, &name);
-        // printf("%s\n", name);
     }
+    return 0;
+}
+
+int wows_tree(WOWS_CONTEXT *context) {
+    print_inode_tree(context->root, 0);
     return 0;
 }
 
