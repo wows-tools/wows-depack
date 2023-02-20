@@ -98,9 +98,10 @@ int main(int argc, char **argv) {
 
     int ret = wows_parse_index(index_content, index_size, context);
     if (ret != 0) {
+        wows_free_context(context);
         return ret;
     }
-    wows_tree(context);
     wows_free_context(context);
+    wows_tree(context);
     return 0;
 }

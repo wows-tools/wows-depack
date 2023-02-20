@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
@@ -316,8 +317,8 @@ int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
                     return WOWS_ERROR_UNKNOWN;
                 }
             } else {
-		// Strangely, got the wrong inode type
-		// This means there are some id collision between file and dir
+                // Strangely, got the wrong inode type
+                // This means there are some id collision between file and dir
                 if (existing_inode->type != WOWS_INODE_TYPE_DIR) {
                     return WOWS_ERROR_ID_COLLISION_FILE_DIR;
                 }
@@ -351,8 +352,36 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
 }
 
 int wows_free_context(WOWS_CONTEXT *context) {
-    // TODO
+    free_inode_tree(context->root);
+    for (int i = 0; i < context->index_count; i++) {
+        WOWS_INDEX *index = context->indexes[i];
+        munmap(index->start_address, index->length);
+        free(index);
+    }
+    free(context->indexes);
     hashmap_free(context->metadata_map);
     hashmap_free(context->file_map);
+    free(context);
+    return 0;
+}
+
+bool iter_inode_free(const void *item, void *udata) {
+    free_inode_tree(*(WOWS_BASE_INODE **)item);
+    return true;
+}
+
+int free_inode_tree(WOWS_BASE_INODE *inode) {
+    switch (inode->type) {
+    case WOWS_INODE_TYPE_FILE:
+        free(inode);
+        break;
+    case WOWS_INODE_TYPE_DIR:
+        hashmap_scan(((WOWS_DIR_INODE *)inode)->children_inodes, iter_inode_free, NULL);
+        hashmap_free(((WOWS_DIR_INODE *)inode)->children_inodes);
+        free(inode);
+        break;
+    default:
+        return WOWS_ERROR_UNKNOWN;
+    }
     return 0;
 }
