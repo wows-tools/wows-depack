@@ -174,3 +174,8 @@ int print_inode_tree(WOWS_BASE_INODE *inode, int level) {
     }
     return 0;
 }
+
+int wows_tree(WOWS_CONTEXT *context) {
+    print_inode_tree(context->root, 0);
+    return 0;
+}
