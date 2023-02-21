@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.12)
 
 project (wows-depack)
 
@@ -10,6 +10,7 @@ set(wows-depack_VERSION_PATCH 0)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 find_package(ZLIB REQUIRED)
+find_package(PCRE REQUIRED)
 
 set(wows-depack_VERSION ${wows-depack_VERSION_MAJOR}.${wows-depack_VERSION_MINOR}.${wows-depack_VERSION_PATCH})
 
@@ -77,6 +78,7 @@ LINK_DIRECTORIES(
 include_directories(
     ./inc/
     ${ZLIB_INCLUDE_DIRS}
+    ${PCRE_INCLUDE_DIRS}
     /usr/include/
     /sw/include/
 )
@@ -104,11 +106,13 @@ set_target_properties(wows-depack
 add_executable(wows-depack-cli wows-depack.c)
 target_link_libraries(wows-depack
     ${ZLIB_LIBRARIES}
+    ${PCRE_LIBRARY}
 )
 
 target_link_libraries(wows-depack-cli
     wows-depack
     ${ZLIB_LIBRARIES}
+    ${PCRE_LIBRARY}
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
