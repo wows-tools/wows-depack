@@ -174,6 +174,14 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         return err;
     }
 
+    // Debugging output if necessary
+    if (context->debug_level & DEBUG_RAW_RECORD) {
+        print_debug_raw(index);
+    }
+    if (context->debug_level & DEBUG_FILE_LISTING) {
+        print_debug_files(index, context->metadata_map);
+    }
+
     char *filler;
 
     // Index all the metadata entries into an hmap
@@ -182,6 +190,7 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         // Check that we can correctly recover the file names
         int ret = get_metadata_filename(entry, index, &filler);
         if (ret != 0) {
+            context->err_msg = wows_render_str("problematic metadata entry id '0x%lx'", entry->id);
             return ret;
         }
         hashmap_set(context->metadata_map, &entry);
@@ -195,18 +204,11 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
     // Check that we can correctly recover the file names
     int ret = get_footer_filename(index->footer, index, &filler);
     if (ret != 0) {
+        context->err_msg = wows_render_str("problematic footer section");
         return ret;
     }
 
     uint32_t current_index_context = add_index_context(context, index);
-
-    // Debugging output if necessary
-    if (context->debug_level & DEBUG_RAW_RECORD) {
-        print_debug_raw(index);
-    }
-    if (context->debug_level & DEBUG_FILE_LISTING) {
-        print_debug_files(index, context->metadata_map);
-    }
 
     err = build_inode_tree(index, current_index_context, context);
     return ret;

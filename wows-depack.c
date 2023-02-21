@@ -76,12 +76,15 @@ int main(int argc, char **argv) {
     }
 
     WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
-    // context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
+    context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_FILE_LISTING;
 
     int ret = wows_parse_index(args.input, context);
     if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+        free(err_msg);
         wows_free_context(context);
         return ret;
     }

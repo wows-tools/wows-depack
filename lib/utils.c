@@ -198,3 +198,18 @@ int wows_inflate_all(FILE *in, char *outdir) {
     }
     return ret_inf;
 }
+
+char *wows_render_str(char *fmt, ...) {
+    // build the out log message
+    FILE *stream;
+    char *out;
+    size_t len;
+    stream = open_memstream(&out, &len);
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stream, fmt, args);
+    va_end(args);
+    fflush(stream);
+    fclose(stream);
+    return out;
+}

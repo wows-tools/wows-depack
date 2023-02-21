@@ -29,6 +29,7 @@ typedef struct {
     void **indexes;       // Array of structures representing each index file (void
                           // **indexes;)
     uint32_t index_count; // Size of the array
+    char *err_msg;        // Last error message
 } WOWS_CONTEXT;
 
 /* ---------- */
@@ -51,3 +52,6 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
 
 /* print the directory tree */
 int wows_tree(WOWS_CONTEXT *context);
+
+/* convert error code into error messages */
+char *wows_error_string(int error_code, WOWS_CONTEXT *context);

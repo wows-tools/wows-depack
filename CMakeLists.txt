@@ -90,6 +90,7 @@ add_library(wows-depack
     lib/hashmap-helpers.c
     lib/memory-helpers.c
     lib/inode.c
+    lib/error.c
 )
 
 set_target_properties(wows-depack

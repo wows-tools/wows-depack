@@ -35,6 +35,9 @@ int wows_free_context_no_munmap(WOWS_CONTEXT *context) {
     free(context->indexes);
     hashmap_free(context->metadata_map);
     hashmap_free(context->file_map);
+    if (context->err_msg != NULL) {
+        free(context->err_msg);
+    }
     free(context);
     return 0;
 }
