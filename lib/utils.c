@@ -7,7 +7,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <pcre.h>
 #include <zlib.h>
+#include <stdbool.h>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -212,4 +214,56 @@ char *wows_render_str(char *fmt, ...) {
     fflush(stream);
     fclose(stream);
     return out;
+}
+
+
+/**
+ * Compiles a PCRE regular expression pattern and returns a pointer to the compiled expression.
+ *
+ * @param pattern The regular expression pattern to compile.
+ * @return A pointer to the compiled regular expression object, or NULL if an error occurred during compilation.
+ */
+pcre *compile_regex(const char *pattern)
+{
+    int erroffset;
+    const char *error;
+    pcre *re;
+
+    re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
+    if (!re) {
+        return NULL;
+    }
+
+    return re;
+}
+
+/**
+ * Matches a PCRE regular expression against a subject string and prints the first match found.
+ *
+ * @param re A pointer to the compiled regular expression object.
+ * @param subject The subject string to match against.
+ * @return 0 if a match is found, or 1 if no match is found or an error occurs during matching.
+ */
+bool match_regex(pcre *re, const char *subject)
+{
+    int rc;
+    int ovector[3];
+
+    rc = pcre_exec(re, NULL, subject, strlen(subject), 0, 0, ovector, 3);
+    if (rc < 0) {
+        switch(rc) {
+            case PCRE_ERROR_NOMATCH:
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+int free_regexp(pcre *re){
+	pcre_free(re);
+	return 0;
 }
