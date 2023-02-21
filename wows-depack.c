@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     }
 
     WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
-    context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
+    // context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_FILE_LISTING;
 
@@ -88,7 +88,8 @@ int main(int argc, char **argv) {
         wows_free_context(context);
         return ret;
     }
-    wows_tree(context);
+    // wows_print_tree(context);
+    wows_print_flat(context);
     wows_free_context(context);
     return 0;
 }

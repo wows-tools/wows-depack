@@ -147,7 +147,9 @@ int print_debug_files(WOWS_INDEX *index, struct hashmap *map) {
     return 0;
 }
 
-bool dir_inode_print(const void *item, void *udata) {
+// FIXME, we should take inspiration from tree, not display pipes '|' at every indent levels
+// For inspiration: https://github.com/mojadita/tree/blob/7db7c7f01133fa78bb5bfdda2713373a64582d9d/process.c
+bool dir_inode_print_tree(const void *item, void *udata) {
     int level = *((int *)udata);
     level++;
     print_inode_tree(*(WOWS_BASE_INODE **)item, level);
@@ -163,19 +165,50 @@ int print_inode_tree(WOWS_BASE_INODE *inode, int level) {
     }
 
     if (inode->type == WOWS_INODE_TYPE_FILE) {
-        WOWS_DIR_INODE *file_inode = (WOWS_DIR_INODE *)inode;
+        WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
         printf("* %s\n", file_inode->name);
     }
     if (inode->type == WOWS_INODE_TYPE_DIR) {
         printf("-%s/\n", inode->name);
         WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
         struct hashmap *map = dir_inode->children_inodes;
-        hashmap_scan(map, dir_inode_print, &level);
+        hashmap_scan(map, dir_inode_print_tree, &level);
     }
     return 0;
 }
 
-int wows_tree(WOWS_CONTEXT *context) {
+int wows_print_tree(WOWS_CONTEXT *context) {
     print_inode_tree(context->root, 0);
+    return 0;
+}
+
+bool dir_inode_print_flat(const void *item, void *udata) {
+    print_inode_flat(*(WOWS_BASE_INODE **)item);
+    return true;
+}
+
+int print_inode_flat(WOWS_BASE_INODE *inode) {
+    if (inode->type == WOWS_INODE_TYPE_FILE) {
+        WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
+        int depth;
+        char **parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(char *));
+        get_path_inode(file_inode, &depth, parent_entries);
+
+        printf("/");
+        for (int j = (depth - 1); j > -1; j--) {
+            printf("%s/", parent_entries[j]);
+        }
+        printf("%s\n", file_inode->name);
+    }
+    if (inode->type == WOWS_INODE_TYPE_DIR) {
+        WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
+        struct hashmap *map = dir_inode->children_inodes;
+        hashmap_scan(map, dir_inode_print_flat, NULL);
+    }
+    return 0;
+}
+
+int wows_print_flat(WOWS_CONTEXT *context) {
+    print_inode_flat(context->root);
     return 0;
 }
