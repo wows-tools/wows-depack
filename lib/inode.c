@@ -159,3 +159,18 @@ WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_co
     }
     return file_inode;
 }
+
+// Get the dir/subdir path of a given file inode
+int get_path_inode(WOWS_FILE_INODE *inode, int *depth, char *entries[]) {
+    int level = 0;
+    *depth = level;
+
+    WOWS_DIR_INODE *dir_inode = inode->parent_inode;
+    while (dir_inode->id != WOWS_ROOT_INODE && level < WOWS_DIR_MAX_LEVEL) {
+        entries[level] = dir_inode->name;
+        dir_inode = dir_inode->parent_inode;
+        level++;
+    }
+    *depth = level;
+    return 0;
+}
