@@ -86,10 +86,11 @@ typedef struct {
 
 // Base inode
 typedef struct {
-    uint8_t type;              // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
-    uint64_t id;               // id of the corresponding metadata item
-    uint32_t index_file_index; // index of the index in WOWS_CONTEXT.indexes
-    char *name;                // Name of the file/dir
+    uint8_t type;                        // type of node (either WOWS_FILE_INODE or WOWS_DIR_INODE
+    uint64_t id;                         // id of the corresponding metadata item
+    uint32_t index_file_index;           // index of the index in WOWS_CONTEXT.indexes
+    char *name;                          // Name of the file/dir
+    struct WOWS_DIR_INODE *parent_inode; // parent inode (always a directory)
 } WOWS_BASE_INODE;
 
 // Dir inode
@@ -142,6 +143,7 @@ int print_data_file_entry(WOWS_INDEX_DATA_FILE_ENTRY *entry);
 int print_debug_files(WOWS_INDEX *index, struct hashmap *map);
 int print_debug_raw(WOWS_INDEX *index);
 int print_inode_tree(WOWS_BASE_INODE *inode, int level);
+int print_inode_flat(WOWS_BASE_INODE *inode);
 int free_inode_tree(WOWS_BASE_INODE *inode);
 bool iter_inode_free(const void *item, void *udata);
 bool dir_inode_print(const void *item, void *udata);
@@ -161,3 +163,4 @@ WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_cont
                                WOWS_CONTEXT *context);
 WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
                                  WOWS_CONTEXT *context);
+int get_path_inode(WOWS_FILE_INODE *inode, int *depth, char *entries[]);

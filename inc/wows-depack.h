@@ -50,8 +50,11 @@ int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
 /* low level, parse a memory buffer directly */
 int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context);
 
-/* print the directory tree */
-int wows_tree(WOWS_CONTEXT *context);
+/* print the directory tree in a tree format*/
+int wows_print_tree(WOWS_CONTEXT *context);
+
+/* print the directory tree in a tree format*/
+int wows_print_flat(WOWS_CONTEXT *context);
 
 /* convert error code into error messages */
 char *wows_error_string(int error_code, WOWS_CONTEXT *context);
