@@ -216,15 +216,13 @@ char *wows_render_str(char *fmt, ...) {
     return out;
 }
 
-
 /**
  * Compiles a PCRE regular expression pattern and returns a pointer to the compiled expression.
  *
  * @param pattern The regular expression pattern to compile.
  * @return A pointer to the compiled regular expression object, or NULL if an error occurred during compilation.
  */
-pcre *compile_regex(const char *pattern)
-{
+pcre *compile_regex(const char *pattern) {
     int erroffset;
     const char *error;
     pcre *re;
@@ -244,18 +242,17 @@ pcre *compile_regex(const char *pattern)
  * @param subject The subject string to match against.
  * @return 0 if a match is found, or 1 if no match is found or an error occurs during matching.
  */
-bool match_regex(pcre *re, const char *subject)
-{
+bool match_regex(pcre *re, const char *subject) {
     int rc;
     int ovector[3];
 
     rc = pcre_exec(re, NULL, subject, strlen(subject), 0, 0, ovector, 3);
     if (rc < 0) {
-        switch(rc) {
-            case PCRE_ERROR_NOMATCH:
-                break;
-            default:
-                break;
+        switch (rc) {
+        case PCRE_ERROR_NOMATCH:
+            break;
+        default:
+            break;
         }
         return false;
     }
@@ -263,7 +260,7 @@ bool match_regex(pcre *re, const char *subject)
     return true;
 }
 
-int free_regexp(pcre *re){
-	pcre_free(re);
-	return 0;
+int free_regexp(pcre *re) {
+    pcre_free(re);
+    return 0;
 }
