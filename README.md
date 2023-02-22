@@ -19,11 +19,12 @@ TODO
 
 ## Library
 
-#include "wows-depack.h"
 
 Basic usage example:
 
 ```C
+#include "wows-depack.h"
+
 char *index_file_path = "path/to/file.idx"
 
 WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
