@@ -168,11 +168,11 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
 
     WOWS_INDEX *index;
     int err = map_index_file(contents, length, &index);
-    index->index_file_path = index_file_path;
-
     if (err != 0) {
         return err;
     }
+
+    index->index_file_path = index_file_path;
 
     // Debugging output if necessary
     if (context->debug_level & DEBUG_RAW_RECORD) {
