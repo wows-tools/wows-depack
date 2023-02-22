@@ -137,7 +137,8 @@ if(CUNIT_LIBRARY)
       -j
       ${n_cores}
       DEPENDENCIES
-      wows-depack-test hashmap-test)
+      wows-depack-test
+      hashmap-test)
 
     add_dependencies(coverage wows-depack-test)
   endif(COVERAGE)
@@ -167,3 +168,6 @@ install(
   RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
+
+# install header file
+install(FILES inc/wows-depack.h DESTINATION ${INCLUDE_INSTALL_DIR})
