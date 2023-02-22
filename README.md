@@ -1,5 +1,7 @@
 # WoWs depack
 
+[![Ubuntu-x86_64](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml/badge.svg)](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml)
+
 World of Warships resource files unpacker
 
 # Format specification
