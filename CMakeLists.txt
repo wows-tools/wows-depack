@@ -135,7 +135,7 @@ if(CUNIT_LIBRARY)
       -j
       ${n_cores}
       DEPENDENCIES
-      wows-depack-test)
+      wows-depack-test hashmap-test)
 
     add_dependencies(coverage wows-depack-test)
   endif(COVERAGE)
