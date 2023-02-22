@@ -6,6 +6,30 @@
 
 #define TEST_DATA_SIZE 2048
 
+void test_print_header() {
+    WOWS_INDEX_HEADER header = {0};
+    int ret = print_header(&header);
+    CU_ASSERT_EQUAL(ret, 0);
+}
+
+void test_print_footer() {
+    WOWS_INDEX_FOOTER footer = {0};
+    int ret = print_footer(&footer);
+    CU_ASSERT_EQUAL(ret, 0);
+}
+
+void test_print_metadata_entry() {
+    WOWS_INDEX_METADATA_ENTRY entry = {0};
+    int ret = print_metadata_entry(&entry);
+    CU_ASSERT_EQUAL(ret, 0);
+}
+
+void test_print_data_file_entry() {
+    WOWS_INDEX_DATA_FILE_ENTRY entry = {0};
+    int ret = print_data_file_entry(&entry);
+    CU_ASSERT_EQUAL(ret, 0);
+}
+
 void test_wows_error_string() {
     WOWS_CONTEXT *context = (WOWS_CONTEXT *)malloc(sizeof(WOWS_CONTEXT));
     context->err_msg = NULL;
@@ -171,6 +195,12 @@ int main() {
     CU_add_test(suite, "Start outside index boundaries", test_checkOutOfIndex_start_outside);
     CU_add_test(suite, "End outside index boundaries", test_checkOutOfIndex_end_outside);
     CU_add_test(suite, "Start and end outside index boundaries", test_checkOutOfIndex_both_outside);
+
+    suite = CU_add_suite("check_printers", NULL, NULL);
+    CU_add_test(suite, "test_print_header", test_print_header);
+    CU_add_test(suite, "test_print_footer", test_print_footer);
+    CU_add_test(suite, "test_print_metadata_entry", test_print_metadata_entry);
+    CU_add_test(suite, "test_print_data_file_entry", test_print_data_file_entry);
 
     suite = CU_add_suite("Error code convert", NULL, NULL);
     CU_add_test(suite, "Check Conversion", test_wows_error_string);
