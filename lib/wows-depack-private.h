@@ -134,6 +134,8 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
 
 int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out);
 int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index, char **out);
+int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
+int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in);
 
 char *wows_render_str(char *fmt, ...);
 int print_header(WOWS_INDEX_HEADER *header);

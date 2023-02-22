@@ -11,6 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 find_package(ZLIB REQUIRED)
 find_package(PCRE REQUIRED)
+find_library(CUNIT_LIBRARY cunit)
 
 set(wows-depack_VERSION ${wows-depack_VERSION_MAJOR}.${wows-depack_VERSION_MINOR}.${wows-depack_VERSION_PATCH})
 
@@ -30,6 +31,8 @@ option(STATIC    "compile statically"           OFF)
 option(USE_CLANG "build application with clang" OFF)
 option(USE_GCC   "build application with gcc"   OFF)
 option(FORCELE   "force little endian architecture"   OFF)
+option(COVERAGE "Enable code coverage" OFF)
+
 
 if(USE_CLANG)
     set(CMAKE_CXX_COMPILER "clang++")
@@ -44,7 +47,19 @@ endif(USE_GCC)
 if(DEBUG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
     set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 endif(DEBUG)
+
+
+if(COVERAGE)
+    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+  include(CodeCoverage)
+  setup_target_for_coverage(NAME coverage
+    EXECUTABLE wows-depack-test
+    DEPENDENCIES wows-depack-test
+    )
+endif(COVERAGE)
 
 if(STATIC)
     set(SHARED "")
@@ -114,6 +129,29 @@ target_link_libraries(wows-depack-cli
     ${ZLIB_LIBRARIES}
     ${PCRE_LIBRARY}
 )
+
+
+if(CUNIT_LIBRARY)
+add_executable(wows-depack-test tests/tests.c)
+target_link_libraries(wows-depack-test
+    wows-depack
+    ${ZLIB_LIBRARIES}
+    ${PCRE_LIBRARY}
+    ${CUNIT_LIBRARY}
+)
+
+# Add the test target
+add_custom_target(tests
+    COMMAND wows-depack-test
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running tests"
+)
+
+add_dependencies(tests wows-depack-test)
+add_dependencies(coverage wows-depack-test)
+else()
+    message(WARNING "CUnit not found; not building tests.")
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall")

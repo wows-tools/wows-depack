@@ -57,6 +57,12 @@ dkms.conf
 
 # binary
 wows-depack-cli
+wows-depack-test
+
+# coverage stuff
+coverage.base
+coverage/
+
 
 # CMake stuff
 CMakeCache.txt
