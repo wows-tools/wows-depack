@@ -50,6 +50,23 @@ int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
 /* low level, parse a memory buffer directly */
 int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context);
 
+// Not implemented
+/* search recursively files matching a pcre regexp in the archive tree */
+int wows_search_files(WOWS_CONTEXT *context, char *regexp, char **results[]);
+
+// Not implemented
+/* search recursively files matching a pcre regexp in the archive tree */
+int wows_readdir(WOWS_CONTEXT *context, char dir_path, char **result[]);
+
+// Not implemented
+/* open a given file */
+int wows_open_file(WOWS_CONTEXT *context, char file_path, FILE *stream);
+
+
+// Not implemented
+/* give the stat of a given path (mainly if it's a directory or a file, and the file size) */
+int wows_stat_path(WOWS_CONTEXT *context, char path);
+
 /* print the directory tree in a tree format*/
 int wows_print_tree(WOWS_CONTEXT *context);
 
