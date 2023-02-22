@@ -37,6 +37,9 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
     case WOWS_ERROR_FILE_OPEN_FAILURE:
         error_string = "The index could not be opened.";
         break;
+    case 0:
+        error_string = "no recent error. Previously";
+        break;
     default:
         error_string = "An unrecognized error code was provided.";
         break;

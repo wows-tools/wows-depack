@@ -212,23 +212,43 @@ static void test_map_index_file() {
 
 void test_wows_parse_index_buffer() {
     // Initialize WOWS_CONTEXT
-    WOWS_CONTEXT *context = wows_init_context(DEBUG_FILE_LISTING);
-
-
+    WOWS_CONTEXT *context = wows_init_context(DEBUG_FILE_LISTING | DEBUG_RAW_RECORD);
 
     char contents[TEST_DATA_SIZE] = {0};
 
     // Prepare test data
     WOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                .file_dir_count = 1,
-                                .file_count = 1,
+                                .file_dir_count = 4,
+                                .file_count = 2,
                                 .header_size = sizeof(WOWS_INDEX_HEADER),
                                 .offset_idx_data_section = 512,
                                 .offset_idx_footer_section = 1024};
-    WOWS_INDEX_METADATA_ENTRY metadata = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 1, .parent_id = 3};
-    WOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 2, .parent_id = 3};
-    WOWS_INDEX_METADATA_ENTRY metadata3 = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 3, .parent_id = 4};
-    WOWS_INDEX_METADATA_ENTRY metadata4 = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 4, .parent_id = 1111};
+
+    memcpy(contents, &header, sizeof(WOWS_INDEX_HEADER));
+
+    WOWS_INDEX_METADATA_ENTRY metadata1 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 1, .parent_id = 3};
+    char *offset_metadata1 = contents + sizeof(WOWS_INDEX_HEADER);
+    WOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 2, .parent_id = 3};
+    char *offset_metadata2 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY);
+    WOWS_INDEX_METADATA_ENTRY metadata3 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 3, .parent_id = 4};
+    char *offset_metadata3 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 2;
+    WOWS_INDEX_METADATA_ENTRY metadata4 = {
+        .file_name_size = 6, .offset_idx_file_name = 256, .id = 4, .parent_id = 1111};
+    char *offset_metadata4 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 3;
+    memcpy(offset_metadata1, &metadata1, sizeof(WOWS_INDEX_METADATA_ENTRY));
+    memcpy(offset_metadata2, &metadata2, sizeof(WOWS_INDEX_METADATA_ENTRY));
+    memcpy(offset_metadata3, &metadata3, sizeof(WOWS_INDEX_METADATA_ENTRY));
+    memcpy(offset_metadata4, &metadata4, sizeof(WOWS_INDEX_METADATA_ENTRY));
+
+    char *name1 = "a1234";
+    char *name2 = "b1234";
+    char *name3 = "c1234";
+    char *name4 = "d1234";
+    memcpy(offset_metadata1 + 256, name1, strlen(name1));
+    memcpy(offset_metadata2 + 256, name2, strlen(name2));
+    memcpy(offset_metadata3 + 256, name3, strlen(name3));
+    memcpy(offset_metadata4 + 256, name4, strlen(name4));
+
     WOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
                                                   .footer_id = 42,
                                                   .offset_pkg_data = 1024,
@@ -244,19 +264,10 @@ void test_wows_parse_index_buffer() {
                                                    .size_pkg_data = 100,
                                                    .id_pkg_data = 1};
     WOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
-    memcpy(contents, &header, sizeof(WOWS_INDEX_HEADER));
-    memcpy(contents + sizeof(WOWS_INDEX_HEADER), &metadata, sizeof(WOWS_INDEX_METADATA_ENTRY));
-    memcpy(contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY), &metadata2,
-           sizeof(WOWS_INDEX_METADATA_ENTRY));
-    memcpy(contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 2, &metadata3,
-           sizeof(WOWS_INDEX_METADATA_ENTRY));
-    memcpy(contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 3, &metadata4,
-           sizeof(WOWS_INDEX_METADATA_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(WOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512 + sizeof(WOWS_INDEX_DATA_FILE_ENTRY), &data_file_entry2,
            sizeof(WOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 1024, &footer, sizeof(WOWS_INDEX_FOOTER));
-
 
     size_t length = TEST_DATA_SIZE;
     char *index_file_path = "index file path";
@@ -266,8 +277,11 @@ void test_wows_parse_index_buffer() {
 
     // Check the result and assert on success
     CU_ASSERT_EQUAL(result, 0);
+    char *err_msg = wows_error_string(result, context);
+    printf("Error: %s\n", err_msg);
 
     // Free the WOWS_CONTEXT
+    // TODO add more asserts
     wows_print_flat(context);
     wows_print_tree(context);
     wows_free_context(context);
