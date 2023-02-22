@@ -5,6 +5,54 @@
 
 #define TEST_DATA_SIZE 2048
 
+void test_checkOutOfIndex_valid(void) {
+    char buffer[1024];
+    WOWS_INDEX index;
+    index.start_address = buffer;
+    index.end_address = buffer + sizeof(buffer);
+
+    // Start and end within index boundaries
+    char *start = buffer + 10;
+    char *end = buffer + 100;
+    CU_ASSERT_FALSE(checkOutOfIndex(start, end, &index));
+}
+
+void test_checkOutOfIndex_start_outside(void) {
+    char buffer[1024];
+    WOWS_INDEX index;
+    index.start_address = buffer + 100;
+    index.end_address = buffer + sizeof(buffer);
+
+    // Start outside index boundaries
+    char *start = buffer + 10;
+    char *end = buffer + 100;
+    CU_ASSERT_TRUE(checkOutOfIndex(start, end, &index));
+}
+
+void test_checkOutOfIndex_end_outside(void) {
+    char buffer[1024];
+    WOWS_INDEX index;
+    index.start_address = buffer;
+    index.end_address = buffer + 100;
+
+    // End outside index boundaries
+    char *start = buffer + 10;
+    char *end = buffer + 200;
+    CU_ASSERT_TRUE(checkOutOfIndex(start, end, &index));
+}
+
+void test_checkOutOfIndex_both_outside(void) {
+    char buffer[1024];
+    WOWS_INDEX index;
+    index.start_address = buffer + 100;
+    index.end_address = buffer + 200;
+
+    // Start and end outside index boundaries
+    char *start = buffer + 10;
+    char *end = buffer + 300;
+    CU_ASSERT_TRUE(checkOutOfIndex(start, end, &index));
+}
+
 static void test_map_index_file() {
     char contents[TEST_DATA_SIZE] = {0};
     WOWS_INDEX *index;
@@ -77,6 +125,13 @@ int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_map_index_file", NULL, NULL);
     CU_add_test(suite, "test_map_index_file", test_map_index_file);
+
+    suite = CU_add_suite("checkOutOfIndex", NULL, NULL);
+    CU_add_test(suite, "Valid arguments", test_checkOutOfIndex_valid);
+    CU_add_test(suite, "Start outside index boundaries", test_checkOutOfIndex_start_outside);
+    CU_add_test(suite, "End outside index boundaries", test_checkOutOfIndex_end_outside);
+    CU_add_test(suite, "Start and end outside index boundaries", test_checkOutOfIndex_both_outside);
+
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
     int ret = CU_get_number_of_failures();
