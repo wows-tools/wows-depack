@@ -62,7 +62,6 @@ int wows_readdir(WOWS_CONTEXT *context, char dir_path, char **result[]);
 /* open a given file */
 int wows_open_file(WOWS_CONTEXT *context, char file_path, FILE *stream);
 
-
 // Not implemented
 /* give the stat of a given path (mainly if it's a directory or a file, and the file size) */
 int wows_stat_path(WOWS_CONTEXT *context, char path);
