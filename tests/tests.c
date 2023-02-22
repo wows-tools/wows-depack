@@ -108,33 +108,21 @@ static void test_map_index_file() {
     WOWS_INDEX *index;
 
     // Prepare test data
-    WOWS_INDEX_HEADER header = {
-        .magic = {'I', 'S', 'F', 'P'},
-        .file_dir_count = 1,
-        .file_count = 1,
-        .header_size = sizeof(WOWS_INDEX_HEADER),
-        .offset_idx_data_section = 512,
-        .offset_idx_footer_section = 1024
-    };
-    WOWS_INDEX_METADATA_ENTRY metadata = {
-        .file_name_size = 6,
-        .offset_idx_file_name = 16,
-        .id = 1,
-        .parent_id = 0
-    };
-    WOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {
-        .metadata_id = 1,
-        .footer_id = 1,
-        .offset_pkg_data = 1024,
-        .type_1 = 1,
-        .type_2 = 2,
-        .size_pkg_data = 100,
-        .id_pkg_data = 1
-    };
-    WOWS_INDEX_FOOTER footer = {
-        .pkg_file_name_size = 5,
-        .id = 1
-    };
+    WOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
+                                .file_dir_count = 1,
+                                .file_count = 1,
+                                .header_size = sizeof(WOWS_INDEX_HEADER),
+                                .offset_idx_data_section = 512,
+                                .offset_idx_footer_section = 1024};
+    WOWS_INDEX_METADATA_ENTRY metadata = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 1, .parent_id = 0};
+    WOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
+                                                  .footer_id = 1,
+                                                  .offset_pkg_data = 1024,
+                                                  .type_1 = 1,
+                                                  .type_2 = 2,
+                                                  .size_pkg_data = 100,
+                                                  .id_pkg_data = 1};
+    WOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 1};
     memcpy(contents, &header, sizeof(WOWS_INDEX_HEADER));
     memcpy(contents + sizeof(WOWS_INDEX_HEADER), &metadata, sizeof(WOWS_INDEX_METADATA_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(WOWS_INDEX_DATA_FILE_ENTRY));
@@ -159,7 +147,9 @@ static void test_map_index_file() {
     CU_ASSERT_EQUAL(index->metadata[0].offset_idx_file_name, 16);
     CU_ASSERT_EQUAL(index->metadata[0].id, 1);
     CU_ASSERT_EQUAL(index->metadata[0].parent_id, 0);
-    CU_ASSERT_PTR_EQUAL(index->data_file_entry, (WOWS_INDEX_DATA_FILE_ENTRY *)(contents + index->header->offset_idx_data_section + MAGIC_SECTION_OFFSET));
+    CU_ASSERT_PTR_EQUAL(
+        index->data_file_entry,
+        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents + index->header->offset_idx_data_section + MAGIC_SECTION_OFFSET));
     CU_ASSERT_EQUAL(index->data_file_entry[0].metadata_id, 1);
     CU_ASSERT_EQUAL(index->data_file_entry[0].footer_id, 1);
     CU_ASSERT_EQUAL(index->data_file_entry[0].offset_pkg_data, 1024);
@@ -184,7 +174,6 @@ int main() {
 
     suite = CU_add_suite("Error code convert", NULL, NULL);
     CU_add_test(suite, "Check Conversion", test_wows_error_string);
- 
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
