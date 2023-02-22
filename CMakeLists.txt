@@ -104,17 +104,13 @@ target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
                       ${PCRE_LIBRARY})
 
 if(CUNIT_LIBRARY)
-  if(COVERAGE)
-    set(CMAKE_BUILD_TYPE Debug)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-    include(CodeCoverage)
-    setup_target_for_coverage(NAME coverage EXECUTABLE wows-depack-test
-                              DEPENDENCIES wows-depack-test)
 
-    add_dependencies(coverage wows-depack-test)
-  endif(COVERAGE)
-
+  include(CTest)
+  add_test(NAME wows-depack-test COMMAND wows-depack-test)
+  add_test(NAME hashmap-test COMMAND hashmap-test)
   add_executable(wows-depack-test tests/tests.c)
+  add_executable(hashmap-test lib/hashmap.c)
+  set_target_properties(hashmap-test PROPERTIES COMPILE_FLAGS "-DHASHMAP_TEST")
   target_link_libraries(wows-depack-test wows-depack ${ZLIB_LIBRARIES}
                         ${PCRE_LIBRARY} ${CUNIT_LIBRARY})
 
@@ -122,9 +118,27 @@ if(CUNIT_LIBRARY)
   add_custom_target(
     tests
     COMMAND wows-depack-test
+    COMMAND hashmap-test
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running tests")
   add_dependencies(tests wows-depack-test)
+
+  if(COVERAGE)
+    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+    include(CodeCoverage)
+    setup_target_for_coverage(
+      NAME
+      coverage
+      EXECUTABLE
+      ctest
+      -j
+      ${n_cores}
+      DEPENDENCIES
+      wows-depack-test)
+
+    add_dependencies(coverage wows-depack-test)
+  endif(COVERAGE)
 
 else()
   message(WARNING "CUnit not found; not building tests.")
