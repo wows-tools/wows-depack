@@ -1,9 +1,59 @@
+#include <stdlib.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
 
 #define TEST_DATA_SIZE 2048
+
+void test_wows_error_string() {
+    WOWS_CONTEXT *context = (WOWS_CONTEXT *)malloc(sizeof(WOWS_CONTEXT));
+    context->err_msg = NULL;
+
+    char *error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_BAD_MAGIC, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The index has an invalid magic number.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_MISSING_METADATA_ENTRY, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The file is missing a required metadata entry.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_MAX_LEVEL_REACHED, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The maximum level has been reached.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_NON_ZERO_TERMINATED_STRING, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "A string in the index is not null-terminated.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_PATH_TOO_LONG, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The file path is too long.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_UNKNOWN, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "An unknown error occurred.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_ID_COLLISION_FILE_DIR, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "There is an ID collision between a file and a directory.");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_FILE_OPEN_FAILURE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The index could not be opened.");
+    free(error_string);
+
+    // Test with a context error message.
+    context->err_msg = "Test error message";
+    error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted.: Test error message");
+    free(error_string);
+
+    free(context);
+}
 
 void test_checkOutOfIndex_valid(void) {
     char buffer[1024];
@@ -131,6 +181,10 @@ int main() {
     CU_add_test(suite, "Start outside index boundaries", test_checkOutOfIndex_start_outside);
     CU_add_test(suite, "End outside index boundaries", test_checkOutOfIndex_end_outside);
     CU_add_test(suite, "Start and end outside index boundaries", test_checkOutOfIndex_both_outside);
+
+    suite = CU_add_suite("Error code convert", NULL, NULL);
+    CU_add_test(suite, "Check Conversion", test_wows_error_string);
+ 
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
