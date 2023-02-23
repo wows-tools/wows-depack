@@ -213,3 +213,45 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
     err = build_inode_tree(index, current_index_context, context);
     return ret;
 }
+
+// Index Dumper function
+int wows_dump_index_to_file(WOWS_INDEX *index, const char *filename) {
+    // TODO recompute the offsets in the metadata and header
+    FILE *f = fopen(filename, "wb");
+    if (!f) {
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    // Write the header
+    fwrite(index->header, sizeof(WOWS_INDEX_HEADER), 1, f);
+
+    // Write the metadata entries
+    for (size_t i = 0; i < index->header->file_dir_count; i++) {
+        WOWS_INDEX_METADATA_ENTRY *metadata_entry = &index->metadata[i];
+        fwrite(metadata_entry, sizeof(WOWS_INDEX_METADATA_ENTRY), 1, f);
+    }
+
+    // Write the file name strings
+    for (size_t i = 0; i < index->header->file_dir_count; i++) {
+        WOWS_INDEX_METADATA_ENTRY *metadata_entry = &index->metadata[i];
+        char *file_name;
+        get_metadata_filename(metadata_entry, index, &file_name);
+        fwrite(file_name, metadata_entry->file_name_size, 1, f);
+    }
+
+    // Write the data file entries
+    for (size_t i = 0; i < index->header->file_count; i++) {
+        WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry = &index->data_file_entry[i];
+        fwrite(data_file_entry, sizeof(WOWS_INDEX_DATA_FILE_ENTRY), 1, f);
+    }
+
+    // Write the footer
+    fwrite(index->footer, sizeof(WOWS_INDEX_FOOTER), 1, f);
+
+    // Write the pkg file name
+    char *pkg_file_name = (char *)index->footer + sizeof(WOWS_INDEX_FOOTER);
+    fwrite(pkg_file_name, index->footer->pkg_file_name_size, 1, f);
+
+    fclose(f);
+    return 0;
+}
