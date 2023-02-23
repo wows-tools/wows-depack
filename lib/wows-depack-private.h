@@ -166,3 +166,6 @@ WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_cont
 WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
                                  WOWS_CONTEXT *context);
 int get_path_inode(WOWS_FILE_INODE *inode, int *depth, char *entries[]);
+
+/* dump an index in a file */
+int wows_dump_index_to_file(WOWS_INDEX *index, const char *filename);
