@@ -215,16 +215,10 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
 }
 
 // Index Dumper function
-int wows_dump_index_to_file(WOWS_INDEX *index, const char *filename) {
+int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
     uint64_t start_data;
     uint64_t start_footer;
     uint64_t general_offset = 0;
-
-    // TODO recompute the offsets in the metadata and header
-    FILE *f = fopen(filename, "wb");
-    if (!f) {
-        return WOWS_ERROR_FILE_OPEN_FAILURE;
-    }
 
     // Write the header
 
