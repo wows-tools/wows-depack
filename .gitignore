@@ -75,3 +75,4 @@ CTestTestfile.cmake
 DartConfiguration.tcl
 Testing/
 hashmap-test
+coverage.info
