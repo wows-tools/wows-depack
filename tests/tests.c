@@ -1,4 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdlib.h>
+#include <stdio.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include "wows-depack.h" // replace with the name of your header file
@@ -289,11 +292,121 @@ void test_wows_parse_index_buffer() {
     wows_free_context(context);
 }
 
+void test_wows_dump_index_to_file(void) {
+    WOWS_INDEX_HEADER header = {
+        .magic = "WoWS",
+        .unknown_1 = 0x10000,
+        .id = 0x12345678,
+        .unknown_2 = 0x20000,
+        .file_dir_count = 2,
+        .file_count = 3,
+        .unknown_3 = 0,
+        .header_size = 0,
+        .offset_idx_data_section = 0,
+        .offset_idx_footer_section = 0
+    };
+    WOWS_INDEX_METADATA_ENTRY metadata[] = {
+        {
+            .file_name_size = 0,
+            .offset_idx_file_name = 0,
+            .id = 1,
+            .parent_id = 0
+        },
+        {
+            .file_name_size = 0,
+            .offset_idx_file_name = 5,
+            .id = 2,
+            .parent_id = 0
+        }
+    };
+    WOWS_INDEX_DATA_FILE_ENTRY data_files[] = {
+        {
+            .metadata_id = 1,
+            .footer_id = 1,
+            .offset_pkg_data = 0,
+            .type_1 = 1,
+            .type_2 = 2,
+            .size_pkg_data = 100,
+            .id_pkg_data = 1,
+            .padding = 0
+        },
+        {
+            .metadata_id = 2,
+            .footer_id = 1,
+            .offset_pkg_data = 100,
+            .type_1 = 2,
+            .type_2 = 3,
+            .size_pkg_data = 200,
+            .id_pkg_data = 2,
+            .padding = 0
+        },
+        {
+            .metadata_id = 2,
+            .footer_id = 1,
+            .offset_pkg_data = 300,
+            .type_1 = 3,
+            .type_2 = 4,
+            .size_pkg_data = 300,
+            .id_pkg_data = 3,
+            .padding = 0
+        }
+    };
+    WOWS_INDEX_FOOTER footer = {
+        .pkg_file_name_size = 9,
+        .unknown_7 = 0,
+        .id = 1
+    };
+
+    WOWS_INDEX index = {
+        .header = &header,
+        .metadata = metadata,
+        .data_file_entry = data_files,
+        .footer = &footer
+    };
+
+    // Open a file for writing
+    char *buf = NULL;
+    size_t buf_size = 0;
+    FILE *f = open_memstream(&buf, &buf_size);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(f);
+
+    // Call the function being tested
+    int ret = wows_dump_index_to_file(&index, f);
+
+    CU_ASSERT_EQUAL(ret, 0);
+
+    WOWS_INDEX_HEADER *buf_header = (WOWS_INDEX_HEADER *)buf;
+    CU_ASSERT_STRING_EQUAL(buf_header->magic, "WoWS");
+    CU_ASSERT_EQUAL(buf_header->file_dir_count, 2);
+    CU_ASSERT_EQUAL(buf_header->file_count, 3);
+
+    // Close the file
+    //fclose(f);
+}
+
+
+void test_wows_parse_index(void) {
+    // Initialize the context
+    WOWS_CONTEXT *context = wows_init_context(0);
+
+    // Parse the index file
+    int ret = wows_parse_index("./tests/data/fake.idx", context);
+
+    // Assert that the return value is 0 (success)
+    CU_ASSERT_EQUAL(ret, 0);
+
+    // Free the context
+    wows_free_context(context);
+}
+
+
 int main() {
     CU_initialize_registry();
-    CU_pSuite suite = CU_add_suite("test_map_index_file", NULL, NULL);
+    CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
     CU_add_test(suite, "test_map_index_file", test_map_index_file);
     CU_add_test(suite, "test_wows_parse_index_buffer", test_wows_parse_index_buffer);
+    CU_add_test(suite, "test_wows_dump_index_to_file", test_wows_dump_index_to_file);
+    CU_add_test(suite, "test_wows_parse_index", test_wows_parse_index);
 
     suite = CU_add_suite("checkOutOfIndex", NULL, NULL);
     CU_add_test(suite, "Valid arguments", test_checkOutOfIndex_valid);
