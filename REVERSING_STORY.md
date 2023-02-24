@@ -2318,3 +2318,96 @@ Interestingly `id` is always `0xa33046442d8327fc` (and also `parent_id` is `0xdb
 However, it raises an interesting question: how this `id` is generated? Is it completely random? Or is it derived from the path/name?
 
 It's not really critical to read files, but might be important to write content if we ever get to that.
+
+### Implementing a pseudo-inode system
+
+The next step in the implementation was to implement a pseudo inode system.
+
+The first step was to have a convenient way to recover a `metadata` or `pkg_data` chunk by id.
+
+To do so, I simply used an [hashmap](https://github.com/tidwall/hashmap.c).
+
+Then, I created two inode types:
+
+* directory
+* file
+
+Then, I created a function that starts with the `pkg_data` chunks. These are our files.
+
+Then I jumped into the metadata section, gather a few bits about the file, mainly its name.
+
+From the file metadata, I do a look-up for its `parent_id`, and then recursively for the parents of the parent. This are our directories.
+
+The recursion ends when the `parent_id` doesn't match any metadata `id` (weirdly enough, root is not identified by a specific id).
+
+In the end, it gives us a `root` inode, with childrens, file or directory. The directory themselves can also have childrens.
+
+That's our archive tree represented.
+
+With a bit more work, adding a path/tree printer function, I now get something like that:
+
+```
+/postfx_animations.xml
+/settings/Default_v3.settings
+/settings/Default_v1.settings
+/settings/Default_v2.settings
+/scripts/user_data_object_defs/Barge.def
+/scripts/user_data_object_defs/SpatialUIDebugTool.def
+/scripts/user_data_object_defs/FogPoint.def
+/scripts/user_data_object_defs/StaticSoundEmitter.def
+[...]
+/helpers/maps/green_hemisphere.dds
+/helpers/maps/lev_dirt01.dds
+/helpers/maps/fat_disc_quarter.dds
+/helpers/maps/lev_grass_01.dds
+/helpers/maps/lev_grassflowers.dds
+/helpers/maps/red_ruler.dds
+/helpers/maps/hemisphere.dds
+/helpers/maps/disc_quarter.dds
+/helpers/maps/red_hemisphere_ring.dds
+/server_stats.xml
+
+```
+
+Or that in (ugly) tree form:
+
+```
+-./
+ |-* postfx_animations.xml
+ |--settings/
+ |  |-* Default_v3.settings
+ |  |-* Default_v1.settings
+ |  |-* Default_v2.settings
+ |--scripts/
+ |  |--user_data_object_defs/
+ |  |  |-* Barge.def
+ |  |  |-* SpatialUIDebugTool.def
+ |  |  |-* FogPoint.def
+ |  |  |-* StaticSoundEmitter.def
+ |  |  |-* Minefield.def
+ |  |  |-* SoundedEffect.def
+ |  |  |-* SquadronReticleTool.def
+ |  |  |-* Trigger.def
+ |  |  |-* WayPoint.def
+[...]
+```
+
+With this pseudo inode system, we will be able to do some neat stuff, like extract by path, extract a whole (sub)tree, implement a search function, or even implement some [FUSE](https://en.wikipedia.org/wiki/Filesystem_in_Userspace) module.
+
+### Unit test & IA
+
+Then I got a bit distracted. At work lots of folks were talking about IAs, so I decided to give it a go.
+
+Up until know I had zero unit tests and kind of gave-up on the idea.
+
+But I tried using chatgpt, first on small stuff like error code to error string conversion, and it worked really well.
+
+Then I just feed it the structs describing the index file, and asked it to create a cunit unit test.
+
+To my surprise, it was able to understand the format relatively well, and was even able to generate mostly correct test index data (it messed-up a bit around `file_names` strings and `offsets`, but still).
+
+So I ended-up actually having a pretty decent code coverage for this project.
+
+It even me helped start a limited write support by providing me with a first draft of an index writer function.
+
+That's really impressive, and honestly, kind of frightening. But it's definitely a tool I will start using quite heavily.
