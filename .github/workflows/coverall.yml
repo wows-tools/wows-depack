@@ -20,12 +20,6 @@ jobs:
         sudo apt update
         sudo apt install cmake zlib1g-dev libpcre2-dev clang lcov libcunit1-dev
 
-    - name: Set up Coveralls
-      uses: coverallsapp/github-action@v1.1.2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: build/coverage.info
-
     - name: Set up CMake
       uses: lukka/run-cmake@v1
 
@@ -37,6 +31,12 @@ jobs:
 
     - name: Generate Coverage Report
       run: lcov --directory . --capture --output-file coverage.info
+
+    - name: Set up Coveralls
+      uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: coverage.info
 
     - name: Upload Coverage Report
       uses: coverallsapp/github-action@v1.1.2
