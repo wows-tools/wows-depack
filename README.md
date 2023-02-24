@@ -1,6 +1,7 @@
 # WoWs depack
 
 [![Ubuntu-x86_64](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml/badge.svg)](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml)
+[![Coverage Status](https://coveralls.io/repos/github/kakwa/wows-depack/badge.svg?branch=main)](https://coveralls.io/github/kakwa/wows-depack?branch=main)
 
 World of Warships resource files unpacker
 
