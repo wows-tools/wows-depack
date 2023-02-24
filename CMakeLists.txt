@@ -90,6 +90,7 @@ add_library(
   lib/hashmap-helpers.c
   lib/memory-helpers.c
   lib/inode.c
+  lib/writer.c
   lib/error.c)
 
 set_target_properties(
