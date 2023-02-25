@@ -237,8 +237,7 @@ void test_wows_parse_index_buffer() {
     char *offset_metadata2 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY);
     WOWS_INDEX_METADATA_ENTRY metadata3 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 3, .parent_id = 4};
     char *offset_metadata3 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 2;
-    WOWS_INDEX_METADATA_ENTRY metadata4 = {
-        .file_name_size = 6, .offset_idx_file_name = 256, .id = 4, .parent_id = 5};
+    WOWS_INDEX_METADATA_ENTRY metadata4 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 4, .parent_id = 5};
     char *offset_metadata4 = contents + sizeof(WOWS_INDEX_HEADER) + sizeof(WOWS_INDEX_METADATA_ENTRY) * 3;
     WOWS_INDEX_METADATA_ENTRY metadata5 = {
         .file_name_size = 6, .offset_idx_file_name = 256, .id = 5, .parent_id = 1111};
@@ -402,8 +401,6 @@ void test_wows_parse_index_dir(void) {
     // Free the context
     wows_free_context(context);
 }
-
-
 
 int main() {
     CU_initialize_registry();
