@@ -214,8 +214,14 @@ HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  =
-HTML_EXTRA_FILES       =
+HTML_EXTRA_STYLESHEET  = /usr/share/doxygen-awesome-css/doxygen-awesome.css \
+                        /usr/share/doxygen-awesome-css/doxygen-awesome-sidebar-only.css
+                        /usr/share/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_EXTRA_FILES       = /usr/share/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js
+                         /usr/share/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js
+                         /usr/share/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
+                         /usr/share/doxygen-awesome-css/doxygen-awesome-paragraph-link.js
+HTML_COLORSTYLE        = LIGHT
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
@@ -247,7 +253,7 @@ QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = org.doxygen.Project
 DISABLE_INDEX          = NO
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250
