@@ -27,7 +27,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install cmake zlib1g-dev libpcre2-dev clang lcov libcunit1-dev
+        sudo apt install cmake zlib1g-dev libpcre2-dev clang lcov libcunit1-dev valgrind
     - name: Configure CMake
       run: cmake -DCOVERAGE=ON .
     - name: Build
@@ -36,3 +36,5 @@ jobs:
       run: make test
     - name: Test
       run: make coverage
+    - name: Memory checks
+      run: valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes --track-origins=yes --error-exitcode=42 ./wows-depack-test
