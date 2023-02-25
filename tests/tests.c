@@ -368,6 +368,42 @@ void test_wows_dump_index_to_file(void) {
     free(buf);
 }
 
+void test_decompose_path_no_sep() {
+    const char *path = "filename.txt";
+    int dir_count;
+    char **dirs;
+    char *file;
+    int result = decompose_path(path, &dir_count, &dirs, &file);
+
+    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL(dir_count, 0);
+    CU_ASSERT_PTR_NULL(dirs);
+    CU_ASSERT_STRING_EQUAL(file, "filename.txt");
+
+    free(file);
+}
+
+void test_decompose_path_with_sep() {
+    const char *path = "/home/user///docs/filename.txt";
+    int dir_count;
+    char **dirs;
+    char *file;
+    int result = decompose_path(path, &dir_count, &dirs, &file);
+
+    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL(dir_count, 3);
+    CU_ASSERT_STRING_EQUAL(dirs[0], "home");
+    CU_ASSERT_STRING_EQUAL(dirs[1], "user");
+    CU_ASSERT_STRING_EQUAL(dirs[2], "docs");
+    CU_ASSERT_STRING_EQUAL(file, "filename.txt");
+
+    for (int i = 0; i < dir_count; i++) {
+        free(dirs[i]);
+    }
+    free(dirs);
+    free(file);
+}
+
 void test_wows_parse_index_file(void) {
     // Initialize the context
     WOWS_CONTEXT *context = wows_init_context(0);
@@ -425,6 +461,10 @@ int main() {
 
     suite = CU_add_suite("Error code convert", NULL, NULL);
     CU_add_test(suite, "Check Conversion", test_wows_error_string);
+
+    suite = CU_add_suite("Utils Suite", NULL, NULL);
+    CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
+    CU_add_test(suite, "test_decompose_path_with_sep", test_decompose_path_with_sep);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
