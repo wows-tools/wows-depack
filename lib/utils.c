@@ -280,7 +280,7 @@ bool match_regex(pcre *re, const char *subject) {
     return true;
 }
 
-int free_regexp(pcre *re) {
+int free_regex(pcre *re) {
     pcre_free(re);
     return 0;
 }
