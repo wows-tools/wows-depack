@@ -28,9 +28,9 @@
 
 const char *argp_program_version = BFD_VERSION;
 
-const char *argp_program_bug_address = "Pierre-Francois Carpentier <carpentier.pf@gmail.com>";
+const char *argp_program_bug_address = "https://github.com/kakwa/wows-depack/issues";
 
-static char doc[] = "\nBrute force DEFLATE decompressor";
+static char doc[] = "\nWorld of Warships resource extractor tool";
 
 static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input file"},
                                        {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},

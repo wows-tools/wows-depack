@@ -16,12 +16,38 @@ The reverse engineering story is detailed in [REVERSING_STORY.md](https://github
 ## CLI tool
 
 TODO
+
+```shell
+./wows-depack-cli --help                                                                                    130 ↵
+Usage: wows-depack-cli [OPTION...] -i INPUT_FILE -o OUTPUT_DIR
+
+World of Warships resource extractor tool
+
+  -i, --input=INPUT_INDEX    Input file
+  -I, --input-dir=INPUT_INDEX_DIR
+                             Input file
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+
+Report bugs to https://github.com/kakwa/wows-depack/issues.
+```
+
+
 ```shell
 ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx
 ```
 
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/
+```
+
 ## Library
 
+TODO
 
 Basic usage example:
 
