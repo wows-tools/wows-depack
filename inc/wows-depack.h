@@ -71,7 +71,7 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level);
  *
  * @return 0 on success, or a negative value if an error occurred.
  */
-int wows_free_context(WOWS_CONTEXT *);
+int wows_free_context(WOWS_CONTEXT *context);
 
 /**
  * @brief Frees a WoW Stats Parser context without unmapping the memory.
