@@ -285,7 +285,11 @@ void test_wows_parse_index_buffer() {
     CU_ASSERT_EQUAL(result, 0);
     char *err_msg = wows_error_string(result, context);
     printf("Error: %s\n", err_msg);
-    // wows_dump_index_to_file(context->indexes[0], "dump.idx");
+
+    // FILE *fp = fopen("dump.idx", "w");
+    // wows_dump_index_to_file(context->indexes[0], fp);
+    // fclose(fp);
+
     wows_print_flat(context);
     wows_print_tree(context);
 
