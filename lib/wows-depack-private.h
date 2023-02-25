@@ -121,6 +121,7 @@ typedef struct WOWS_INDEX {
     char *start_address;
     char *end_address;
     size_t length;
+    int fd;
     char *index_file_path;
 } WOWS_INDEX;
 
@@ -138,6 +139,7 @@ int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in);
 
 char *wows_render_str(char *fmt, ...);
+void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...);
 int print_header(WOWS_INDEX_HEADER *header);
 int print_footer(WOWS_INDEX_FOOTER *footer);
 int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry);

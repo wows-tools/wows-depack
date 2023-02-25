@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include "wows-depack.h"
 #include "wows-depack-private.h"
@@ -23,6 +24,8 @@ int wows_free_context(WOWS_CONTEXT *context) {
     for (int i = 0; i < context->index_count; i++) {
         WOWS_INDEX *index = context->indexes[i];
         munmap(index->start_address, index->length);
+        close(index->fd);
+        free(index->index_file_path);
         free(index);
     }
     return wows_free_context_no_munmap(context);

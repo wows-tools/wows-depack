@@ -45,10 +45,13 @@ int wows_free_context_no_munmap(WOWS_CONTEXT *context);
 /* ---------- */
 
 /* parse one file */
-int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
+int wows_parse_index_file(const char *index_file_path, WOWS_CONTEXT *context);
+
+/* parse all files in a given directory */
+int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context);
 
 /* low level, parse a memory buffer directly */
-int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context);
+int wows_parse_index_buffer(char *contents, size_t length, const char *index_file_path, int fd, WOWS_CONTEXT *context);
 
 // Not implemented
 /* search recursively files matching a pcre regexp in the archive tree */

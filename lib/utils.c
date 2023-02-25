@@ -11,6 +11,9 @@
 #include <zlib.h>
 #include <stdbool.h>
 
+#include "wows-depack.h"
+#include "wows-depack-private.h"
+
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
 #include <io.h>
@@ -199,6 +202,23 @@ int wows_inflate_all(FILE *in, char *outdir) {
         }
     }
     return ret_inf;
+}
+
+void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
+    if (context->err_msg != NULL) {
+        free(context->err_msg);
+    }
+    FILE *stream;
+    char *out;
+    size_t len;
+    stream = open_memstream(&out, &len);
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stream, fmt, args);
+    va_end(args);
+    fflush(stream);
+    fclose(stream);
+    context->err_msg = out;
 }
 
 char *wows_render_str(char *fmt, ...) {

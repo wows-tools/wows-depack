@@ -277,7 +277,7 @@ void test_wows_parse_index_buffer() {
     char *index_file_path = "index file path";
 
     // Call the function
-    int result = wows_parse_index_buffer(contents, length, index_file_path, context);
+    int result = wows_parse_index_buffer(contents, length, index_file_path, 0, context);
 
     // Check the result and assert on success
     CU_ASSERT_EQUAL(result, 0);
@@ -358,10 +358,13 @@ void test_wows_parse_index(void) {
     WOWS_CONTEXT *context = wows_init_context(0);
 
     // Parse the index file
-    int ret = wows_parse_index("./tests/data/fake.idx", context);
-
+    int ret = wows_parse_index_file("./tests/data/fake.idx", context);
     // Assert that the return value is 0 (success)
     CU_ASSERT_EQUAL(ret, 0);
+
+    char *err_msg = wows_error_string(ret, context);
+    printf("Error: %s\n", err_msg);
+    free(err_msg);
 
     // Free the context
     wows_free_context(context);

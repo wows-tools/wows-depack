@@ -6,8 +6,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -115,10 +117,11 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
 
 // Add the parsed index to the context list
 uint32_t add_index_context(WOWS_CONTEXT *context, WOWS_INDEX *index) {
-    context->indexes = realloc(context->indexes, context->index_count + 1);
-    context->indexes[context->index_count] = index;
     context->index_count++;
-    return context->index_count - 1;
+    int new_indice = context->index_count - 1;
+    context->indexes = realloc(context->indexes, context->index_count * sizeof(WOWS_INDEX *));
+    context->indexes[new_indice] = index;
+    return new_indice;
 }
 
 // Get the dir/subdir path of a given file entry
@@ -144,26 +147,70 @@ int get_path(WOWS_CONTEXT *context, WOWS_INDEX_METADATA_ENTRY *mentry, int *dept
     return 0;
 }
 
-int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context) {
+// Parse all the index files in a given directory to construct the full tree
+int wows_parse_index_dir(const char *path, WOWS_CONTEXT *context) {
+    int ret = 0;
+    DIR *directory = opendir(path);
+    if (directory == NULL) {
+        wows_set_error_details(context, "error with directory '%s'", path);
+        return 0;
+    }
+
+    struct dirent *entry;
+    struct stat statbuf;
+    char *full_path = NULL;
+    while ((entry = readdir(directory)) != NULL) {
+        // Construct the full path to the file/directory
+        size_t path_len = strlen(path);
+        size_t name_len = strlen(entry->d_name);
+        full_path = realloc(full_path, path_len + 1 + name_len + 1);
+        if (full_path == NULL) {
+            return WOWS_ERROR_UNKNOWN;
+        }
+        snprintf(full_path, path_len + 1 + name_len + 1, "%s/%s", path, entry->d_name);
+
+        // Get information about the file/directory
+        if (lstat(full_path, &statbuf) == -1) {
+            continue;
+        }
+
+        // Check if it's a regular file
+        if (S_ISREG(statbuf.st_mode)) {
+            wows_parse_index_file(full_path, context);
+            if (ret != 0) {
+                return ret;
+            }
+        }
+    }
+
+    free(full_path);
+    closedir(directory);
+    return 0;
+}
+
+// Parse an individual index file
+int wows_parse_index_file(const char *index_file_path, WOWS_CONTEXT *context) {
     // Open the index file
     int fd = open(index_file_path, O_RDONLY);
     if (fd <= 0) {
+        wows_set_error_details(context, "error with file '%s', %s", index_file_path, strerror(errno));
         return WOWS_ERROR_FILE_OPEN_FAILURE;
     }
 
     // Recover the file size
     struct stat s;
     fstat(fd, &s);
+
     /* index content size */
     size_t length = s.st_size;
 
     // Map the whole content in memory
     char *content = mmap(0, length, PROT_READ, MAP_PRIVATE, fd, 0);
-    return wows_parse_index_buffer(content, length, index_file_path, context);
+    return wows_parse_index_buffer(content, length, index_file_path, fd, context);
 }
 
-// Index Parser function
-int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path, WOWS_CONTEXT *context) {
+// Parse a buffer directly
+int wows_parse_index_buffer(char *contents, size_t length, const char *index_file_path, int fd, WOWS_CONTEXT *context) {
     int i;
 
     WOWS_INDEX *index;
@@ -172,7 +219,13 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         return err;
     }
 
-    index->index_file_path = index_file_path;
+    // Copy over the file_path string
+    size_t len = strlen(index_file_path);
+    char *index_file_path_cpy = malloc(len + 1);
+    strcpy(index_file_path_cpy, index_file_path);
+
+    index->index_file_path = index_file_path_cpy;
+    index->fd = fd;
 
     // Debugging output if necessary
     if (context->debug_level & DEBUG_RAW_RECORD) {
@@ -190,7 +243,7 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
         // Check that we can correctly recover the file names
         int ret = get_metadata_filename(entry, index, &filler);
         if (ret != 0) {
-            context->err_msg = wows_render_str("problematic metadata entry id '0x%lx'", entry->id);
+            wows_set_error_details(context, "problematic metadata entry id '0x%lx'", entry->id);
             return ret;
         }
         hashmap_set(context->metadata_map, &entry);
@@ -204,7 +257,7 @@ int wows_parse_index_buffer(char *contents, size_t length, char *index_file_path
     // Check that we can correctly recover the file names
     int ret = get_footer_filename(index->footer, index, &filler);
     if (ret != 0) {
-        context->err_msg = wows_render_str("problematic footer section");
+        wows_set_error_details(context, "problematic footer section");
         return ret;
     }
 
