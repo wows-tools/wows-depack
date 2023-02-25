@@ -291,7 +291,8 @@ int free_regex(pcre *re) {
  * @param path the file path to decompose
  * @param out_dir_count a pointer to an integer that will receive the number of parent directories in the path
  * @param out_dirs a pointer to a char array that will receive the parent directory names
- * @param out_file a pointer to a char pointer that will receive the file name (or the entire path if no directories are present)
+ * @param out_file a pointer to a char pointer that will receive the file name (or the entire path if no directories are
+ * present)
  * @return 0 on success, or a non-zero error code on failure
  */
 int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file) {
@@ -348,7 +349,13 @@ int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char 
         cur_dir = next_dir;
     }
 
-    char *file = calloc(sizeof(char), (strlen(cur_dir) + 1));
+    char *file;
+    if (strlen(cur_dir) != 0) {
+        file = calloc(sizeof(char), (strlen(cur_dir) + 1));
+        memcpy(file, cur_dir, strlen(cur_dir));
+    } else {
+        file = NULL;
+    }
     memcpy(file, cur_dir, strlen(cur_dir));
 
     *out_dirs = dirs;

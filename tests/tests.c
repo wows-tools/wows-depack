@@ -450,6 +450,45 @@ void test_decompose_path_with_sep() {
     free(file);
 }
 
+void test_decompose_path_only_dir() {
+    const char *path = "/home/user///docs/";
+    int dir_count;
+    char **dirs;
+    char *file;
+    int result = decompose_path(path, &dir_count, &dirs, &file);
+
+    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL(dir_count, 3);
+    CU_ASSERT_STRING_EQUAL(dirs[0], "home");
+    CU_ASSERT_STRING_EQUAL(dirs[1], "user");
+    CU_ASSERT_STRING_EQUAL(dirs[2], "docs");
+    CU_ASSERT_PTR_NULL(file);
+
+    for (int i = 0; i < dir_count; i++) {
+        free(dirs[i]);
+    }
+    free(dirs);
+    free(file);
+}
+
+void test_decompose_path_root() {
+    const char *path = "/";
+    int dir_count;
+    char **dirs;
+    char *file;
+    int result = decompose_path(path, &dir_count, &dirs, &file);
+
+    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL(dir_count, 0);
+
+    for (int i = 0; i < dir_count; i++) {
+        free(dirs[i]);
+    }
+    CU_ASSERT_STRING_EQUAL(file, "/");
+    free(dirs);
+    free(file);
+}
+
 void test_wows_parse_index_file(void) {
     // Initialize the context
     WOWS_CONTEXT *context = wows_init_context(0);
@@ -516,6 +555,8 @@ int main() {
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
     CU_add_test(suite, "test_decompose_path_with_sep", test_decompose_path_with_sep);
+    CU_add_test(suite, "test_decompose_path_only_dir", test_decompose_path_only_dir);
+    CU_add_test(suite, "test_decompose_path_root", test_decompose_path_root);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
