@@ -35,8 +35,7 @@ void test_print_data_file_entry() {
 }
 
 void test_wows_error_string() {
-    WOWS_CONTEXT *context = (WOWS_CONTEXT *)malloc(sizeof(WOWS_CONTEXT));
-    context->err_msg = NULL;
+    WOWS_CONTEXT *context = wows_init_context(0);
 
     char *error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
     CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted");
@@ -86,15 +85,15 @@ void test_wows_error_string() {
     wows_set_error_details(context, "Test error message %s", "variable");
     error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
     CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message variable");
+    free(error_string);
 
     // Test with a context error message.
     wows_set_error_details(context, "Test error message 2");
     error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
     CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message 2");
-
     free(error_string);
 
-    free(context);
+    wows_free_context(context);
 }
 
 void test_checkOutOfIndex_valid(void) {
