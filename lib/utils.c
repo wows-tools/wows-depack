@@ -285,6 +285,15 @@ int free_regexp(pcre *re) {
     return 0;
 }
 
+/**
+ * Decomposes a file path into its component parts.
+ *
+ * @param path the file path to decompose
+ * @param out_dir_count a pointer to an integer that will receive the number of parent directories in the path
+ * @param out_dirs a pointer to a char array that will receive the parent directory names
+ * @param out_file a pointer to a char pointer that will receive the file name (or the entire path if no directories are present)
+ * @return 0 on success, or a non-zero error code on failure
+ */
 int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file) {
     const char DIR_SEP = '/';
     const int MAX_DIRS = 10;
