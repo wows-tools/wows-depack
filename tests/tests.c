@@ -219,7 +219,7 @@ void test_wows_parse_index_buffer() {
     // Initialize WOWS_CONTEXT
     WOWS_CONTEXT *context = wows_init_context(DEBUG_FILE_LISTING | DEBUG_RAW_RECORD);
 
-    char contents[TEST_DATA_SIZE] = {0};
+    char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
 
     // Prepare test data
     WOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
@@ -286,13 +286,14 @@ void test_wows_parse_index_buffer() {
     char *err_msg = wows_error_string(result, context);
     printf("Error: %s\n", err_msg);
     // wows_dump_index_to_file(context->indexes[0], "dump.idx");
+    wows_print_flat(context);
+    wows_print_tree(context);
 
     // Free the WOWS_CONTEXT
     // TODO add more asserts
     free(err_msg);
-    wows_print_flat(context);
-    wows_print_tree(context);
-    wows_free_context(context);
+    wows_free_context_no_munmap(context);
+    free(contents);
 }
 
 void test_wows_dump_index_to_file(void) {
@@ -377,9 +378,9 @@ void test_wows_parse_index(void) {
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
-    CU_add_test(suite, "test_wows_parse_index", test_wows_parse_index);
     CU_add_test(suite, "test_map_index_file", test_map_index_file);
     CU_add_test(suite, "test_wows_parse_index_buffer", test_wows_parse_index_buffer);
+    CU_add_test(suite, "test_wows_parse_index", test_wows_parse_index);
     CU_add_test(suite, "test_wows_dump_index_to_file", test_wows_dump_index_to_file);
 
     suite = CU_add_suite("checkOutOfIndex", NULL, NULL);
