@@ -211,6 +211,8 @@ static void test_map_index_file() {
 
     CU_ASSERT_EQUAL(index->footer->pkg_file_name_size, 5);
     CU_ASSERT_EQUAL(index->footer->id, 42);
+
+    free(index);
 }
 
 void test_wows_parse_index_buffer() {
@@ -287,6 +289,7 @@ void test_wows_parse_index_buffer() {
 
     // Free the WOWS_CONTEXT
     // TODO add more asserts
+    free(err_msg);
     wows_print_flat(context);
     wows_print_tree(context);
     wows_free_context(context);
@@ -341,6 +344,7 @@ void test_wows_dump_index_to_file(void) {
 
     // Call the function being tested
     int ret = wows_dump_index_to_file(&index, f);
+    fclose(f);
 
     CU_ASSERT_EQUAL(ret, 0);
 
@@ -350,7 +354,7 @@ void test_wows_dump_index_to_file(void) {
     CU_ASSERT_EQUAL(buf_header->file_count, 3);
 
     // Close the file
-    // fclose(f);
+    free(buf);
 }
 
 void test_wows_parse_index(void) {
@@ -373,10 +377,10 @@ void test_wows_parse_index(void) {
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
+    CU_add_test(suite, "test_wows_parse_index", test_wows_parse_index);
     CU_add_test(suite, "test_map_index_file", test_map_index_file);
     CU_add_test(suite, "test_wows_parse_index_buffer", test_wows_parse_index_buffer);
     CU_add_test(suite, "test_wows_dump_index_to_file", test_wows_dump_index_to_file);
-    CU_add_test(suite, "test_wows_parse_index", test_wows_parse_index);
 
     suite = CU_add_suite("checkOutOfIndex", NULL, NULL);
     CU_add_test(suite, "Valid arguments", test_checkOutOfIndex_valid);
