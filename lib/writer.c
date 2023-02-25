@@ -82,6 +82,5 @@ int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
     cpy_header.offset_idx_footer_section = start_footer - MAGIC_SECTION_OFFSET;
     fwrite(&cpy_header, sizeof(WOWS_INDEX_HEADER), 1, f);
 
-    fclose(f);
     return 0;
 }
