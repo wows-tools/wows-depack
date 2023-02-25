@@ -80,19 +80,8 @@ link_directories(${CMAKE_BINARY_DIR}/ /usr/local/lib /usr/lib/)
 include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE_INCLUDE_DIRS}
                     /usr/include/ /sw/include/)
 
-add_library(
-  wows-depack
-  ${SHARED}
-  lib/utils.c
-  lib/index-parser.c
-  lib/index-printer.c
-  lib/hashmap.c
-  lib/hashmap-helpers.c
-  lib/memory-helpers.c
-  lib/inode.c
-  lib/writer.c
-  lib/error.c)
-
+file(GLOB WOWS_SOURCES lib/*.c)
+add_library(wows-depack ${SHARED} ${WOWS_SOURCES})
 set_target_properties(
   wows-depack PROPERTIES VERSION ${wows-depack_VERSION}
                          SOVERSION ${wows-depack_VERSION_MAJOR})
