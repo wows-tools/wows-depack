@@ -199,6 +199,7 @@ int print_inode_flat(WOWS_BASE_INODE *inode) {
             printf("%s/", parent_entries[j]);
         }
         printf("%s\n", file_inode->name);
+        free(parent_entries);
     }
     if (inode->type == WOWS_INODE_TYPE_DIR) {
         WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
