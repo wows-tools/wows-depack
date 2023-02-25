@@ -1,24 +1,18 @@
-
 name: Ubuntu-x86_64
 
+# Only run on main
 on:
   push:
-    paths-ignore:
-      - '.github/workflows/alpine-x86_64.yml'
-      - '.github/workflows/macos-x86_64.yml'
-      - '.github/workflows/macos-arm64.yml'
-      - '.github/workflows/ubuntu-aarch64.yml'
-      - '.github/workflows/msys-x86_64.yml'
-      - '.github/workflows/windows-x86_64.yml'
-  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
   BUILD_TYPE: Release
-  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/cache
 
 jobs:
   build-and-test:
+    if: ${{ github.event_name != 'pull_request' }} # and never, ever run on pull requests
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -33,6 +27,7 @@ jobs:
     - name: Build Doc
       run: make
     - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
