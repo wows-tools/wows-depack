@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
+#include <pcre.h>
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
 
@@ -368,6 +369,8 @@ void test_wows_dump_index_to_file(void) {
     free(buf);
 }
 
+pcre *re;
+
 void test_decompose_path_no_sep() {
     const char *path = "filename.txt";
     int dir_count;
@@ -381,6 +384,49 @@ void test_decompose_path_no_sep() {
     CU_ASSERT_STRING_EQUAL(file, "filename.txt");
 
     free(file);
+}
+
+// Initialize test suite
+int regex_init_suite(void) {
+    const char *pattern = "quick\\s(brown|red) fox";
+    int erroffset;
+    const char *error;
+
+    re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
+    if (!re) {
+        return -1;
+    }
+
+    return 0;
+}
+
+// Cleanup test suite
+int regex_clean_suite(void) {
+    pcre_free(re);
+    return 0;
+}
+
+// Test compile_regex function
+void test_compile_regex(void) {
+    const char *pattern = "quick\\s(brown|red) fox";
+    pcre *compiled = compile_regex(pattern);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(compiled);
+    int result = free_regex(compiled);
+    CU_ASSERT_EQUAL(result, 0);
+}
+
+// Test match_regex function with matching input
+void test_match_regex_match(void) {
+    const char *subject = "The quick brown fox jumped over the lazy dog.";
+    bool result = match_regex(re, subject);
+    CU_ASSERT_TRUE(result);
+}
+
+// Test match_regex function with non-matching input
+void test_match_regex_no_match(void) {
+    const char *subject = "The quick blue fox jumped over the lazy dog.";
+    bool result = match_regex(re, subject);
+    CU_ASSERT_FALSE(result);
 }
 
 void test_decompose_path_with_sep() {
@@ -461,6 +507,11 @@ int main() {
 
     suite = CU_add_suite("Error code convert", NULL, NULL);
     CU_add_test(suite, "Check Conversion", test_wows_error_string);
+
+    suite = CU_add_suite("regex_suite", regex_init_suite, regex_clean_suite);
+    CU_add_test(suite, "test_compile_regex", test_compile_regex);
+    CU_add_test(suite, "test_match_regex_match", test_match_regex_match);
+    CU_add_test(suite, "test_match_regex_no_match", test_match_regex_no_match);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
