@@ -2,9 +2,6 @@ name: Coverage
 
 on:
   push:
-    paths-ignore:
-      - '.github/workflows/ubuntu-aarch64.yml'
-      - '.github/workflows/coverage.yml'
   pull_request:
   workflow_dispatch:
 
