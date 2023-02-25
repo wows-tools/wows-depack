@@ -41,7 +41,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
         error_string = "no recent error";
         break;
     default:
-        error_string = "An unrecognized error code was provided.";
+        error_string = "An unrecognized error code was provided";
         break;
     }
 
@@ -51,7 +51,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
         sprintf(error_message, "%s: %s", error_string, context->err_msg);
         return error_message;
     } else {
-        char *error_message = (char *)malloc(strlen(error_string));
+        char *error_message = (char *)malloc(strlen(error_string) + 1);
         sprintf(error_message, "%s", error_string);
         return error_message;
     }
