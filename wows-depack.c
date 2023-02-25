@@ -33,7 +33,7 @@ const char *argp_program_bug_address = "Pierre-Francois Carpentier <carpentier.p
 static char doc[] = "\nBrute force DEFLATE decompressor";
 
 static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input file"},
-                                       //    {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
+                                       {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
                                        //    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed
                                        //    blobs"},
                                        {0}};
@@ -45,6 +45,7 @@ struct arguments {
     char *args[2]; /* arg1 & arg2 */
     char *output;
     char *input;
+    char *input_dir;
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -55,6 +56,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     switch (key) {
     case 'i':
         arguments->input = arg;
+        break;
+    case 'I':
+        arguments->input_dir = arg;
         break;
     default:
         return ARGP_ERR_UNKNOWN;
@@ -70,8 +74,8 @@ int main(int argc, char **argv) {
     args.output = NULL;
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
-    if (args.input == NULL) {
-        fprintf(stderr, "error: no -i <input file> arg\n");
+    if (args.input == NULL && args.input_dir == NULL) {
+        fprintf(stderr, "error: no -i <input file> or -I <input dir> arg\n");
         return EXIT_FAILURE;
     }
 
@@ -80,7 +84,13 @@ int main(int argc, char **argv) {
     // context->debug_level = DEBUG_RAW_RECORD;
     // context->debug_level = DEBUG_FILE_LISTING;
 
-    int ret = wows_parse_index(args.input, context);
+    int ret = 0;
+    if (args.input != NULL) {
+        ret = wows_parse_index_file(args.input, context);
+    }
+    if (args.input_dir != NULL) {
+        ret = wows_parse_index_dir(args.input_dir, context);
+    }
     if (ret != 0) {
         char *err_msg = wows_error_string(ret, context);
         printf("Error: %s\n", err_msg);
@@ -88,8 +98,8 @@ int main(int argc, char **argv) {
         wows_free_context(context);
         return ret;
     }
-    // wows_print_tree(context);
-    wows_print_flat(context);
+    wows_print_tree(context);
+    // wows_print_flat(context);
     wows_free_context(context);
     return 0;
 }
