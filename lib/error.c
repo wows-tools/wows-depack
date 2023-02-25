@@ -66,7 +66,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
 void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
     if (context->err_msg != NULL) {
         free(context->err_msg);
-	context->err_msg = NULL;
+        context->err_msg = NULL;
     }
     FILE *stream;
     size_t len;
