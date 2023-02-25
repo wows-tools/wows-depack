@@ -76,3 +76,13 @@ DartConfiguration.tcl
 Testing/
 hashmap-test
 coverage.info
+
+# Doxygen stuff
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+Doxyfile
+html/
+inc/html/
+inc/latex/
+latex/
+
