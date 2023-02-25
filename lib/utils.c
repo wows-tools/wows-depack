@@ -284,3 +284,66 @@ int free_regexp(pcre *re) {
     pcre_free(re);
     return 0;
 }
+
+int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file) {
+    const char DIR_SEP = '/';
+    const int MAX_DIRS = 10;
+
+    // Find last directory separator character
+    const char *sep = strrchr(path, DIR_SEP);
+    if (!sep) {
+        // No directory separator found
+        char *file = calloc(sizeof(char), (strlen(path) + 1));
+        memcpy(file, path, strlen(path));
+        *out_file = file;
+        *out_dirs = NULL;
+        *out_dir_count = 0;
+        return 0;
+    }
+
+    // Count parent directories
+    int count = 0;
+    const char *cur_dir = path;
+    const char *next_dir = path;
+    while (count < MAX_DIRS && (sep = strchr(cur_dir, DIR_SEP))) {
+        next_dir = sep + 1;
+        // Ignore initial '/' and '//[////]'
+        if (cur_dir + 1 != next_dir) {
+            count++;
+        }
+        cur_dir = next_dir;
+    }
+
+    // Allocate array of directory strings
+    char **dirs = malloc(sizeof(char *) * count);
+    if (!dirs) {
+        return WOWS_ERROR_DECOMPOSE_PATH;
+    }
+
+    // Copy directory paths to array in reverse order
+    cur_dir = path;
+    int i = 0;
+    while (i < count) {
+        sep = strchr(cur_dir, DIR_SEP);
+        next_dir = sep + 1;
+        if (cur_dir + 1 != next_dir) {
+            size_t dir_len = sep - cur_dir;
+            dirs[i] = malloc(sizeof(char) * (dir_len + 1));
+            if (!dirs[i]) {
+                return WOWS_ERROR_DECOMPOSE_PATH;
+            }
+            strncpy(dirs[i], cur_dir, dir_len);
+            dirs[i][dir_len] = '\0';
+            i++;
+        }
+        cur_dir = next_dir;
+    }
+
+    char *file = calloc(sizeof(char), (strlen(cur_dir) + 1));
+    memcpy(file, cur_dir, strlen(cur_dir));
+
+    *out_dirs = dirs;
+    *out_dir_count = count;
+    *out_file = file;
+    return 0;
+}
