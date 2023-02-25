@@ -171,3 +171,5 @@ int get_path_inode(WOWS_FILE_INODE *inode, int *depth, char *entries[]);
 
 /* dump an index in a file */
 int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f);
+
+int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file);

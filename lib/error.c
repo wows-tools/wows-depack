@@ -37,11 +37,14 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
     case WOWS_ERROR_FILE_OPEN_FAILURE:
         error_string = "The index could not be opened";
         break;
+    case WOWS_ERROR_DECOMPOSE_PATH:
+        error_string = "failed to decompose path into [dir1, dir2, etc] + file";
+        break;
     case 0:
         error_string = "no recent error";
         break;
     default:
-        error_string = "An unrecognized error code was provided";
+        error_string = "unrecognized error code";
         break;
     }
 
