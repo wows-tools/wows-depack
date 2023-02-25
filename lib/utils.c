@@ -204,38 +204,6 @@ int wows_inflate_all(FILE *in, char *outdir) {
     return ret_inf;
 }
 
-void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
-    if (context->err_msg != NULL) {
-        free(context->err_msg);
-    }
-    FILE *stream;
-    char *out;
-    size_t len;
-    stream = open_memstream(&out, &len);
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(stream, fmt, args);
-    va_end(args);
-    fflush(stream);
-    fclose(stream);
-    context->err_msg = out;
-}
-
-char *wows_render_str(char *fmt, ...) {
-    // build the out log message
-    FILE *stream;
-    char *out;
-    size_t len;
-    stream = open_memstream(&out, &len);
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(stream, fmt, args);
-    va_end(args);
-    fflush(stream);
-    fclose(stream);
-    return out;
-}
-
 /**
  * Compiles a PCRE regular expression pattern and returns a pointer to the compiled expression.
  *

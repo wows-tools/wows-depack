@@ -59,3 +59,20 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
         return error_message;
     }
 }
+
+void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
+    if (context->err_msg != NULL) {
+        free(context->err_msg);
+    }
+    FILE *stream;
+    char *out;
+    size_t len;
+    stream = open_memstream(&out, &len);
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stream, fmt, args);
+    va_end(args);
+    fflush(stream);
+    fclose(stream);
+    context->err_msg = out;
+}
