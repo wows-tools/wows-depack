@@ -74,10 +74,24 @@ void test_wows_error_string() {
     CU_ASSERT_STRING_EQUAL(error_string, "The index could not be opened");
     free(error_string);
 
+    error_string = wows_error_string(WOWS_ERROR_DECOMPOSE_PATH, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "failed to decompose path into [dir1, dir2, etc] + file");
+    free(error_string);
+
+    error_string = wows_error_string(9999999, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "unrecognized error code");
+    free(error_string);
+
     // Test with a context error message.
-    context->err_msg = "Test error message";
+    wows_set_error_details(context, "Test error message %s", "variable");
     error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message");
+    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message variable");
+
+    // Test with a context error message.
+    wows_set_error_details(context, "Test error message 2");
+    error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message 2");
+
     free(error_string);
 
     free(context);
