@@ -89,6 +89,7 @@ The index file is composed of 5 sections:
 
 ### Header
 
+#### Layout
 ```
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
 | MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
@@ -115,6 +116,8 @@ The index file is composed of 5 sections:
 |               64 bits                  |
 ```
 
+#### Field descriptions
+
 | Field                      |  size   | Description                                                                                                                                     |
 |----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `magic`                    | 32 bits | Magic bytes, always "ISFP"                                                                                                                      |
@@ -132,6 +135,8 @@ The index file is composed of 5 sections:
 
 This section is repeated for each file and directory (`header->file_dir_count`).
 
+#### Layout
+
 ```
 +====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
 | NS | NS | NS | NS | NS | NS | NS | NS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
@@ -148,6 +153,8 @@ This section is repeated for each file and directory (`header->file_dir_count`).
 [...repeat...]
 ```
 
+#### Field descriptions
+
 | Field                  | Size    | Description                                                                               |
 |------------------------|---------|-------------------------------------------------------------------------------------------|
 | `file_name_size`       | 64 bits | Size of the file name string                                                              |
@@ -158,6 +165,8 @@ This section is repeated for each file and directory (`header->file_dir_count`).
 ### File names section
 
 This section is just `\0` separated list of strings:
+
+#### Layout
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
 |             file name string         | 00 |
@@ -169,6 +178,8 @@ This section is just `\0` separated list of strings:
 
 This section  is repeated for each file (`header->file_count`).
 
+
+#### Layout
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
 | UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
@@ -189,6 +200,7 @@ This section  is repeated for each file (`header->file_count`).
 |     32 bits       ||               64 bits                 ||      32 bits      |
 [...repeat...]
 ```
+#### Field descriptions
 
 | Field             | Size    | Description                                                     |
 |-------------------|---------|-----------------------------------------------------------------|
@@ -203,6 +215,7 @@ This section  is repeated for each file (`header->file_count`).
 
 ### Footer
 
+#### Layout
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
 | UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
@@ -216,6 +229,8 @@ This section  is repeated for each file (`header->file_count`).
 |<----------------- id ----------------->|
 |                64 bits                 |
 ```
+
+#### Field descriptions
 
 | Field                | Size    | Description                                       |
 |----------------------|---------|---------------------------------------------------|
