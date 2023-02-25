@@ -8,6 +8,9 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
+#define FREE_WITH_CLOSE 1
+#define FREE_SIMPLE 0
+
 // Check that start and end of section is withing the boundary of the mmaped file
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     if ((index->start_address > start) || (index->end_address < start)) {
@@ -19,21 +22,19 @@ bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index) {
     return false;
 }
 
-// Free the whole context, including un-mmaping the index files;
-int wows_free_context(WOWS_CONTEXT *context) {
+// Base context release, it takes a flag to conditionally closing and unmapping files
+// (we need to disable that part when dealing with parsing from buffers)
+int wows_free_context_internal(WOWS_CONTEXT *context, int flag) {
     for (int i = 0; i < context->index_count; i++) {
         WOWS_INDEX *index = context->indexes[i];
-        munmap(index->start_address, index->length);
-        close(index->fd);
+        if (flag == FREE_WITH_CLOSE) {
+            munmap(index->start_address, index->length);
+            close(index->fd);
+        }
         free(index->index_file_path);
         free(index);
     }
-    return wows_free_context_no_munmap(context);
-    return 0;
-}
 
-// Free without the un-mmapping (in case the index is loaded in another fashion)
-int wows_free_context_no_munmap(WOWS_CONTEXT *context) {
     free_inode_tree(context->root);
     free(context->indexes);
     hashmap_free(context->metadata_map);
@@ -43,6 +44,17 @@ int wows_free_context_no_munmap(WOWS_CONTEXT *context) {
     }
     free(context);
     return 0;
+}
+
+// Free the whole context, including un-mmaping the index files;
+int wows_free_context(WOWS_CONTEXT *context) {
+    return wows_free_context_internal(context, FREE_WITH_CLOSE);
+    return 0;
+}
+
+// Free without the un-mmapping (in case the index is loaded in another fashion)
+int wows_free_context_no_munmap(WOWS_CONTEXT *context) {
+    return wows_free_context_internal(context, FREE_SIMPLE);
 }
 
 // Helper functions to free the inode tree
