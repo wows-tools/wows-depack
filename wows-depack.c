@@ -98,7 +98,17 @@ int main(int argc, char **argv) {
         wows_free_context(context);
         return ret;
     }
-    wows_print_tree(context);
+    // wows_print_tree(context);
+
+    int resc;
+    char **res_files;
+    wows_search(context, ".*Params.*", WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
+    printf("Found %d matching files:\n", resc);
+    for (int i = 0; i < resc; i++) {
+        printf("%s\n", res_files[i]);
+        free(res_files[i]);
+    }
+    free(res_files);
     // wows_print_flat(context);
     wows_free_context(context);
     return 0;
