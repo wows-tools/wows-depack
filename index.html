@@ -90,13 +90,11 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a> <a href="https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml"><img src="https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml/badge.svg" alt="Ubuntu-x86_64" style="pointer-events: none;" class="inline"/></a> <a href="https://coveralls.io/github/kakwa/wows-depack?branch=main"><img src="https://coveralls.io/repos/github/kakwa/wows-depack/badge.svg?branch=main" alt="Coverage Status" style="pointer-events: none;" class="inline"/></a></p>
 <p>World of Warships resource files unpacker</p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Format specification</h1>
 <p>The format specification is presented in <a href="https://github.com/kakwa/wows-depack/blob/main/FORMAT.md">FORMAT.md</a>.</p>
 <p>The reverse engineering story is detailed in <a href="https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md">REVERSING_STORY.md</a></p>
-<h1><a class="anchor" id="autotoc_md2"></a>
+<h1><a class="anchor" id="autotoc_md1"></a>
 Usage</h1>
-<h2><a class="anchor" id="autotoc_md3"></a>
+<h2><a class="anchor" id="autotoc_md2"></a>
 CLI tool</h2>
 <p>TODO</p>
 <div class="fragment"><div class="line">./wows-depack-cli --help</div>
@@ -117,9 +115,9 @@ CLI tool</h2>
 <div class="line">Report bugs to https://github.com/kakwa/wows-depack/issues.</div>
 </div><!-- fragment --><div class="fragment"><div class="line">./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx</div>
 </div><!-- fragment --><div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md4"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md3"></a>
 Library</h2>
-<h3><a class="anchor" id="autotoc_md5"></a>
+<h3><a class="anchor" id="autotoc_md4"></a>
 Usage examples</h3>
 <p>TODO</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="wows-depack_8h.html">wows-depack.h</a>&quot;</span></div>
@@ -163,22 +161,22 @@ Usage examples</h3>
 <div class="ttc" id="awows-depack_8h_html_a9ad32a010e06dae6150c2d35a8b6c913"><div class="ttname"><a href="wows-depack_8h.html#a9ad32a010e06dae6150c2d35a8b6c913">wows_init_context</a></div><div class="ttdeci">WOWS_CONTEXT * wows_init_context(uint8_t debug_level)</div><div class="ttdoc">Initializes a WoWs resource extractor context.</div></div>
 <div class="ttc" id="awows-depack_8h_html_aa4787554ee0be28e87c28a3869181e0f"><div class="ttname"><a href="wows-depack_8h.html#aa4787554ee0be28e87c28a3869181e0f">wows_error_string</a></div><div class="ttdeci">char * wows_error_string(int error_code, WOWS_CONTEXT *context)</div><div class="ttdoc">Converts an error code into an error message string for the given WoWs resource parser context.</div></div>
 <div class="ttc" id="awows-depack_8h_html_af5398ab65db5ef107cbfe67400fe662a"><div class="ttname"><a href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a">wows_free_context</a></div><div class="ttdeci">int wows_free_context(WOWS_CONTEXT *context)</div><div class="ttdoc">Frees a WoWs resource extractor context.</div></div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md6"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md5"></a>
 API documentation</h3>
 <p>The API documentation <a href="https://kakwa.github.io/wows-depack/wows-depack_8h.html">is available here</a>.</p>
-<h1><a class="anchor" id="autotoc_md7"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Build &amp; development</h1>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Dependencies</h2>
 <p>Installing the dependencies on Debian:</p>
 <div class="fragment"><div class="line">apt install cmake zlib1g-dev libpcre2-dev clang</div>
 </div><!-- fragment --><p>Installing the test/coverage dependencies:</p>
 <div class="fragment"><div class="line">apt install lcov libcunit1-dev</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
 Build</h2>
 <div class="fragment"><div class="line">cmake .</div>
 <div class="line">make</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md10"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
 Install</h2>
 <div class="fragment"><div class="line"># Remove DESTDIR for system installation</div>
 <div class="line">make install DESTDIR=fakeroot</div>
@@ -194,7 +192,7 @@ Install</h2>
 <div class="line">            ├── libwows-depack.so -&gt; libwows-depack.so.0</div>
 <div class="line">            ├── libwows-depack.so.0 -&gt; libwows-depack.so.0.1.0</div>
 <div class="line">            └── libwows-depack.so.0.1.0</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md11"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md10"></a>
 Test</h2>
 <p>To run the unit tests, do the following </p><div class="fragment"><div class="line"># cmake run (on time)</div>
 <div class="line">cmake -DCOVERAGE=ON .</div>
@@ -206,7 +204,7 @@ Test</h2>
 <div class="line">./wows-depack-test</div>
 <div class="line"> </div>
 <div class="line"># or with gdb:</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md12"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md11"></a>
 Fuzzing</h1>
 <p>This tool/lib parses binary data, consequently checking for overflow might be a good idea.</p>
 <p>To do so, install <a href="https://aflplus.plus/">american fuzzy lop++ (afl++)</a>:</p>
