@@ -5,8 +5,6 @@
 
 World of Warships resource files unpacker
 
-# Format specification
-
 The format specification is presented in [FORMAT.md](https://github.com/kakwa/wows-depack/blob/main/FORMAT.md).
 
 The reverse engineering story is detailed in [REVERSING_STORY.md](https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md)
