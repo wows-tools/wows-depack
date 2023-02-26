@@ -121,6 +121,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a272705b2fc60a492932d4e6a270b11b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low level, parses a memory buffer directly.  <a href="wows-depack_8h.html#a272705b2fc60a492932d4e6a270b11b3">More...</a><br /></td></tr>
 <tr class="separator:a272705b2fc60a492932d4e6a270b11b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *pattern, int mode, int *result_count, char ***results)</td></tr>
+<tr class="memdesc:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.  <a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">More...</a><br /></td></tr>
 <tr class="separator:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa21a99c351b09f0e81fb3b159d840f15"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#aa21a99c351b09f0e81fb3b159d840f15">wows_readdir</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char dir_path, char **result[])</td></tr>
 <tr class="separator:aa21a99c351b09f0e81fb3b159d840f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,6 +148,7 @@ Data Structures</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a71c6c7cb90e57268a91d9514af42f573"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a71c6c7cb90e57268a91d9514af42f573">WOWS_ERROR_CORRUPTED_FILE</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a71c6c7cb90e57268a91d9514af42f573"><td class="mdescLeft">&#160;</td><td class="mdescRight">error codes.  <a href="wows-depack_8h.html#a71c6c7cb90e57268a91d9514af42f573">More...</a><br /></td></tr>
 <tr class="separator:a71c6c7cb90e57268a91d9514af42f573"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0880033edcca329d8fce1a1c8bb74dd0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a0880033edcca329d8fce1a1c8bb74dd0">WOWS_ERROR_BAD_MAGIC</a>&#160;&#160;&#160;2</td></tr>
 <tr class="separator:a0880033edcca329d8fce1a1c8bb74dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +168,8 @@ Macros</h2></td></tr>
 <tr class="separator:a56d0b8dab8727cc97b4abce38402e302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acba65514322f6c8537d6618aeaa60433"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#acba65514322f6c8537d6618aeaa60433">WOWS_ERROR_DECOMPOSE_PATH</a>&#160;&#160;&#160;10</td></tr>
 <tr class="separator:acba65514322f6c8537d6618aeaa60433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1e1cc985b2cd3e0429d9d762ec540fc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#af1e1cc985b2cd3e0429d9d762ec540fc">WOWS_ERROR_INVALID_SEARCH_PATTERN</a>&#160;&#160;&#160;11</td></tr>
+<tr class="separator:af1e1cc985b2cd3e0429d9d762ec540fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a424f1b989129c5519f4df8f61ad6dcaf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a424f1b989129c5519f4df8f61ad6dcaf">NO_DEBUG</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:a424f1b989129c5519f4df8f61ad6dcaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug levels.  <a href="wows-depack_8h.html#a424f1b989129c5519f4df8f61ad6dcaf">More...</a><br /></td></tr>
 <tr class="separator:a424f1b989129c5519f4df8f61ad6dcaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,6 +177,13 @@ Macros</h2></td></tr>
 <tr class="separator:a5c52d9ba6cb9a5f2ab74fd7a87117cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f85749d5fb47c7de927f41bf12642a1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a5f85749d5fb47c7de927f41bf12642a1">DEBUG_FILE_LISTING</a>&#160;&#160;&#160;(1 &lt;&lt; 1)</td></tr>
 <tr class="separator:a5f85749d5fb47c7de927f41bf12642a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad06e857fe4cab707bc7fcd511cbda4d2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:ad06e857fe4cab707bc7fcd511cbda4d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search Modes.  <a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">More...</a><br /></td></tr>
+<tr class="separator:ad06e857fe4cab707bc7fcd511cbda4d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeeace7121654e87d2f8b0bc02288945"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945">WOWS_SEARCH_DIR_ONLY</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:adeeace7121654e87d2f8b0bc02288945"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51c70275faa8498163c7f6fb6b7656d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d">WOWS_SEARCH_FULL_PATH</a>&#160;&#160;&#160;2</td></tr>
+<tr class="separator:ab51c70275faa8498163c7f6fb6b7656d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Header file for the wows-depack library. </p>
@@ -607,6 +618,25 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">context</td><td>The <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" title="WoWs resource extractor context.">WOWS_CONTEXT</a> object representing the root of the archive tree. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">pattern</td><td>The PCRE regular expression pattern to match against file names. The pattern is passed to the matcher as ^&lt;pattern&gt;$ </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mode</td><td>The search mode, which can be one of the following values:<ul>
+<li>WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)</li>
+<li>WOWS_SEARCH_DIR_ONLY: search for directories only (exclude files) (not implemented yet)</li>
+<li>WOWS_SEARCH_FULL_PATH: search on the full file pathes (not implemented yet) </li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_count</td><td>A pointer to an integer variable that will be set to the number of matching files or directories found. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">results</td><td>A pointer to an array of strings that will be allocated to hold the names of the matching files or directories. The caller is responsible for freeing the memory allocated for this array and its elements. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a non-zero error code on failure.</dd></dl>
+<p>This function searches recursively through the WOWS archive tree for files or directories that match the given PCRE regular expression pattern. The search can be restricted to files, directories, or the full path, depending on the value of the <code>mode</code> parameter. The names of the matching files or directories are stored in the <code>results</code> array, and the number of matches is stored in the <code>result_count</code> variable. The caller is responsible for freeing the memory allocated for the <code>results</code> array and its elements. </p>
+
 </div>
 </div>
 <a id="ab167e3d4eb672688c726a8f8183ac389"></a>
@@ -711,7 +741,9 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>A corrupted WoWs resource file. </p>
+
+<p>error codes. </p>
+<p>These are the error codes wows-depack can return . A corrupted WoWs resource file. </p>
 
 </div>
 </div>
@@ -757,6 +789,21 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>A file and directory identifier collision. </p>
+
+</div>
+</div>
+<a id="af1e1cc985b2cd3e0429d9d762ec540fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1e1cc985b2cd3e0429d9d762ec540fc">&#9670;&nbsp;</a></span>WOWS_ERROR_INVALID_SEARCH_PATTERN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WOWS_ERROR_INVALID_SEARCH_PATTERN&#160;&#160;&#160;11</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>failure to compile regex pattern </p>
 
 </div>
 </div>
@@ -832,6 +879,53 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>An unknown error occurred. </p>
+
+</div>
+</div>
+<a id="adeeace7121654e87d2f8b0bc02288945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeeace7121654e87d2f8b0bc02288945">&#9670;&nbsp;</a></span>WOWS_SEARCH_DIR_ONLY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WOWS_SEARCH_DIR_ONLY&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Search only on directory names. </p>
+
+</div>
+</div>
+<a id="ad06e857fe4cab707bc7fcd511cbda4d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad06e857fe4cab707bc7fcd511cbda4d2">&#9670;&nbsp;</a></span>WOWS_SEARCH_FILE_ONLY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WOWS_SEARCH_FILE_ONLY&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Search Modes. </p>
+<p>These are the search modes available in the search function. Search only on file names. </p>
+
+</div>
+</div>
+<a id="ab51c70275faa8498163c7f6fb6b7656d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab51c70275faa8498163c7f6fb6b7656d">&#9670;&nbsp;</a></span>WOWS_SEARCH_FULL_PATH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WOWS_SEARCH_FULL_PATH&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Search on the full path of files. </p>
 
 </div>
 </div>
