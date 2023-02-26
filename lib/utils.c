@@ -10,6 +10,7 @@
 #include <pcre.h>
 #include <zlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "wows-depack.h"
 #include "wows-depack-private.h"
@@ -330,4 +331,31 @@ int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char 
     *out_dir_count = count;
     *out_file = file;
     return 0;
+}
+
+char *join_path(char **parent_entries, int depth, char *name) {
+    // Calculate the total length of the combined path
+    size_t combined_len = 0;
+    for (int i = 0; i < depth; i++) {
+        combined_len += strlen(parent_entries[i]) + 1; // +1 for the slash
+    }
+
+    // Allocate memory for the combined path string
+    char *combined_path = malloc(combined_len + strlen(name) + 1); // +1 for the null terminator
+    if (!combined_path) {
+        return NULL;
+    }
+
+    // Copy each path component into the combined path string with a slash in between
+    size_t offset = 0;
+    for (int i = 0; i < depth; i++) {
+        size_t len = strlen(parent_entries[i]);
+        memcpy(combined_path + offset, parent_entries[i], len);
+        offset += len;
+        combined_path[offset++] = '/';
+    }
+    memcpy(combined_path + offset, name, strlen(name));
+    combined_path[combined_len + strlen(name)] = '\0';
+
+    return combined_path;
 }

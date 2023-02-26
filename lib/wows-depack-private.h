@@ -174,6 +174,7 @@ int get_path_inode(WOWS_FILE_INODE *inode, int *depth, char *entries[]);
 int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f);
 
 int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file);
+char *join_path(char **parent_entries, int depth, char *name);
 pcre *compile_regex(const char *pattern);
 bool match_regex(pcre *re, const char *subject);
 int free_regex(pcre *re);

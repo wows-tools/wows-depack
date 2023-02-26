@@ -7,7 +7,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* Error codes */
+/**
+ * @brief error codes.
+ *
+ * These are the error codes wows-depack can return .
+ */
 #define WOWS_ERROR_CORRUPTED_FILE 1             /**< A corrupted WoWs resource file. */
 #define WOWS_ERROR_BAD_MAGIC 2                  /**< A bad magic number in a WoWs resource file. */
 #define WOWS_ERROR_MISSING_METADATA_ENTRY 3     /**< A missing metadata entry in a WoWs resource file. */
@@ -18,6 +22,8 @@
 #define WOWS_ERROR_ID_COLLISION_FILE_DIR 8      /**< A file and directory identifier collision. */
 #define WOWS_ERROR_FILE_OPEN_FAILURE 9          /**< A failure to open a file. */
 #define WOWS_ERROR_DECOMPOSE_PATH 10            /**< An error while decomposing a path. */
+#define WOWS_ERROR_INVALID_SEARCH_PATTERN 11    /**< failure to compile regex pattern */
+/* ---------- */
 
 /**
  * @brief Debug levels.
@@ -27,6 +33,16 @@
 #define NO_DEBUG 0                  /**< No debug output. */
 #define DEBUG_RAW_RECORD (1 << 0)   /**< Debug output for raw records. */
 #define DEBUG_FILE_LISTING (1 << 1) /**< Debug output for file listings. */
+/* ---------- */
+
+/**
+ * @brief Search Modes.
+ *
+ * These are the search modes available in the search function.
+ */
+#define WOWS_SEARCH_FILE_ONLY 0 /**< Search only on file names. */
+#define WOWS_SEARCH_DIR_ONLY 1  /**< Search only on directory names. */
+#define WOWS_SEARCH_FULL_PATH 2 /**< Search on the full path of files. */
 /* ---------- */
 
 /**
@@ -133,8 +149,28 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
 
 /* Archive exploration functions */
 
-/* search recursively files matching a pcre regexp in the archive tree */
-// Not implemented
+/**
+ * @brief Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.
+ *
+ * @param context The WOWS_CONTEXT object representing the root of the archive tree.
+ * @param pattern The PCRE regular expression pattern to match against file names.
+ *             The pattern is passed to the matcher as ^<pattern>$
+ * @param mode The search mode, which can be one of the following values:
+ *             - WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)
+ *             - WOWS_SEARCH_DIR_ONLY:  search for directories only (exclude files) (not implemented yet)
+ *             - WOWS_SEARCH_FULL_PATH: search on the full file pathes (not implemented yet)
+ * @param[out] result_count A pointer to an integer variable that will be set to the number of matching files or
+ * directories found.
+ * @param[out] results A pointer to an array of strings that will be allocated to hold the names of the matching files
+ * or directories. The caller is responsible for freeing the memory allocated for this array and its elements.
+ * @return 0 on success, or a non-zero error code on failure.
+ *
+ * This function searches recursively through the WOWS archive tree for files or directories that match the given PCRE
+ * regular expression pattern. The search can be restricted to files, directories, or the full path, depending on the
+ * value of the `mode` parameter. The names of the matching files or directories are stored in the `results` array, and
+ * the number of matches is stored in the `result_count` variable. The caller is responsible for freeing the memory
+ * allocated for the `results` array and its elements.
+ */
 int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results);
 
 /* read the content of a directory */
