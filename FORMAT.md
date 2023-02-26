@@ -1,4 +1,4 @@
-# Format
+# WoWs .pkg & .idx Format
 
 ## Introduction
 
