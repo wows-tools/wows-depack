@@ -18,7 +18,7 @@ The reverse engineering story is detailed in [REVERSING_STORY.md](https://github
 TODO
 
 ```shell
-./wows-depack-cli --help                                                                                    130 ↵
+./wows-depack-cli --help
 Usage: wows-depack-cli [OPTION...] -i INPUT_FILE -o OUTPUT_DIR
 
 World of Warships resource extractor tool
@@ -47,9 +47,10 @@ Report bugs to https://github.com/kakwa/wows-depack/issues.
 
 ## Library
 
+### Usage examples
+
 TODO
 
-Basic usage example:
 
 ```C
 #include "wows-depack.h"
@@ -87,6 +88,10 @@ wows_print_flat(context);
 /* Free the context and munmap the index file */
 wows_free_context(context);
 ```
+
+### API documentation
+
+The API documentation [is available here](https://kakwa.github.io/wows-depack/wows-depack_8h.html).
 
 # Build & development
 
