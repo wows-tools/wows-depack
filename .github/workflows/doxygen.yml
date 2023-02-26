@@ -24,6 +24,8 @@ jobs:
         sudo apt install cmake zlib1g-dev libpcre2-dev clang lcov libcunit1-dev doxygen
     - name: Configure CMake
       run: cmake -DBUILD_DOC=ON .
+    - name: Get Doxygen awesome CSS
+      run: ./misc/setup_doxycss.sh
     - name: Build Doc
       run: make
     - name: Deploy to GitHub Pages
