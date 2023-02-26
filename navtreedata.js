@@ -39,7 +39,7 @@ var NAVTREE =
       [ "Test", "index.html#autotoc_md10", null ]
     ] ],
     [ "Fuzzing", "index.html#autotoc_md11", null ],
-    [ "Format", "md__f_o_r_m_a_t.html", [
+    [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
       [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md13", null ],
       [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md14", null ],
       [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md15", null ],
