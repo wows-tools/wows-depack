@@ -536,6 +536,48 @@ void test_wows_parse_index_dir(void) {
     wows_free_context(context);
 }
 
+void test_wows_search_file(void) {
+    // Initialize the context
+    WOWS_CONTEXT *context = wows_init_context(0);
+
+    // Parse the index file
+    int ret = wows_parse_index_dir("./tests/data/", context);
+    // Assert that the return value is 0 (success)
+    CU_ASSERT_EQUAL(ret, 0);
+
+    char *err_msg = wows_error_string(ret, context);
+    printf("Error: %s\n", err_msg);
+    free(err_msg);
+
+    // Set up search parameters
+    char *pattern = "[ab]123.*";
+    int mode = WOWS_SEARCH_FILE_ONLY;
+    int expected_result_count = 2;
+
+    // Perform search
+    int result_count = 0;
+    char **results = NULL;
+    int result = wows_search(context, pattern, mode, &result_count, &results);
+
+    // Check result code
+    CU_ASSERT_EQUAL(result, 0);
+
+    // Check number of matching files
+    CU_ASSERT_EQUAL(result_count, expected_result_count);
+
+    // Check file names
+    CU_ASSERT_STRING_EQUAL(results[0], "c1234/d1234/b1234");
+    CU_ASSERT_STRING_EQUAL(results[1], "c1234/d1234/a1234");
+
+    // Free memory
+    for (int i = 0; i < result_count; i++) {
+        free(results[i]);
+    }
+    free(results);
+    // Free the context
+    wows_free_context(context);
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
@@ -559,6 +601,9 @@ int main() {
 
     suite = CU_add_suite("Error code convert", NULL, NULL);
     CU_add_test(suite, "Check Conversion", test_wows_error_string);
+
+    suite = CU_add_suite("wows_search", NULL, NULL);
+    CU_add_test(suite, "test_wows_search", test_wows_search_file);
 
     suite = CU_add_suite("regex_suite", regex_init_suite, regex_clean_suite);
     CU_add_test(suite, "test_compile_regex", test_compile_regex);
