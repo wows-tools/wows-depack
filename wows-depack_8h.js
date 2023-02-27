@@ -2,10 +2,12 @@ var wows_depack_8h =
 [
     [ "WOWS_CONTEXT", "struct_w_o_w_s___c_o_n_t_e_x_t.html", "struct_w_o_w_s___c_o_n_t_e_x_t" ],
     [ "wows_error_string", "wows-depack_8h.html#aa4787554ee0be28e87c28a3869181e0f", null ],
+    [ "wows_extract_dir", "wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54", null ],
+    [ "wows_extract_file", "wows-depack_8h.html#ae1342b90a9bbddb5e984b86678514417", null ],
+    [ "wows_extract_file_fp", "wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3", null ],
     [ "wows_free_context", "wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a", null ],
     [ "wows_free_context_no_munmap", "wows-depack_8h.html#a1ea057f265d1014f94bbc090087b98b2", null ],
     [ "wows_init_context", "wows-depack_8h.html#a9ad32a010e06dae6150c2d35a8b6c913", null ],
-    [ "wows_open_file", "wows-depack_8h.html#ae1e3ce2e9a03c39f9b1093194d27868b", null ],
     [ "wows_parse_index_buffer", "wows-depack_8h.html#a272705b2fc60a492932d4e6a270b11b3", null ],
     [ "wows_parse_index_dir", "wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5", null ],
     [ "wows_parse_index_file", "wows-depack_8h.html#a89b09d61a1a58d9fca404c7ab519bd80", null ],

@@ -127,8 +127,15 @@ Functions</h2></td></tr>
 <tr class="separator:aa21a99c351b09f0e81fb3b159d840f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab167e3d4eb672688c726a8f8183ac389"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab167e3d4eb672688c726a8f8183ac389">wows_stat_path</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char path)</td></tr>
 <tr class="separator:ab167e3d4eb672688c726a8f8183ac389"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1e3ce2e9a03c39f9b1093194d27868b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ae1e3ce2e9a03c39f9b1093194d27868b">wows_open_file</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char file_path, FILE *stream)</td></tr>
-<tr class="separator:ae1e3ce2e9a03c39f9b1093194d27868b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaef72db46268e68876a6fb6b1534f1a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">wows_extract_file_fp</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *file_path, FILE *output)</td></tr>
+<tr class="memdesc:aaef72db46268e68876a6fb6b1534f1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a given file from the archive (file pointer version).  <a href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">More...</a><br /></td></tr>
+<tr class="separator:aaef72db46268e68876a6fb6b1534f1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1342b90a9bbddb5e984b86678514417"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ae1342b90a9bbddb5e984b86678514417">wows_extract_file</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *file_path, char *out_path)</td></tr>
+<tr class="memdesc:ae1342b90a9bbddb5e984b86678514417"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a given file from the archive (output file version).  <a href="wows-depack_8h.html#ae1342b90a9bbddb5e984b86678514417">More...</a><br /></td></tr>
+<tr class="separator:ae1342b90a9bbddb5e984b86678514417"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9547c79e9b759a2acf595739b3c3a54"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">wows_extract_dir</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *dir_path, char *out_dir_path)</td></tr>
+<tr class="memdesc:af9547c79e9b759a2acf595739b3c3a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a given directory (recursively) from the archive (output file version).  <a href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">More...</a><br /></td></tr>
+<tr class="separator:af9547c79e9b759a2acf595739b3c3a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c69ea035a86734bee5959a56c99a12f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a9c69ea035a86734bee5959a56c99a12f">wows_print_tree</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context)</td></tr>
 <tr class="memdesc:a9c69ea035a86734bee5959a56c99a12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the directory tree of the given WoWs resource parser context in a tree format.  <a href="wows-depack_8h.html#a9c69ea035a86734bee5959a56c99a12f">More...</a><br /></td></tr>
 <tr class="separator:a9c69ea035a86734bee5959a56c99a12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,6 +236,145 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a id="af9547c79e9b759a2acf595739b3c3a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9547c79e9b759a2acf595739b3c3a54">&#9670;&nbsp;</a></span>wows_extract_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_extract_dir </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>dir_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>out_dir_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract a given directory (recursively) from the archive (output file version). </p>
+<p>This function will extract all files under the given directory. The whole directory tree from the archive will be recreated under out_dir_path.</p>
+<p>Not implemented yet</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" title="WoWs resource extractor context.">WOWS_CONTEXT</a> structure. </td></tr>
+    <tr><td class="paramname">dir_path</td><td>Path of the directory to extract. </td></tr>
+    <tr><td class="paramname">out_dir_path</td><td>Path to the output directory.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+
+</div>
+</div>
+<a id="ae1342b90a9bbddb5e984b86678514417"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1342b90a9bbddb5e984b86678514417">&#9670;&nbsp;</a></span>wows_extract_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_extract_file </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>file_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>out_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract a given file from the archive (output file version). </p>
+<p>Not implemented yet</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" title="WoWs resource extractor context.">WOWS_CONTEXT</a> structure. </td></tr>
+    <tr><td class="paramname">file_path</td><td>Path of the file to extract. </td></tr>
+    <tr><td class="paramname">out_path</td><td>Path to the output file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Not implemented yet </p><dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+
+</div>
+</div>
+<a id="aaef72db46268e68876a6fb6b1534f1a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaef72db46268e68876a6fb6b1534f1a3">&#9670;&nbsp;</a></span>wows_extract_file_fp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_extract_file_fp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>file_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract a given file from the archive (file pointer version). </p>
+<p>Not implemented yet</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" title="WoWs resource extractor context.">WOWS_CONTEXT</a> structure. </td></tr>
+    <tr><td class="paramname">file_path</td><td>Path of the file to extract. </td></tr>
+    <tr><td class="paramname">output</td><td>Pointer to a FILE structure to write the output to.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+
+</div>
+</div>
 <a id="af5398ab65db5ef107cbfe67400fe662a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af5398ab65db5ef107cbfe67400fe662a">&#9670;&nbsp;</a></span>wows_free_context()</h2>
 
@@ -310,40 +456,6 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the newly created context, or NULL if an error occurred. </dd></dl>
-
-</div>
-</div>
-<a id="ae1e3ce2e9a03c39f9b1093194d27868b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1e3ce2e9a03c39f9b1093194d27868b">&#9670;&nbsp;</a></span>wows_open_file()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int wows_open_file </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>file_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">FILE *&#160;</td>
-          <td class="paramname"><em>stream</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -624,7 +736,7 @@ Macros</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">context</td><td>The <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" title="WoWs resource extractor context.">WOWS_CONTEXT</a> object representing the root of the archive tree. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">pattern</td><td>The PCRE regular expression pattern to match against file names. The pattern is passed to the matcher as ^&lt;pattern&gt;$ </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">pattern</td><td>The PCRE regular expression pattern to match against file names. The pattern is passed to the matcher as ^{PATTERN}$ </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">mode</td><td>The search mode, which can be one of the following values:<ul>
 <li>WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)</li>
 <li>WOWS_SEARCH_DIR_ONLY: search for directories only (exclude files)</li>
