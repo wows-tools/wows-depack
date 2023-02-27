@@ -155,7 +155,7 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
  *
  * @param context The WOWS_CONTEXT object representing the root of the archive tree.
  * @param pattern The PCRE regular expression pattern to match against file names.
- *             The pattern is passed to the matcher as ^<pattern>$
+ *             The pattern is passed to the matcher as ^{PATTERN}$
  * @param mode The search mode, which can be one of the following values:
  *             - WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)
  *             - WOWS_SEARCH_DIR_ONLY:  search for directories only (exclude files)
@@ -187,9 +187,53 @@ int wows_stat_path(WOWS_CONTEXT *context, char path);
 
 /* Archive extraction functions */
 
-// Not implemented
-/* open a given file */
-int wows_open_file(WOWS_CONTEXT *context, char file_path, FILE *stream);
+/**
+ * @brief Extract a given file from the archive (file pointer version).
+ *
+ * Not implemented yet
+ *
+ * @param context  Pointer to a WOWS_CONTEXT structure.
+ * @param file_path  Path of the file to extract.
+ * @param output  Pointer to a FILE structure to write the output to.
+ *
+ * @return 0 if the file was opened successfully and the header was written,
+ *         otherwise a negative value indicating the error.
+ */
+int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *output);
+
+/**
+ * @brief Extract a given file from the archive (output file version).
+ *
+ * Not implemented yet
+ *
+ * @param context  Pointer to a WOWS_CONTEXT structure.
+ * @param file_path  Path of the file to extract.
+ * @param out_path  Path to the output file.
+ *
+ * Not implemented yet
+ * @return 0 if the file was opened successfully and the header was written,
+ *         otherwise a negative value indicating the error.
+ */
+int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path);
+
+
+/**
+ * @brief Extract a given directory (recursively) from the archive (output file version).
+ *
+ * This function will extract all files under the given directory.
+ * The whole directory tree from the archive will be recreated under out_dir_path.
+ *
+ * Not implemented yet
+ *
+ * @param context  Pointer to a WOWS_CONTEXT structure.
+ * @param dir_path  Path of the directory to extract.
+ * @param out_dir_path  Path to the output directory.
+ *
+ * @return 0 if the file was opened successfully and the header was written,
+ *         otherwise a negative value indicating the error.
+ */
+int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path);
+
 
 /* ---------- */
 
