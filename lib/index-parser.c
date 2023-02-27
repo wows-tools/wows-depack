@@ -228,10 +228,10 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     index->fd = fd;
 
     // Debugging output if necessary
-    if (context->debug_level & DEBUG_RAW_RECORD) {
+    if (context->debug_level & WOWS_DEBUG_RAW_RECORD) {
         print_debug_raw(index);
     }
-    if (context->debug_level & DEBUG_FILE_LISTING) {
+    if (context->debug_level & WOWS_DEBUG_FILE_LISTING) {
         print_debug_files(index, context->metadata_map);
     }
 

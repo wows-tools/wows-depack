@@ -231,7 +231,7 @@ static void test_map_index_file() {
 
 void test_wows_parse_index_buffer() {
     // Initialize WOWS_CONTEXT
-    WOWS_CONTEXT *context = wows_init_context(DEBUG_FILE_LISTING | DEBUG_RAW_RECORD);
+    WOWS_CONTEXT *context = wows_init_context(WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD);
 
     char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
 

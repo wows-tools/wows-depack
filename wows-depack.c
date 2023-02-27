@@ -79,10 +79,10 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
-    // context->debug_level = DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
-    // context->debug_level = DEBUG_RAW_RECORD;
-    // context->debug_level = DEBUG_FILE_LISTING;
+    WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
+    // context->debug_level = WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
+    // context->debug_level = WOWS_DEBUG_RAW_RECORD;
+    // context->debug_level = WOWS_DEBUG_FILE_LISTING;
 
     int ret = 0;
     if (args.input != NULL) {
