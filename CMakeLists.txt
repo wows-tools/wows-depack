@@ -36,7 +36,7 @@ option(USE_CLANG "build application with clang" OFF)
 option(USE_GCC "build application with gcc" OFF)
 option(FORCELE "force little endian architecture" OFF)
 option(COVERAGE "Enable code coverage" OFF)
-option(BUILD_DOC "Build documentation" ON)
+option(BUILD_DOC "Build documentation" OFF)
 
 if(USE_CLANG)
   set(CMAKE_CXX_COMPILER "clang++")
