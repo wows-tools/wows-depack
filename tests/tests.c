@@ -566,14 +566,88 @@ void test_wows_search_file(void) {
     CU_ASSERT_EQUAL(result_count, expected_result_count);
 
     // Check file names
-    CU_ASSERT_STRING_EQUAL(results[0], "c1234/d1234/b1234");
-    CU_ASSERT_STRING_EQUAL(results[1], "c1234/d1234/a1234");
+    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234/b1234");
+    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/a1234");
 
     // Free memory
     for (int i = 0; i < result_count; i++) {
         free(results[i]);
     }
     free(results);
+
+    // Set up search parameters
+    pattern = "[cg]123.*";
+    mode = WOWS_SEARCH_DIR_ONLY;
+    expected_result_count = 2;
+
+    // Perform search
+    result = wows_search(context, pattern, mode, &result_count, &results);
+
+    // Check result code
+    CU_ASSERT_EQUAL(result, 0);
+
+    // Check number of matching files
+    CU_ASSERT_EQUAL(result_count, expected_result_count);
+
+    // Check file names
+    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234");
+    CU_ASSERT_STRING_EQUAL(results[1], "h1234/g1234");
+
+    // Free memory
+    for (int i = 0; i < result_count; i++) {
+        free(results[i]);
+    }
+    free(results);
+
+    // Set up search parameters
+    pattern = ".*[ab]123.*";
+    mode = WOWS_SEARCH_FULL_PATH;
+    expected_result_count = 2;
+
+    // Perform search
+    result = wows_search(context, pattern, mode, &result_count, &results);
+
+    // Check result code
+    CU_ASSERT_EQUAL(result, 0);
+
+    // Check number of matching files
+    CU_ASSERT_EQUAL(result_count, expected_result_count);
+
+    // Check file names
+    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234/b1234");
+    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/a1234");
+
+    // Free memory
+    for (int i = 0; i < result_count; i++) {
+        free(results[i]);
+    }
+    free(results);
+
+    // Set up search parameters
+    pattern = ".*[abd]123.*";
+    mode = WOWS_SEARCH_FILE_PLUS_DIR;
+    expected_result_count = 3;
+
+    // Perform search
+    result = wows_search(context, pattern, mode, &result_count, &results);
+
+    // Check result code
+    CU_ASSERT_EQUAL(result, 0);
+
+    // Check number of matching files
+    CU_ASSERT_EQUAL(result_count, expected_result_count);
+
+    // Check file names
+    CU_ASSERT_STRING_EQUAL(results[0], "d1234");
+    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/b1234");
+    CU_ASSERT_STRING_EQUAL(results[2], "d1234/c1234/a1234");
+
+    // Free memory
+    for (int i = 0; i < result_count; i++) {
+        free(results[i]);
+    }
+    free(results);
+
     // Free the context
     wows_free_context(context);
 }
