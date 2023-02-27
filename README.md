@@ -55,14 +55,14 @@ TODO
 
 char *index_file_path = "path/to/file.idx"
 
-WOWS_CONTEXT *context = wows_init_context(NO_DEBUG);
+WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
 
 /* Other debug categories */
-// DEBUG_RAW_RECORD
-// DEBUG_FILE_LISTING
+// WOWS_DEBUG_RAW_RECORD
+// WOWS_DEBUG_FILE_LISTING
 
 /* several debug categories can be enabled like so: */
-// DEBUG_FILE_LISTING | DEBUG_RAW_RECORD;
+// WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
 
 /* Parse the index file */
 int ret = wows_parse_index(index_file_path, context);

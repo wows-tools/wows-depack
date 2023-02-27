@@ -30,9 +30,9 @@
  *
  * These are the available debug levels for the library.
  */
-#define NO_DEBUG 0                  /**< No debug output. */
-#define DEBUG_RAW_RECORD (1 << 0)   /**< Debug output for raw records. */
-#define DEBUG_FILE_LISTING (1 << 1) /**< Debug output for file listings. */
+#define WOWS_NO_DEBUG 0                  /**< No debug output. */
+#define WOWS_DEBUG_RAW_RECORD (1 << 0)   /**< Debug output for raw records. */
+#define WOWS_DEBUG_FILE_LISTING (1 << 1) /**< Debug output for file listings. */
 /* ---------- */
 
 /**
