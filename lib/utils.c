@@ -336,7 +336,7 @@ int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char 
 char *join_path(char **parent_entries, int depth, char *name) {
     // Calculate the total length of the combined path
     size_t combined_len = 0;
-    for (int i = 0; i < depth; i++) {
+    for (int i = depth - 1; i > -1; i--) {
         combined_len += strlen(parent_entries[i]) + 1; // +1 for the slash
     }
 
@@ -348,7 +348,7 @@ char *join_path(char **parent_entries, int depth, char *name) {
 
     // Copy each path component into the combined path string with a slash in between
     size_t offset = 0;
-    for (int i = 0; i < depth; i++) {
+    for (int i = depth - 1; i > -1; i--) {
         size_t len = strlen(parent_entries[i]);
         memcpy(combined_path + offset, parent_entries[i], len);
         offset += len;
