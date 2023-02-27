@@ -29,6 +29,7 @@ var searchData=
   ['wows_5fsearch_39',['wows_search',['../wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5',1,'wows-depack.h']]],
   ['wows_5fsearch_5fdir_5fonly_40',['WOWS_SEARCH_DIR_ONLY',['../wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945',1,'wows-depack.h']]],
   ['wows_5fsearch_5ffile_5fonly_41',['WOWS_SEARCH_FILE_ONLY',['../wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2',1,'wows-depack.h']]],
-  ['wows_5fsearch_5ffull_5fpath_42',['WOWS_SEARCH_FULL_PATH',['../wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d',1,'wows-depack.h']]],
-  ['wows_5fstat_5fpath_43',['wows_stat_path',['../wows-depack_8h.html#ab167e3d4eb672688c726a8f8183ac389',1,'wows-depack.h']]]
+  ['wows_5fsearch_5ffile_5fplus_5fdir_42',['WOWS_SEARCH_FILE_PLUS_DIR',['../wows-depack_8h.html#a3fc832c343c56e8103150b612564662c',1,'wows-depack.h']]],
+  ['wows_5fsearch_5ffull_5fpath_43',['WOWS_SEARCH_FULL_PATH',['../wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d',1,'wows-depack.h']]],
+  ['wows_5fstat_5fpath_44',['wows_stat_path',['../wows-depack_8h.html#ab167e3d4eb672688c726a8f8183ac389',1,'wows-depack.h']]]
 ];

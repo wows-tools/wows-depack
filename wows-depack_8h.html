@@ -182,7 +182,9 @@ Macros</h2></td></tr>
 <tr class="separator:ad06e857fe4cab707bc7fcd511cbda4d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adeeace7121654e87d2f8b0bc02288945"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945">WOWS_SEARCH_DIR_ONLY</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:adeeace7121654e87d2f8b0bc02288945"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab51c70275faa8498163c7f6fb6b7656d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d">WOWS_SEARCH_FULL_PATH</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memitem:a3fc832c343c56e8103150b612564662c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a3fc832c343c56e8103150b612564662c">WOWS_SEARCH_FILE_PLUS_DIR</a>&#160;&#160;&#160;2</td></tr>
+<tr class="separator:a3fc832c343c56e8103150b612564662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51c70275faa8498163c7f6fb6b7656d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d">WOWS_SEARCH_FULL_PATH</a>&#160;&#160;&#160;3</td></tr>
 <tr class="separator:ab51c70275faa8498163c7f6fb6b7656d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -625,8 +627,9 @@ Macros</h2></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">pattern</td><td>The PCRE regular expression pattern to match against file names. The pattern is passed to the matcher as ^&lt;pattern&gt;$ </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">mode</td><td>The search mode, which can be one of the following values:<ul>
 <li>WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)</li>
-<li>WOWS_SEARCH_DIR_ONLY: search for directories only (exclude files) (not implemented yet)</li>
-<li>WOWS_SEARCH_FULL_PATH: search on the full file pathes (not implemented yet) </li>
+<li>WOWS_SEARCH_DIR_ONLY: search for directories only (exclude files)</li>
+<li>WOWS_SEARCH_FILE_PLUS_DIR: search on directory and file names.</li>
+<li>WOWS_SEARCH_FULL_PATH: search on the full file pathes </li>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result_count</td><td>A pointer to an integer variable that will be set to the number of matching files or directories found. </td></tr>
@@ -914,6 +917,21 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a id="a3fc832c343c56e8103150b612564662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc832c343c56e8103150b612564662c">&#9670;&nbsp;</a></span>WOWS_SEARCH_FILE_PLUS_DIR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WOWS_SEARCH_FILE_PLUS_DIR&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Search on directory and file names. </p>
+
+</div>
+</div>
 <a id="ab51c70275faa8498163c7f6fb6b7656d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab51c70275faa8498163c7f6fb6b7656d">&#9670;&nbsp;</a></span>WOWS_SEARCH_FULL_PATH</h2>
 
@@ -921,7 +939,7 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define WOWS_SEARCH_FULL_PATH&#160;&#160;&#160;2</td>
+          <td class="memname">#define WOWS_SEARCH_FULL_PATH&#160;&#160;&#160;3</td>
         </tr>
       </table>
 </div><div class="memdoc">

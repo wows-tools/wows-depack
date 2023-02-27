@@ -30,5 +30,6 @@ var wows_depack_8h =
     [ "WOWS_ERROR_UNKNOWN", "wows-depack_8h.html#abf7eef4ebd8ebcc0eb264c235b5ec427", null ],
     [ "WOWS_SEARCH_DIR_ONLY", "wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945", null ],
     [ "WOWS_SEARCH_FILE_ONLY", "wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2", null ],
+    [ "WOWS_SEARCH_FILE_PLUS_DIR", "wows-depack_8h.html#a3fc832c343c56e8103150b612564662c", null ],
     [ "WOWS_SEARCH_FULL_PATH", "wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d", null ]
 ];
