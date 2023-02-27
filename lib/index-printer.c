@@ -192,7 +192,7 @@ int print_inode_flat(WOWS_BASE_INODE *inode) {
         WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
         int depth;
         char **parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(char *));
-        get_path_inode(file_inode, &depth, parent_entries);
+        get_path_inode(inode, &depth, parent_entries);
 
         printf("/");
         for (int j = (depth - 1); j > -1; j--) {
