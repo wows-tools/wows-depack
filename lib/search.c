@@ -24,27 +24,65 @@ bool search_inode(const void *item, void *udata) {
     WOWS_BASE_INODE *inode = *(WOWS_BASE_INODE **)item;
     search_context *ctx = (search_context *)udata;
 
+    bool matched = false;
+
+    char **parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(char *));
+    int depth;
+    get_path_inode(inode, &depth, parent_entries);
+
+    char *path = join_path(parent_entries, depth, inode->name);
+
     if (inode->type == WOWS_INODE_TYPE_FILE) {
         WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
-        char **parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(char *));
-        int depth;
-        get_path_inode(file_inode, &depth, parent_entries);
+        switch (ctx->mode) {
+        case WOWS_SEARCH_FILE_ONLY:
+        case WOWS_SEARCH_FILE_PLUS_DIR:
+            matched = match_regex(ctx->matcher, file_inode->name);
+            break;
+        case WOWS_SEARCH_FULL_PATH:
+            matched = match_regex(ctx->matcher, path);
+            break;
+        default:
+            matched = false;
+            break;
+        }
+        if (matched) {
+            // Resizing of the result buffer
+            if (ctx->result_count % SEARCH_RESULT_ALLOC_SIZE == SEARCH_RESULT_ALLOC_SIZE - 1) {
+                ctx->results = realloc(ctx->results, sizeof(char *) * (ctx->result_count + SEARCH_RESULT_ALLOC_SIZE));
+            }
 
-        if (ctx->result_count % SEARCH_RESULT_ALLOC_SIZE == SEARCH_RESULT_ALLOC_SIZE - 1) {
-            ctx->results = realloc(ctx->results, sizeof(char *) * (ctx->result_count + SEARCH_RESULT_ALLOC_SIZE));
-        }
-        if (match_regex(ctx->matcher, file_inode->name)) {
             // pattern found in the filename, add it to the results
-            char *path = join_path(parent_entries, depth, file_inode->name);
-            ctx->results[ctx->result_count++] = path;
+            ctx->results[ctx->result_count++] = strdup(path);
         }
-        free(parent_entries);
     } else if (inode->type == WOWS_INODE_TYPE_DIR) {
-        // recursively search the directory
         WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
+
+        switch (ctx->mode) {
+        case WOWS_SEARCH_DIR_ONLY:
+        case WOWS_SEARCH_FILE_PLUS_DIR:
+            matched = match_regex(ctx->matcher, dir_inode->name);
+            break;
+        default:
+            matched = false;
+            break;
+        }
+        if (matched) {
+            // Resizing of the result buffer
+            if (ctx->result_count % SEARCH_RESULT_ALLOC_SIZE == SEARCH_RESULT_ALLOC_SIZE - 1) {
+                ctx->results = realloc(ctx->results, sizeof(char *) * (ctx->result_count + SEARCH_RESULT_ALLOC_SIZE));
+            }
+
+            // pattern found in the dir name, add it to the results
+            ctx->results[ctx->result_count++] = strdup(path);
+        }
+
+        // recursively search the directory
         struct hashmap *map = dir_inode->children_inodes;
         hashmap_scan(map, search_inode, udata);
     }
+    free(parent_entries);
+    free(path);
     return true;
 }
 
