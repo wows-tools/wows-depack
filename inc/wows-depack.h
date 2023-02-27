@@ -40,9 +40,10 @@
  *
  * These are the search modes available in the search function.
  */
-#define WOWS_SEARCH_FILE_ONLY 0 /**< Search only on file names. */
-#define WOWS_SEARCH_DIR_ONLY 1  /**< Search only on directory names. */
-#define WOWS_SEARCH_FULL_PATH 2 /**< Search on the full path of files. */
+#define WOWS_SEARCH_FILE_ONLY 0     /**< Search only on file names. */
+#define WOWS_SEARCH_DIR_ONLY 1      /**< Search only on directory names. */
+#define WOWS_SEARCH_FILE_PLUS_DIR 2 /**< Search on directory and file names. */
+#define WOWS_SEARCH_FULL_PATH 3     /**< Search on the full path of files. */
 /* ---------- */
 
 /**
@@ -157,8 +158,9 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
  *             The pattern is passed to the matcher as ^<pattern>$
  * @param mode The search mode, which can be one of the following values:
  *             - WOWS_SEARCH_FILE_ONLY: search for files only (exclude directories)
- *             - WOWS_SEARCH_DIR_ONLY:  search for directories only (exclude files) (not implemented yet)
- *             - WOWS_SEARCH_FULL_PATH: search on the full file pathes (not implemented yet)
+ *             - WOWS_SEARCH_DIR_ONLY:  search for directories only (exclude files)
+ *             - WOWS_SEARCH_FILE_PLUS_DIR:  search on directory and file names.
+ *             - WOWS_SEARCH_FULL_PATH: search on the full file pathes
  * @param[out] result_count A pointer to an integer variable that will be set to the number of matching files or
  * directories found.
  * @param[out] results A pointer to an array of strings that will be allocated to hold the names of the matching files
