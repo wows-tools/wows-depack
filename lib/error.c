@@ -43,6 +43,18 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
     case WOWS_ERROR_DECOMPOSE_PATH:
         error_string = "failed to decompose path into [dir1, dir2, etc] + file";
         break;
+    case WOWS_ERROR_INVALID_SEARCH_PATTERN:
+        error_string = "failure to compile regex pattern";
+        break;
+    case WOWS_ERROR_NOT_A_FILE:
+        error_string = "path is not a file";
+        break;
+    case WOWS_ERROR_NOT_A_DIR:
+        error_string = "path is not a directory";
+        break;
+    case WOWS_ERROR_NOT_FOUND:
+        error_string = "file or directory not found";
+        break;
     case 0:
         error_string = "no recent error";
         break;

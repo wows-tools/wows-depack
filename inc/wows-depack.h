@@ -23,6 +23,9 @@
 #define WOWS_ERROR_FILE_OPEN_FAILURE 9          /**< A failure to open a file. */
 #define WOWS_ERROR_DECOMPOSE_PATH 10            /**< An error while decomposing a path. */
 #define WOWS_ERROR_INVALID_SEARCH_PATTERN 11    /**< failure to compile regex pattern */
+#define WOWS_ERROR_NOT_A_FILE 12                /**< path is not a file */
+#define WOWS_ERROR_NOT_A_DIR 13                 /**< path is not a directory */
+#define WOWS_ERROR_NOT_FOUND 14                 /**< file or directory not found */
 /* ---------- */
 
 /**
@@ -57,7 +60,7 @@ typedef struct {
     void *metadata_map;   // Global Metadata hashmap (struct hashmap *metadata_map;)
     void *file_map;       // Global File hashmap (struct hashmap *file_map;)
     void *current_dir;    // Current directory (WOWS_DIR_INODE *current_dir;)
-    void **indexes;       // Array of structures representing each index file (void
+    void **indexes;       // Array of structures representing each index file (WOWS_INDEX
                           // **indexes;)
     uint32_t index_count; // Size of the array
     char *err_msg;        // Last error message
@@ -216,7 +219,6 @@ int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *output);
  */
 int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path);
 
-
 /**
  * @brief Extract a given directory (recursively) from the archive (output file version).
  *
@@ -233,7 +235,6 @@ int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path);
  *         otherwise a negative value indicating the error.
  */
 int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path);
-
 
 /* ---------- */
 
