@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE  500
 // TODO clean-up this mess
 #include <string.h>
 #include <stddef.h>
@@ -9,9 +10,9 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdlib.h>
 #include <linux/limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -220,11 +221,9 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     }
 
     // Copy over the file_path string
-    size_t len = strlen(index_file_path);
-    char *index_file_path_cpy = malloc(len + 1);
-    strcpy(index_file_path_cpy, index_file_path);
+    char *resolved_path = NULL;
 
-    index->index_file_path = index_file_path_cpy;
+    index->index_file_path = realpath(index_file_path, resolved_path);
     index->fd = fd;
 
     // Debugging output if necessary
