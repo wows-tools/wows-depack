@@ -77,6 +77,26 @@ void test_wows_error_string() {
     CU_ASSERT_STRING_EQUAL(error_string, "failed to decompose path into [dir1, dir2, etc] + file");
     free(error_string);
 
+    error_string = wows_error_string(WOWS_ERROR_INVALID_SEARCH_PATTERN, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "failure to compile regex pattern");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_NOT_A_FILE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "path is not a file");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_NOT_A_DIR, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "path is not a directory");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_NOT_FOUND, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "file or directory not found");
+    free(error_string);
+
+    error_string = wows_error_string(WOWS_ERROR_FILE_WRITE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "file write error");
+    free(error_string);
+
     error_string = wows_error_string(9999999, context);
     CU_ASSERT_STRING_EQUAL(error_string, "unrecognized error code");
     free(error_string);
