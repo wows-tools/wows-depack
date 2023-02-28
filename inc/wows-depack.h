@@ -7,11 +7,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/**
- * @brief error codes.
- *
- * These are the error codes wows-depack can return .
- */
+/* Error codes  */
+
 #define WOWS_ERROR_CORRUPTED_FILE 1             /**< A corrupted WoWs resource file. */
 #define WOWS_ERROR_BAD_MAGIC 2                  /**< A bad magic number in a WoWs resource file. */
 #define WOWS_ERROR_MISSING_METADATA_ENTRY 3     /**< A missing metadata entry in a WoWs resource file. */
@@ -27,33 +24,33 @@
 #define WOWS_ERROR_NOT_A_DIR 13                 /**< path is not a directory */
 #define WOWS_ERROR_NOT_FOUND 14                 /**< file or directory not found */
 #define WOWS_ERROR_FILE_WRITE 15                /**< file write error */
+
 /* ---------- */
 
-/**
- * @brief Debug levels.
- *
- * These are the available debug levels for the library.
- */
+/* Debug levels */
+
 #define WOWS_NO_DEBUG 0                  /**< No debug output. */
 #define WOWS_DEBUG_RAW_RECORD (1 << 0)   /**< Debug output for raw records. */
 #define WOWS_DEBUG_FILE_LISTING (1 << 1) /**< Debug output for file listings. */
+
 /* ---------- */
 
-/**
- * @brief Search Modes.
- *
- * These are the search modes available in the search function.
- */
+/*  Search Modes */
+
 #define WOWS_SEARCH_FILE_ONLY 0     /**< Search only on file names. */
 #define WOWS_SEARCH_DIR_ONLY 1      /**< Search only on directory names. */
 #define WOWS_SEARCH_FILE_PLUS_DIR 2 /**< Search on directory and file names. */
 #define WOWS_SEARCH_FULL_PATH 3     /**< Search on the full path of files. */
+
 /* ---------- */
 
-/**
+/*
  * @brief WoWs resource extractor context.
  *
- * This struct is used to hold the context for the WoWs extractor.
+ * This structure is used to hold the context for the WoWs extractor.
+ *
+ * This structure is not meant to be manipulated directly.
+ * Internal fields are private and could be subject to changes.
  */
 typedef struct {
     uint8_t debug_level;  // Debug level for logging
