@@ -175,7 +175,7 @@ int wows_parse_index_dir(const char *path, WOWS_CONTEXT *context) {
     DIR *directory = opendir(path);
     if (directory == NULL) {
         wows_set_error_details(context, "error with directory '%s'", path);
-        return 0;
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
     }
 
     struct dirent *entry;
