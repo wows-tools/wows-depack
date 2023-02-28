@@ -54,23 +54,10 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     }
     uint32_t idx_index = file_inode->index_file_index;
     WOWS_INDEX *index = context->indexes[idx_index];
-    char *pkg_file_name;
-    get_footer_filename(index->footer, index, &pkg_file_name);
-    printf("%s\n", pkg_file_name);
-    printf("%s\n", index->index_file_path);
-    const int num_parents = 4; // compute the third parent directory
-
-    char* parent_path = strdup(index->index_file_path);
-    char* current_path = parent_path;
-
-    for (int i = 0; i < num_parents; i++) {
-        current_path = dirname(current_path);
-    }
-
-    printf("The %dth parent directory of %s is %s\n", num_parents, index->index_file_path, current_path);
-
-    free(parent_path);
-
+    char *pkg_file_path;
+    get_pkg_filepath(index, &pkg_file_path);
+    printf("%s\n", pkg_file_path);
+    free(pkg_file_path);
     return 0;
 }
 

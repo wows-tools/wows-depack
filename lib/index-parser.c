@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
-#define _XOPEN_SOURCE  500
+#define _XOPEN_SOURCE 500
 // TODO clean-up this mess
 #include <string.h>
 #include <stddef.h>
@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <libgen.h>
 #include <linux/limits.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -43,6 +44,26 @@ int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, c
         return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
     }
     *out = filename;
+    return 0;
+}
+
+int get_pkg_filepath(WOWS_INDEX *index, char **out) {
+    char *pkg_file_name;
+    get_footer_filename(index->footer, index, &pkg_file_name);
+    const int num_parents = 4;
+
+    char *current_path = strdup(index->index_file_path);
+
+    for (int i = 0; i < num_parents; i++) {
+        current_path = dirname(current_path);
+    }
+
+    const char *fixed_path = "/res_packages/";
+    char *out_path = calloc(strlen(current_path) + strlen(fixed_path) + strlen(pkg_file_name) + 1, sizeof(char));
+    sprintf(out_path, "%s%s%s", current_path, fixed_path, pkg_file_name);
+
+    free(current_path);
+    *out = out_path;
     return 0;
 }
 

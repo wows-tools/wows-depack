@@ -164,6 +164,7 @@ int build_inode_tree(WOWS_INDEX *index, int current_index_context, WOWS_CONTEXT 
 WOWS_DIR_INODE *init_root_inode();
 int add_child_inode(WOWS_DIR_INODE *parent_inode, WOWS_BASE_INODE *inode);
 WOWS_BASE_INODE *get_child(WOWS_DIR_INODE *inode, char *name);
+int get_pkg_filepath(WOWS_INDEX *index, char **out);
 WOWS_DIR_INODE *init_dir_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
                                WOWS_CONTEXT *context);
 WOWS_FILE_INODE *init_file_inode(uint64_t metadata_id, uint32_t current_index_context, WOWS_DIR_INODE *parent_inode,
