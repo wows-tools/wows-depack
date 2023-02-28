@@ -56,7 +56,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
         error_string = "file or directory not found";
         break;
     case WOWS_ERROR_FILE_WRITE:
-        error_string = "file or directory not found";
+        error_string = "file write error";
         break;
     case 0:
         error_string = "no recent error";
