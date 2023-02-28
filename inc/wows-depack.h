@@ -194,8 +194,6 @@ int wows_stat_path(WOWS_CONTEXT *context, char path);
 /**
  * @brief Extract a given file from the archive (file pointer version).
  *
- * Not implemented yet
- *
  * @param context  Pointer to a WOWS_CONTEXT structure.
  * @param file_path  Path of the file to extract.
  * @param output  Pointer to a FILE structure to write the output to.
