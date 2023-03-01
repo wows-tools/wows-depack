@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -25,6 +26,43 @@
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
+
+int list_files_recursive(const char *path, char ***file_paths, int *count) {
+    DIR *dir;
+    struct dirent *entry;
+    struct stat info;
+
+    if ((dir = opendir(path)) == NULL) {
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        char full_path[1024];
+        snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+
+        // Ignore errors
+        // FIXME even if not fatal we should do something with these ones
+        if (stat(full_path, &info) != 0) {
+            continue;
+        }
+
+        if (S_ISDIR(info.st_mode)) {
+            // Ignore "." and ".." directories
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+                continue;
+            }
+            list_files_recursive(full_path, file_paths, count);
+        } else if (S_ISREG(info.st_mode)) {
+            // Store the file path in the array
+            (*count)++;
+            *file_paths = realloc(*file_paths, (*count) * sizeof(char *));
+            (*file_paths)[(*count) - 1] = strdup(full_path);
+        }
+    }
+
+    closedir(dir);
+    return 0;
+}
 
 // Index Dumper function
 int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
