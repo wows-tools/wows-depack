@@ -27,10 +27,12 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-int list_files_recursive(const char *path, char ***file_paths, int *count) {
+int list_files_recursive(const char *path, char ***file_paths, int *count_file, int *count_dir) {
     DIR *dir;
     struct dirent *entry;
     struct stat info;
+    *count_file = 0;
+    *count_dir = 0;
 
     if ((dir = opendir(path)) == NULL) {
         return WOWS_ERROR_FILE_OPEN_FAILURE;
@@ -51,16 +53,48 @@ int list_files_recursive(const char *path, char ***file_paths, int *count) {
             if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
                 continue;
             }
-            list_files_recursive(full_path, file_paths, count);
+            (*count_dir)++;
+            list_files_recursive(full_path, file_paths, count_file, count_dir);
         } else if (S_ISREG(info.st_mode)) {
             // Store the file path in the array
-            (*count)++;
-            *file_paths = realloc(*file_paths, (*count) * sizeof(char *));
-            (*file_paths)[(*count) - 1] = strdup(full_path);
+            (*count_file)++;
+            *file_paths = realloc(*file_paths, (*count_file) * sizeof(char *));
+            (*file_paths)[(*count_file) - 1] = strdup(full_path);
         }
     }
 
     closedir(dir);
+    return 0;
+}
+
+int wows_writer(WOWS_CONTEXT *context, char *in_path, char *name) {
+    char *idx_ext = ".idx";
+    char *pkg_ext = ".pkg";
+    // Recover the list of files in the input directory
+    char **file_list;
+    int count_file;
+    int count_dir;
+    list_files_recursive(in_path, &file_list, &count_file, &count_dir);
+    // compute the total length of this file path
+    // FIXME, this is wrong (we don't need the full path each time, we only need the filename
+    // And directory name if not already encountered.
+    int sum_len_file_names = 0;
+    for (int i = 0; i < count_file; i++) {
+        sum_len_file_names += strlen(file_list[i]) + 1;
+    }
+    int count_all = count_dir + count_file;
+    WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
+    WOWS_INDEX_HEADER *header = calloc(sizeof(WOWS_INDEX_HEADER), 1);
+    WOWS_INDEX_METADATA_ENTRY *metadata_section =
+        malloc(sizeof(WOWS_INDEX_METADATA_ENTRY) * count_all + sum_len_file_names);
+    char *file_names_section = (char *)metadata_section + sizeof(WOWS_INDEX_METADATA_ENTRY) * count_all;
+    WOWS_INDEX_DATA_FILE_ENTRY *file_section = calloc(sizeof(WOWS_INDEX_DATA_FILE_ENTRY), count_file);
+    WOWS_INDEX_FOOTER *footer = malloc(sizeof(WOWS_INDEX_FOOTER) + strlen(name) + strlen(pkg_ext) + 1);
+    char *pkg_file_name = (char *)footer + sizeof(WOWS_INDEX_FOOTER);
+    index->header = header;
+    index->metadata = metadata_section;
+    index->data_file_entry = file_section;
+    index->footer = footer;
     return 0;
 }
 
