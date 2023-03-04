@@ -165,14 +165,17 @@ Searching files/directories</h4>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Supported search modes:</span></div>
-<div class="line"><span class="comment">WOWS_SEARCH_FILE_ONLY     /**&lt; Search only on file names. */</span></div>
-<div class="line"><a class="code" href="wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945">WOWS_SEARCH_DIR_ONLY</a>      </div>
-<div class="line"><a class="code" href="wows-depack_8h.html#a3fc832c343c56e8103150b612564662c">WOWS_SEARCH_FILE_PLUS_DIR</a> </div>
-<div class="line"><a class="code" href="wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d">WOWS_SEARCH_FULL_PATH</a>     </div>
-<div class="line">*/</div>
+<div class="line"><span class="comment">WOWS_SEARCH_FILE_ONLY     &lt; Search only on file names.</span></div>
+<div class="line"><span class="comment">WOWS_SEARCH_DIR_ONLY      &lt; Search only on directory names.</span></div>
+<div class="line"><span class="comment">WOWS_SEARCH_FILE_PLUS_DIR &lt; Search on directory and file names.</span></div>
+<div class="line"><span class="comment">WOWS_SEARCH_FULL_PATH     &lt; Search on the full path of files.</span></div>
+<div class="line"><span class="comment">*/</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// PCRE search pattern, please note that the final regex is &quot;^&lt;search_pattern&gt;$&quot;</span></div>
+<div class="line"><span class="keywordtype">char</span> *search_pattern = <span class="stringliteral">&quot;.*Params.*&quot;</span>;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Search the files</span></div>
-<div class="line"><a class="code" href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a>(context, <span class="stringliteral">&quot;.*Params.*&quot;</span>, <a class="code" href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a>, &amp;resc, &amp;res_files);</div>
+<div class="line"><a class="code" href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a>(context, search_pattern, <a class="code" href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a>, &amp;resc, &amp;res_files);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Print and free the result</span></div>
 <div class="line">printf(<span class="stringliteral">&quot;Found %d matching files:\n&quot;</span>, resc);</div>
@@ -183,11 +186,8 @@ Searching files/directories</h4>
 <div class="line">}</div>
 <div class="line"><span class="comment">// Free the array containing these paths</span></div>
 <div class="line">free(res_files);</div>
-<div class="ttc" id="awows-depack_8h_html_a3fc832c343c56e8103150b612564662c"><div class="ttname"><a href="wows-depack_8h.html#a3fc832c343c56e8103150b612564662c">WOWS_SEARCH_FILE_PLUS_DIR</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_PLUS_DIR</div><div class="ttdef"><b>Definition:</b> wows-depack.h:42</div></div>
 <div class="ttc" id="awows-depack_8h_html_a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><div class="ttname"><a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a></div><div class="ttdeci">int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results)</div><div class="ttdoc">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.</div></div>
-<div class="ttc" id="awows-depack_8h_html_ab51c70275faa8498163c7f6fb6b7656d"><div class="ttname"><a href="wows-depack_8h.html#ab51c70275faa8498163c7f6fb6b7656d">WOWS_SEARCH_FULL_PATH</a></div><div class="ttdeci">#define WOWS_SEARCH_FULL_PATH</div><div class="ttdef"><b>Definition:</b> wows-depack.h:43</div></div>
 <div class="ttc" id="awows-depack_8h_html_ad06e857fe4cab707bc7fcd511cbda4d2"><div class="ttname"><a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:40</div></div>
-<div class="ttc" id="awows-depack_8h_html_adeeace7121654e87d2f8b0bc02288945"><div class="ttname"><a href="wows-depack_8h.html#adeeace7121654e87d2f8b0bc02288945">WOWS_SEARCH_DIR_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_DIR_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:41</div></div>
 </div><!-- fragment --><h4><a class="anchor" id="autotoc_md8"></a>
 Extracting files</h4>
 <p>To extract files, you can do the following:</p>
