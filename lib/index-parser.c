@@ -30,6 +30,13 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
+int get_metadata_filename_unsafe(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
+    char *filename = (char *)entry;
+    filename += entry->offset_idx_file_name;
+    *out = filename;
+    return 0;
+}
+
 int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
     char *filename = (char *)entry;
     filename += entry->offset_idx_file_name;
