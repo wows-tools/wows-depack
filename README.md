@@ -324,7 +324,7 @@ fakeroot
             └── libwows-depack.so.0.1.0
 ```
 
-## Test
+## Tests
 
 To run the unit tests, do the following:
 
@@ -364,7 +364,7 @@ Optionally, get a nicer doxygen theme:
 make doc_doxygen
 ```
 
-# Fuzzing
+## Fuzzing
 
 This tool/lib parses binary data, consequently checking for overflow might be a good idea.
 
