@@ -232,6 +232,8 @@ This section  is repeated for each file (`header->file_count`).
 
 #### Field descriptions
 
+
+
 | Field                | Size    | Description                                       |
 |----------------------|---------|---------------------------------------------------|
 | `pkg_file_name_size` | 64 bits | Size of the corresponding `.pkg` file name string |
@@ -240,7 +242,11 @@ This section  is repeated for each file (`header->file_count`).
 
 ## PKG format
 
+### PKG Entry
+
 The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.
+
+#### Layout
 
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
@@ -256,6 +262,8 @@ The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1
 
 [...repeat...]
 ```
+
+#### Field descriptions
 
 | Field             | Size    | Description         |
 |-------------------|---------|---------------------|
