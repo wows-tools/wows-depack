@@ -320,7 +320,11 @@ Field descriptions</h3>
 </table>
 <h1><a class="anchor" id="autotoc_md46"></a>
 PKG format</h1>
+<h2><a class="anchor" id="autotoc_md47"></a>
+PKG Entry</h2>
 <p>The <code>.pkg</code> format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.</p>
+<h3><a class="anchor" id="autotoc_md48"></a>
+Layout</h3>
 <div class="fragment"><div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</div>
 <div class="line">|                                                                                 |</div>
 <div class="line">|                      Compressed Data (RFC 1951/Deflate)                         |</div>
@@ -333,7 +337,9 @@ PKG format</h1>
 <div class="line">|     32 bits       ||               64 bits                 ||      32 bits      |</div>
 <div class="line"> </div>
 <div class="line">[...repeat...]</div>
-</div><!-- fragment --><table class="markdownTable">
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md49"></a>
+Field descriptions</h3>
+<table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Size   </th><th class="markdownTableHeadNone">Description    </th></tr>
 <tr class="markdownTableRowOdd">

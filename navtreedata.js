@@ -81,7 +81,12 @@ var NAVTREE =
           [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md45", null ]
         ] ]
       ] ],
-      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md46", null ]
+      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md46", [
+        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md47", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md48", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md49", null ]
+        ] ]
+      ] ]
     ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
