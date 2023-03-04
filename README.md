@@ -56,7 +56,15 @@ Parse all the indexes in the index directory:
 ./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/
 ```
 
-Note, the other examples are using `-I <DIR>` , but it could be faster to specify one index file directly through `-i <FILE>`.
+Auto-discovery of the latest idx directory (from WoWs install directory) and parse all index files:
+
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/
+```
+
+
+
+Note, the other examples are using `-W <WOWS DIR>` , but it could be faster to specify one index file directly through `-i <FILE>`.
 Specifically, `GameParams,data` is referenced in the `system_data.idx` index.
 
 Also, please note that you will need to adapt the path to your WoWs install and the parent of `idx/` (the `6831266` part changes with every update).
@@ -65,7 +73,7 @@ Also, please note that you will need to adapt the path to your WoWs install and 
 
 To print all the files present:
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/ -p
+./wows-depack-cli -W ~/Games/World\ of\ Warships/ -p
 
 /gui/modernization_icons/icon_modernization_PCM020_DamageControl_Mod_I.png
 /gui/modernization_icons/icon_modernization_PCM047_Special_Mod_I_Montana.png
@@ -79,7 +87,7 @@ To print all the files present:
 To search a given file (regular expression):
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx -s '.*Params.*'
+./wows-depack-cli -W ~/Games/World\ of\ Warships/ -s '.*Params.*'
 
 Found 3 matching files:
 shipyardParams.xml
@@ -92,7 +100,7 @@ content/UIParams.data
 To Extract a Single file, do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx \
+./wows-depack-cli -W ~/Games/World\ of\ Warships/ \
 	-e 'content/GameParams.data' -o GameParams.data
 ```
 
@@ -101,14 +109,14 @@ To Extract a Single file, do:
 To extract a whole sub directory, do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \
+./wows-depack-cli -W ~/Games/World\ of\ Warships/ \
 	-e 'content/' -O out/
 ```
 
 To extract everything (rip your free disk space), do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \
+./wows-depack-cli -W ~/Games/World\ of\ Warships/ \
 	-e '/' -O out/
 ```
 
@@ -146,7 +154,7 @@ int ret = wows_parse_index(index_file_path, context);
 To parse the indexes, you can either specify a specific index file:
 
 ```C
-char *index_file_path = "path/to/file.idx"
+char *index_file_path = "Games/World of Warships/bin/6831266/idx/system_data.idx"
 
 /* Parse the index file */
 int ret = wows_parse_index(index_file_path, context);
@@ -155,11 +163,29 @@ int ret = wows_parse_index(index_file_path, context);
 Alternatively, you can parse all the index files in a given directory:
 
 ```C
-char *index_dir_path = "path/to/index/dir/"
+// Note: the '6831266' directory changes every updates
+char *index_dir_path = "Games/World of Warships/bin/6831266/idx"
 
 /* Parse the index file */
 int ret = wows_parse_index_dir(index_dir_path, context);
 ```
+
+Wows depack also provides a small helper to detect the latest idx directory.
+```C
+char *index_dir_path;
+
+get_latest_idx_dir("Games/World of Warships/", index_dir_path);
+
+/* Parse the index file */
+int ret = wows_parse_index_dir(index_dir_path, context);
+
+// [...] do stuff
+
+// You need to free index_dir_path after
+free(index_dir_path);
+```
+
+
 
 These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.
 
