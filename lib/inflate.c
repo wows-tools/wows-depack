@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <zlib.h>
+#include <errno.h>
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
@@ -149,4 +150,15 @@ int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *dest) {
         return ret;
     }
     return extract_file_inode(context, (WOWS_FILE_INODE *)inode, dest);
+}
+
+int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path) {
+    FILE *fd = fopen(out_path, "w+");
+    if (fd <= 0) {
+        wows_set_error_details(context, "error with output file '%s', %s", out_path, strerror(errno));
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+    int ret = wows_extract_file_fp(context, file_path, fd);
+    fclose(fd);
+    return ret;
 }

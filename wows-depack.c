@@ -109,8 +109,9 @@ int main(int argc, char **argv) {
     //     free(res_files[i]);
     // }
     // free(res_files);
-    FILE *fd_pkg = fopen("stuff.c", "w+");
-    ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
+    // FILE *fd_pkg = fopen("stuff.c", "w+");
+    // ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
+    ret = wows_extract_file(context, "tests.c", "stuff.c");
     if (ret != 0) {
         char *err_msg = wows_error_string(ret, context);
         printf("Error: %s\n", err_msg);
@@ -122,7 +123,7 @@ int main(int argc, char **argv) {
     // FILE *fd_pkg = fopen("aircraft_propeller_quad.anim", "w+");
     // wows_extract_file_fp(context, "content/animation/common/aircraft_propeller_quad.anim", fd_pkg);
 
-    fclose(fd_pkg);
+    // fclose(fd_pkg);
     wows_print_flat(context);
 
     FILE *nfd_pkg = fopen("stuff.pkg", "w+");
