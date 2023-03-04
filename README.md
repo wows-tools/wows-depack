@@ -111,8 +111,11 @@ WOWS_SEARCH_FILE_PLUS_DIR /**< Search on directory and file names. */
 WOWS_SEARCH_FULL_PATH     /**< Search on the full path of files. */
 */
 
+// PCRE search pattern, please note that the final regex is "^<search_pattern>$"
+char *search_pattern = ".*Params.*";
+
 // Search the files
-wows_search(context, ".*Params.*", WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
+wows_search(context, search_pattern, WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
 
 // Print and free the result
 printf("Found %d matching files:\n", resc);
