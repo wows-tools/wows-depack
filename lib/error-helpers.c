@@ -67,7 +67,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
     }
 
     // If a context argument was provided, add it to the error message.
-    if (context->err_msg != NULL) {
+    if (context != NULL && context->err_msg != NULL) {
         char *error_message = (char *)malloc(strlen(error_string) + strlen(context->err_msg) + 3);
         sprintf(error_message, "%s: %s", error_string, context->err_msg);
         return error_message;

@@ -32,8 +32,9 @@ const char *argp_program_bug_address = "https://github.com/kakwa/wows-depack/iss
 
 static char doc[] = "\nWorld of Warships resource extractor tool";
 
-static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input file"},
-                                       {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
+static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input index file"},
+                                       {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input index directory"},
+                                       {"wows-dir", 'W', "WOWS_BASE_DIR", 0, "Input World of Warships base directory"},
                                        {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir for recursive extract"},
                                        {"output", 'o', "OUTPUT_FILE", 0, "Output file when extracting one file"},
                                        {"search", 's', "SEARCH_PATTERN", 0, "Search Regex"},
@@ -42,12 +43,13 @@ static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input f
                                        {0}};
 
 /* A description of the arguments we accept. */
-static char args_doc[] = "<-i INPUT_FILE|-I INPUT_DIR>";
+static char args_doc[] = "<-i INPUT_FILE | -I INPUT_DIR | -W WOWS_BASE_DIR>";
 
 struct arguments {
     char *args[2]; /* arg1 & arg2 */
     char *output;
     char *output_dir;
+    char *wows_base_dir;
     char *extract;
     char *search;
     char *input;
@@ -66,6 +68,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         break;
     case 'I':
         arguments->input_dir = arg;
+        break;
+    case 'W':
+        arguments->wows_base_dir = arg;
         break;
     case 'o':
         arguments->output = arg;
@@ -92,10 +97,22 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
     struct arguments *args = calloc(sizeof(struct arguments), 1);
+    int ret = 0;
     argp_parse(&argp, argc, argv, 0, 0, args);
 
+    if (args->wows_base_dir != NULL) {
+        ret = get_latest_idx_dir(args->wows_base_dir, &args->input_dir);
+        char *err_msg = wows_error_string(ret, NULL);
+        if (ret != 0) {
+            fprintf(stderr, "error: %s\n", err_msg);
+            free(err_msg);
+            free(args);
+            return ret;
+        }
+    }
+
     if (args->input == NULL && args->input_dir == NULL) {
-        fprintf(stderr, "error: no -i <input file> or -I <input dir> arg\n");
+        fprintf(stderr, "error: no -i <input file> or -I <input dir> arg or -W <wows dir> specified\n");
         return EXIT_FAILURE;
     }
 
@@ -112,7 +129,6 @@ int main(int argc, char **argv) {
     // Parsing the content
     WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
 
-    int ret = 0;
     if (args->input != NULL) {
         ret = wows_parse_index_file(args->input, context);
     }
