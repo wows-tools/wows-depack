@@ -67,7 +67,6 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
 }
 
 int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE *out_file) {
-    printf("%s %d\n", file_inode->name, file_inode->type);
     if (file_inode->type != WOWS_INODE_TYPE_FILE) {
         return WOWS_ERROR_NOT_A_FILE;
     }
