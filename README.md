@@ -208,10 +208,17 @@ If you want to control the underlying File Pointer (for example, to write in a m
 ```C
 char *buf = NULL;
 size_t buf_size = 0;
+
+// Open the file
 FILE *f = open_memstream(&buf, &buf_size);
 
 // Extract to File *
 ret = wows_extract_file_fp(context, "stuff.xml", f);
+
+// Close the file
+fclose(f);
+
+free(buff);
 ```
 
 You can also extract files recursively:
