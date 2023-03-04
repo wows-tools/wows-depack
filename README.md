@@ -85,7 +85,7 @@ content/GameParams.data
 content/UIParams.data
 ```
 
-### Extract A single file
+### Extract a single file
 
 To Extract a Single file, do:
 
