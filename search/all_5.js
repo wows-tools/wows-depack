@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['metadata_5fmap_7',['metadata_map',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#a4301f2820f4e38abca3ed6b0820f5175',1,'WOWS_CONTEXT']]]
+  ['index_5fcount_6',['index_count',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#a3f07e0b3ba2e4ebeb481ac7ddc16f7f3',1,'WOWS_CONTEXT']]],
+  ['indexes_7',['indexes',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#a26f11164d359636d62f25db4da57d86b',1,'WOWS_CONTEXT']]]
 ];

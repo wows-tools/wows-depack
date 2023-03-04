@@ -148,6 +148,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">wows_write_pkg</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp)</td></tr>
 <tr class="memdesc:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a package file and its index.  <a href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">More...</a><br /></td></tr>
 <tr class="separator:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdedb373df71e2565530e77e10564400"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">get_latest_idx_dir</a> (char *wows_base_dir, char **idx_dir)</td></tr>
+<tr class="memdesc:acdedb373df71e2565530e77e10564400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the latest index directory in the specified WoWs installation directory.  <a href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">More...</a><br /></td></tr>
+<tr class="separator:acdedb373df71e2565530e77e10564400"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -204,6 +207,46 @@ Macros</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Header file for the wows-depack library. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="acdedb373df71e2565530e77e10564400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdedb373df71e2565530e77e10564400">&#9670;&nbsp;</a></span>get_latest_idx_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int get_latest_idx_dir </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>wows_base_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>idx_dir</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the latest index directory in the specified WoWs installation directory. </p>
+<p>This function takes a base directory path for a World of Warships installation and a pointer to a char pointer to store the path of the latest index directory.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wows_base_dir</td><td>Path to the World of Warships installation directory. </td></tr>
+    <tr><td class="paramname">idx_dir</td><td>Pointer to a char pointer to store the name of the latest index directory. The memory for this pointer will be allocated by the function and must be freed by the caller. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>On success, returns 0. On failure, returns an error code.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The caller is responsible for freeing the memory allocated for the idx_dir parameter. </dd></dl>
+
+</div>
+</div>
 <a id="aa4787554ee0be28e87c28a3869181e0f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa4787554ee0be28e87c28a3869181e0f">&#9670;&nbsp;</a></span>wows_error_string()</h2>
 
