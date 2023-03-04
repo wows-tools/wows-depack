@@ -241,10 +241,17 @@ Extracting files</h4>
 </div><!-- fragment --><p>If you want to control the underlying File Pointer (for example, to write in a memstream), extract functions also provide an <code>_fp</code> version whenever possible:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> *buf = NULL;</div>
 <div class="line"><span class="keywordtype">size_t</span> buf_size = 0;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Open the file</span></div>
 <div class="line">FILE *f = open_memstream(&amp;buf, &amp;buf_size);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Extract to File *</span></div>
 <div class="line">ret = <a class="code" href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">wows_extract_file_fp</a>(context, <span class="stringliteral">&quot;stuff.xml&quot;</span>, f);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Close the file</span></div>
+<div class="line">fclose(f);</div>
+<div class="line"> </div>
+<div class="line">free(buff);</div>
 <div class="ttc" id="awows-depack_8h_html_aaef72db46268e68876a6fb6b1534f1a3"><div class="ttname"><a href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">wows_extract_file_fp</a></div><div class="ttdeci">int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *output)</div><div class="ttdoc">Extract a given file from the archive (file pointer version).</div></div>
 </div><!-- fragment --><p>You can also extract files recursively:</p>
 <div class="fragment"><div class="line">TODO</div>
