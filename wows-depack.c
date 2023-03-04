@@ -34,18 +34,25 @@ static char doc[] = "\nWorld of Warships resource extractor tool";
 
 static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input file"},
                                        {"input-dir", 'I', "INPUT_INDEX_DIR", 0, "Input file"},
-                                       //    {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir with the decompressed
-                                       //    blobs"},
+                                       {"output-dir", 'O', "OUTPUT_DIR", 0, "Output dir for recursive extract"},
+                                       {"output", 'o', "OUTPUT_FILE", 0, "Output file when extracting one file"},
+                                       {"search", 's', "SEARCH_PATTERN", 0, "Search Regex"},
+                                       {"extract", 'e', "FILE_DIR_TO_EXTRACT", 0, "File or directory to extract"},
+                                       {"print", 'p', NULL, 0, "Print All files"},
                                        {0}};
 
 /* A description of the arguments we accept. */
-static char args_doc[] = "-i INPUT_FILE -o OUTPUT_DIR";
+static char args_doc[] = "<-i INPUT_FILE|-I INPUT_DIR>";
 
 struct arguments {
     char *args[2]; /* arg1 & arg2 */
     char *output;
+    char *output_dir;
+    char *extract;
+    char *search;
     char *input;
     char *input_dir;
+    bool print;
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -60,6 +67,21 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     case 'I':
         arguments->input_dir = arg;
         break;
+    case 'o':
+        arguments->output = arg;
+        break;
+    case 'O':
+        arguments->output_dir = arg;
+        break;
+    case 's':
+        arguments->search = arg;
+        break;
+    case 'e':
+        arguments->extract = arg;
+        break;
+    case 'p':
+        arguments->print = true;
+        break;
     default:
         return ARGP_ERR_UNKNOWN;
     }
@@ -69,70 +91,92 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
-    struct arguments args;
-    args.input = NULL;
-    args.output = NULL;
-    argp_parse(&argp, argc, argv, 0, 0, &args);
+    struct arguments *args = calloc(sizeof(struct arguments), 1);
+    argp_parse(&argp, argc, argv, 0, 0, args);
 
-    if (args.input == NULL && args.input_dir == NULL) {
+    if (args->input == NULL && args->input_dir == NULL) {
         fprintf(stderr, "error: no -i <input file> or -I <input dir> arg\n");
         return EXIT_FAILURE;
     }
 
+    if ((args->output != NULL || args->output_dir != NULL) && args->extract == NULL) {
+        fprintf(stderr, "error: please specify the file/dir to extract (-e '<FILE|DIR>')\n");
+        return EXIT_FAILURE;
+    }
+
+    if ((args->output == NULL && args->output_dir == NULL) && args->extract != NULL) {
+        fprintf(stderr, "error: please specify where to extract (-o 'FILE' or -O 'DIR')\n");
+        return EXIT_FAILURE;
+    }
+
+    // Parsing the content
     WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
-    context->debug_level = WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
-    // context->debug_level = WOWS_DEBUG_RAW_RECORD;
-    // context->debug_level = WOWS_DEBUG_FILE_LISTING;
 
     int ret = 0;
-    if (args.input != NULL) {
-        ret = wows_parse_index_file(args.input, context);
+    if (args->input != NULL) {
+        ret = wows_parse_index_file(args->input, context);
     }
-    if (args.input_dir != NULL) {
-        ret = wows_parse_index_dir(args.input_dir, context);
+    if (args->input_dir != NULL) {
+        ret = wows_parse_index_dir(args->input_dir, context);
     }
     if (ret != 0) {
         char *err_msg = wows_error_string(ret, context);
-        printf("Error: %s\n", err_msg);
+        fprintf(stderr, "error: %s\n", err_msg);
         free(err_msg);
+        free(args);
         wows_free_context(context);
         return ret;
     }
-    // wows_print_tree(context);
 
-    // int resc;
-    // char **res_files;
-    // wows_search(context, ".*Params.*", WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
-    // printf("Found %d matching files:\n", resc);
-    // for (int i = 0; i < resc; i++) {
-    //     printf("%s\n", res_files[i]);
-    //     free(res_files[i]);
+    if (args->print) {
+        wows_print_flat(context);
+    }
+
+    if (args->search != NULL) {
+        int resc;
+        char **res_files;
+        ret = wows_search(context, args->search, WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
+        printf("Found %d matching files:\n", resc);
+        for (int i = 0; i < resc; i++) {
+            printf("%s\n", res_files[i]);
+            free(res_files[i]);
+        }
+        free(res_files);
+        if (ret != 0) {
+            char *err_msg = wows_error_string(ret, context);
+            fprintf(stderr, "error: %s\n", err_msg);
+            free(err_msg);
+            free(args);
+            wows_free_context(context);
+            return ret;
+        }
+    }
+
+    if (args->output != NULL && args->extract != NULL) {
+        ret = wows_extract_file(context, args->extract, args->output);
+        if (ret != 0) {
+            char *err_msg = wows_error_string(ret, context);
+            fprintf(stderr, "error: %s\n", err_msg);
+            free(err_msg);
+            free(args);
+            wows_free_context(context);
+            return ret;
+        }
+    }
+
+    // if (args->output_dir != NULL && args->extract != NULL) {
+    //     ret = wows_extract_dir(context, args->extract, args->output_dir);
+    //     if (ret != 0) {
+    //         char *err_msg = wows_error_string(ret, context);
+    //         fprintf(stderr, "error: %s\n", err_msg);
+    //         free(err_msg);
+    //         free(args);
+    //         wows_free_context(context);
+    //         return ret;
+    //     }
     // }
-    // free(res_files);
-    // FILE *fd_pkg = fopen("stuff.c", "w+");
-    // ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
-    ret = wows_extract_file(context, "tests.c", "stuff.c");
-    if (ret != 0) {
-        char *err_msg = wows_error_string(ret, context);
-        printf("Error: %s\n", err_msg);
-        free(err_msg);
-        wows_free_context(context);
-        return ret;
-    }
 
-    // FILE *fd_pkg = fopen("aircraft_propeller_quad.anim", "w+");
-    // wows_extract_file_fp(context, "content/animation/common/aircraft_propeller_quad.anim", fd_pkg);
-
-    // fclose(fd_pkg);
-    wows_print_flat(context);
-
-    FILE *nfd_pkg = fopen("stuff.pkg", "w+");
-    FILE *nfd_idx = fopen("stuff.idx", "w+");
-    wows_write_pkg(context, "./tests", "stuff.pkg", nfd_pkg, nfd_idx);
-    fclose(nfd_idx);
-    fclose(nfd_pkg);
-    // wows_parse_index_file("stuff.idx", context);
-    // wows_print_flat(context);
+    free(args);
     wows_free_context(context);
     return 0;
 }
