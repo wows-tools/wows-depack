@@ -22,7 +22,7 @@ jobs:
         sudo apt update
         sudo apt install cmake zlib1g-dev libpcre2-dev clang lcov libcunit1-dev valgrind
     - name: Configure CMake
-      run: cmake -DCOVERAGE=ON .
+      run: cmake -DCOVERAGE=ON -DBUILD_TESTS=ON .
     - name: Build
       run: make
     - name: Coverage

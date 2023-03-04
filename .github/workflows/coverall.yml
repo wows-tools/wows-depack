@@ -21,7 +21,7 @@ jobs:
       uses: lukka/run-cmake@v1
 
     - name: Build
-      run: cmake -DCOVERAGE=ON .
+      run: cmake -DCOVERAGE=ON -DBUILD_TESTS=ON .
 
     - name: Test
       run: make coverage
