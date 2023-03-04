@@ -146,6 +146,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa4787554ee0be28e87c28a3869181e0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an error code into an error message string for the given WoWs resource parser context.  <a href="wows-depack_8h.html#aa4787554ee0be28e87c28a3869181e0f">More...</a><br /></td></tr>
 <tr class="separator:aa4787554ee0be28e87c28a3869181e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">wows_write_pkg</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp)</td></tr>
+<tr class="memdesc:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a package file and its index.  <a href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">More...</a><br /></td></tr>
 <tr class="separator:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -830,6 +831,21 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Writes a package file and its index. </p>
+<p>This function takes a <code><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a></code> pointer, an input directory path, a name for the .pkg file, and pointers to file streams for the package file and its index. The function writes the package file and its index to the provided file streams, using the given name.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <code><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a></code> struct. </td></tr>
+    <tr><td class="paramname">in_path</td><td>Input directory path to package. </td></tr>
+    <tr><td class="paramname">name</td><td>Name for the '.pkg file'. </td></tr>
+    <tr><td class="paramname">pkg_fp</td><td>Pointer to a file stream to write the package file to. </td></tr>
+    <tr><td class="paramname">idx_fp</td><td>Pointer to a file stream to write the index file to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>On success, returns 0. On failure, returns a non-zero error code.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function is experimental </dd></dl>
 
 </div>
 </div>
