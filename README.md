@@ -289,10 +289,10 @@ Installing the dependencies on Debian:
 apt install cmake zlib1g-dev libpcre2-dev clang
 ```
 
-Installing the test/coverage dependencies:
+Installing the test/coverage/doc dependencies:
 
 ```shell
-apt install lcov libcunit1-dev
+apt install lcov libcunit1-dev doxygen
 ```
 
 ## Build
@@ -326,10 +326,11 @@ fakeroot
 
 ## Test
 
-To run the unit tests, do the following
+To run the unit tests, do the following:
+
 ```shell
 # cmake run (on time)
-cmake -DCOVERAGE=ON .
+cmake -DCOVERAGE=ON -DBUILD_TESTS=ON .
 # run just the unit tests
 make tests
 # run also the coverage tests
@@ -342,6 +343,25 @@ in case of issues, you can directly launch the test binary alone:
 ./wows-depack-test
 
 # or with gdb:
+gdb --args ./wows-depack-test
+```
+
+## Documentation
+
+To build the doxygen documentation:
+
+```shell
+cmake -DBUILD_DOC=ON .
+
+make doc_doxygen
+```
+
+Optionally, get a nicer doxygen theme:
+
+```shell
+./misc/setup_doxycss.sh
+
+make doc_doxygen
 ```
 
 # Fuzzing
