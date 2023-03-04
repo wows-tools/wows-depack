@@ -259,6 +259,12 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
     index->header->offset_idx_data_section = 0;   // Recomputed by wows_dump_index_to_file
     index->header->offset_idx_footer_section = 0; // Same
     wows_dump_index_to_file(index, idx_fp);
+    free(index->header);
+    free(index->metadata);
+    free(index->data_file_entry);
+    free(index->footer);
+    free(index);
+    free(writer);
     return 0;
 }
 
