@@ -109,13 +109,19 @@ int main(int argc, char **argv) {
     //     free(res_files[i]);
     // }
     // free(res_files);
-    FILE *fd_pkg = fopen("GameParams.data", "w+");
-    wows_extract_file_fp(context, "content/GameParams.data", fd_pkg);
+    // FILE *fd_pkg = fopen("GameParams.data", "w+");
+    // wows_extract_file_fp(context, "content/GameParams.data", fd_pkg);
     // FILE *fd_pkg = fopen("aircraft_propeller_quad.anim", "w+");
     // wows_extract_file_fp(context, "content/animation/common/aircraft_propeller_quad.anim", fd_pkg);
 
+    // fclose(fd_pkg);
+    //  wows_print_flat(context);
+
+    FILE *fd_pkg = fopen("stuff.pkg", "w+");
+    FILE *fd_idx = fopen("stuff.idx", "w+");
+    wows_write_pkg(context, "./tests", "stuff", fd_pkg, fd_idx);
     fclose(fd_pkg);
-    // wows_print_flat(context);
+    fclose(fd_idx);
     wows_free_context(context);
     return 0;
 }

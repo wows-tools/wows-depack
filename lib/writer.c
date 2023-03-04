@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <time.h>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -23,16 +24,170 @@
 #define SET_BINARY_MODE(file)
 #endif
 
+#define CHUNK_NAME_SECTION 128
+#define CHUNK_FILE 10
+
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-int list_files_recursive(const char *path, char ***file_paths, int *count_file, int *count_dir) {
+/**
+    Appends a file name to the input buffer at the given offset.
+
+    @param input_buffer A pointer to a pointer to the input buffer.
+    @param offset A pointer to the offset in the input buffer where the file name should be written.
+    @param name The file name to write to the input buffer.
+    @param current_size A pointer to the current size of the input buffer.
+
+    @return Returns 0 on success, or a non-zero value on failure.
+*/
+int write_file_name(char **input_buffer, size_t *offset, char *name, size_t *current_size) {
+    size_t len = strlen(name) + 1;
+    if ((*current_size - *offset) < len) {
+        *input_buffer = realloc(*input_buffer, *current_size + CHUNK_NAME_SECTION);
+        *current_size += CHUNK_NAME_SECTION;
+    }
+    memcpy(*input_buffer, name, len);
+    offset += len;
+    return 0;
+}
+
+/**
+
+    Writes an entry for a file in a World of Warships (WoWS) package file section.
+
+    @param file_section A pointer to a pointer to an array of WOWS_INDEX_DATA_FILE_ENTRY structs representing the file
+   section.
+    @param file_section_size A pointer to a 64-bit unsigned integer representing the size of the file section array.
+    @param metadata_id A 64-bit unsigned integer representing the metadata ID for the file.
+    @param footer_id A 64-bit unsigned integer representing the footer ID for the file.
+    @param offset A 64-bit unsigned integer representing the offset of the file data within the package file.
+    @param size A 32-bit unsigned integer representing the size of the file data.
+    @param pkg_id A 64-bit unsigned integer representing the ID of the package containing the file.
+    @param file_count A pointer to a 64-bit unsigned integer representing the number of files in the file section array.
+
+    @return Returns 0 on success, or a non-zero value on failure.
+*/
+int write_file_pkg_entry(WOWS_INDEX_DATA_FILE_ENTRY **file_section, uint64_t *file_section_size, uint64_t metadata_id,
+                         uint64_t footer_id, uint64_t offset, uint32_t size, uint64_t pkg_id, uint64_t *file_count) {
+    if ((*file_section_size - *file_count) == 0) {
+        *file_section = realloc(*file_section, sizeof(WOWS_INDEX_DATA_FILE_ENTRY) * (*file_count + CHUNK_FILE));
+        (*file_section_size) += CHUNK_FILE;
+    }
+    (*file_section)[*file_count].metadata_id = metadata_id;
+    (*file_section)[*file_count].type_1 = 0x5;
+    (*file_section)[*file_count].type_2 = 0x1;
+    (*file_section)[*file_count].footer_id = footer_id;
+    (*file_section)[*file_count].offset_pkg_data = offset;
+    (*file_section)[*file_count].size_pkg_data = size;
+    (*file_section)[*file_count].id_pkg_data = pkg_id;
+    (*file_section)[*file_count].padding = 0;
+    (*file_count)++;
+    return 0;
+}
+
+/**
+
+    Writes a data blob to a package file, compressing it.
+
+    @param file_path The path to the data file to write.
+    @param pkg_fp A pointer to a FILE object representing the package file.
+    @param offset A pointer to the offset in the package file where the data blob should be written.
+    @param pkg_id Unsigned integer representing the ID of the data blob being written.
+
+    @return Returns 0 on success, or a non-zero value on failure.
+*/
+int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *size_written, uint64_t pkg_id) {
+    return 0;
+}
+
+/**
+
+    Writes an entry for metadata in a World of Warships (WoWS) package metadata section.
+
+    @param metadata A pointer to a pointer to an array of WOWS_INDEX_METADATA_ENTRY structs representing the metadata
+   section.
+    @param metadata_section_size A pointer to a 64-bit unsigned integer representing the size of the metadata section
+   array.
+    @param metadata_id A 64-bit unsigned integer representing the ID for the metadata entry.
+    @param file_name_size A 64-bit unsigned integer representing the size of the file name for the metadata entry.
+    @param offset_idx_file_name A 64-bit unsigned integer representing the offset of the file name in the file name
+   section.
+    @param parent_id A 64-bit unsigned integer representing the ID of the parent directory for the metadata entry.
+    @param file_plus_dir_count A pointer to a 64-bit unsigned integer representing the number of files and directories
+   in the metadata section array.
+
+    @return Returns 0 on success, or a non-zero value on failure.
+*/
+int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadata_section_size, uint64_t metadata_id,
+                         uint64_t file_name_size, uint64_t offset_idx_file_name, uint64_t parent_id,
+                         uint64_t *file_plus_dir_count) {
+    // If the metadata section array is full, allocate more space for it.
+    if ((*metadata_section_size - *file_plus_dir_count) == 0) {
+        *metadata = realloc(*metadata, sizeof(WOWS_INDEX_METADATA_ENTRY) * (*file_plus_dir_count + CHUNK_FILE));
+        (*metadata_section_size) += CHUNK_FILE;
+    }
+    (*metadata)[*file_plus_dir_count].id = metadata_id;
+    (*metadata)[*file_plus_dir_count].file_name_size = file_name_size;
+    (*metadata)[*file_plus_dir_count].offset_idx_file_name = offset_idx_file_name;
+    (*metadata)[*file_plus_dir_count].parent_id = parent_id;
+    (*file_plus_dir_count)++;
+    return 0;
+}
+
+int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *pkg_fp, FILE *idx_fp) {
+    WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
+    wows_writer *writer = calloc(sizeof(wows_writer), 1);
+    writer->index = index;
+    writer->context = context;
+    writer->pkg_fp = pkg_fp;
+    writer->idx_fp = idx_fp;
+    writer->footer_id = rand();
+    index->header = calloc(sizeof(WOWS_INDEX_HEADER), 1);
+
+    // Setup footer
+    index->footer = malloc(sizeof(WOWS_INDEX_FOOTER) + strlen(name_pkg) + 1);
+    index->footer->pkg_file_name_size = strlen(name_pkg) + 1;
+    index->footer->id = writer->footer_id;
+    index->footer->unknown_7 = rand(); // FIXME dubious, but we don't know what this field does.
+    memcpy(index->footer + sizeof(WOWS_INDEX_HEADER), name_pkg, strlen(name_pkg) + 1);
+
+    uint64_t parent_id = rand();
+    recursive_writer(writer, in_path, parent_id);
+    // Recompute the offset between metadata entries and file names
+    // We need to add the offset consituted by the metadata entries we have between one metadata entry and its filename
+    for (int i = 0; i < writer->file_plus_dir_count; i++) {
+        uint64_t added_offset = (writer->file_plus_dir_count - i) * sizeof(WOWS_INDEX_METADATA_ENTRY);
+        writer->index->metadata[i].offset_idx_file_name += added_offset;
+    }
+    // Concatenate the metadata section and the filename section
+    size_t metadata_byte_len = sizeof(WOWS_INDEX_METADATA_ENTRY) * writer->file_plus_dir_count;
+    WOWS_INDEX_METADATA_ENTRY *new_metadata_section = malloc(metadata_byte_len + writer->filename_section_offset);
+    memcpy(new_metadata_section, index->metadata, metadata_byte_len);
+    memcpy(new_metadata_section + metadata_byte_len, writer->filename_section, writer->filename_section_offset);
+    free(index->metadata);
+    free(writer->filename_section);
+    index->metadata = new_metadata_section;
+
+    // Setup header
+    memcpy(index->header->magic, "ISFP", 4);
+    index->header->unknown_1 = 0x2000000;
+    index->header->id = (uint32_t)rand();
+    index->header->unknown_2 = 0x40;
+    index->header->file_dir_count = writer->file_plus_dir_count;
+    index->header->file_count = writer->file_count;
+    index->header->unknown_3 = 1;
+    index->header->header_size = 40;
+    index->header->offset_idx_data_section = 0;   // Recomputed by wows_dump_index_to_file
+    index->header->offset_idx_footer_section = 0; // Same
+    wows_dump_index_to_file(index, idx_fp);
+    return 0;
+}
+
+int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
     DIR *dir;
     struct dirent *entry;
     struct stat info;
-    *count_file = 0;
-    *count_dir = 0;
 
     if ((dir = opendir(path)) == NULL) {
         return WOWS_ERROR_FILE_OPEN_FAILURE;
@@ -53,48 +208,34 @@ int list_files_recursive(const char *path, char ***file_paths, int *count_file, 
             if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
                 continue;
             }
-            (*count_dir)++;
-            list_files_recursive(full_path, file_paths, count_file, count_dir);
+            uint64_t offset_idx_file_name = writer->filename_section_offset;
+            uint64_t metadata_id = rand();
+
+            write_file_name(&(writer->filename_section), &(writer->filename_section_offset), entry->d_name,
+                            &(writer->filename_section_size));
+            write_metadata_entry(&(writer->index->metadata), &(writer->metadata_section_size), metadata_id,
+                                 (strlen(entry->d_name) + 1), offset_idx_file_name, parent_id,
+                                 &(writer->file_plus_dir_count));
+            recursive_writer(writer, full_path, metadata_id);
         } else if (S_ISREG(info.st_mode)) {
-            // Store the file path in the array
-            (*count_file)++;
-            *file_paths = realloc(*file_paths, (*count_file) * sizeof(char *));
-            (*file_paths)[(*count_file) - 1] = strdup(full_path);
+            uint64_t offset_idx_file_name = writer->filename_section_offset;
+            uint64_t metadata_id = rand();
+            uint64_t offset = 42; // TODO
+            uint32_t size = 69;
+            uint64_t pkg_id = rand();
+            write_data_blob(full_path, writer->pkg_fp, &offset, &size, pkg_id);
+            write_file_name(&(writer->filename_section), &(writer->filename_section_offset), entry->d_name,
+                            &(writer->filename_section_size));
+            write_metadata_entry(&(writer->index->metadata), &(writer->metadata_section_size), metadata_id,
+                                 (strlen(entry->d_name) + 1), offset_idx_file_name, parent_id,
+                                 &(writer->file_plus_dir_count));
+            write_file_pkg_entry(&(writer->index->data_file_entry), &(writer->file_section_size), metadata_id,
+                                 writer->footer_id, offset, size, pkg_id, &(writer->file_count));
         }
     }
 
     closedir(dir);
-    return 0;
-}
 
-int wows_writer(WOWS_CONTEXT *context, char *in_path, char *name) {
-    char *idx_ext = ".idx";
-    char *pkg_ext = ".pkg";
-    // Recover the list of files in the input directory
-    char **file_list;
-    int count_file;
-    int count_dir;
-    list_files_recursive(in_path, &file_list, &count_file, &count_dir);
-    // compute the total length of this file path
-    // FIXME, this is wrong (we don't need the full path each time, we only need the filename
-    // And directory name if not already encountered.
-    int sum_len_file_names = 0;
-    for (int i = 0; i < count_file; i++) {
-        sum_len_file_names += strlen(file_list[i]) + 1;
-    }
-    int count_all = count_dir + count_file;
-    WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
-    WOWS_INDEX_HEADER *header = calloc(sizeof(WOWS_INDEX_HEADER), 1);
-    WOWS_INDEX_METADATA_ENTRY *metadata_section =
-        malloc(sizeof(WOWS_INDEX_METADATA_ENTRY) * count_all + sum_len_file_names);
-    char *file_names_section = (char *)metadata_section + sizeof(WOWS_INDEX_METADATA_ENTRY) * count_all;
-    WOWS_INDEX_DATA_FILE_ENTRY *file_section = calloc(sizeof(WOWS_INDEX_DATA_FILE_ENTRY), count_file);
-    WOWS_INDEX_FOOTER *footer = malloc(sizeof(WOWS_INDEX_FOOTER) + strlen(name) + strlen(pkg_ext) + 1);
-    char *pkg_file_name = (char *)footer + sizeof(WOWS_INDEX_FOOTER);
-    index->header = header;
-    index->metadata = metadata_section;
-    index->data_file_entry = file_section;
-    index->footer = footer;
     return 0;
 }
 

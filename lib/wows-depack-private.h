@@ -126,6 +126,21 @@ typedef struct WOWS_INDEX {
     char *index_file_path;
 } WOWS_INDEX;
 
+typedef struct {
+    WOWS_CONTEXT *context;
+    FILE *pkg_fp;
+    FILE *idx_fp;
+    WOWS_INDEX *index;
+    char *filename_section;
+    uint64_t filename_section_offset;
+    uint64_t filename_section_size;
+    uint64_t file_plus_dir_count;
+    uint64_t metadata_section_size;
+    uint64_t file_count;
+    uint64_t file_section_size;
+    uint64_t footer_id;
+} wows_writer;
+
 /* ---------- */
 
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
@@ -173,3 +188,15 @@ char *join_path(char **parent_entries, int depth, char *name);
 pcre *compile_regex(const char *pattern);
 bool match_regex(pcre *re, const char *subject);
 int free_regex(pcre *re);
+
+int write_file_name(char **input_buffer, size_t *offset, char *name, size_t *current_size);
+
+int write_file_pkg_entry(WOWS_INDEX_DATA_FILE_ENTRY **file_section, uint64_t *file_section_size, uint64_t metadata_id,
+                         uint64_t footer_id, uint64_t offset, uint32_t size, uint64_t pkg_id, uint64_t *file_count);
+
+int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *size_written, uint64_t pkg_id);
+
+int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadata_section_size, uint64_t metadata_id,
+                         uint64_t file_name_size, uint64_t offset_idx_file_name, uint64_t parent_id,
+                         uint64_t *file_plus_dir_count);
+int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id);

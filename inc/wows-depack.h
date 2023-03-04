@@ -277,3 +277,5 @@ int wows_print_flat(WOWS_CONTEXT *context);
 char *wows_error_string(int error_code, WOWS_CONTEXT *context);
 
 /* ---------- */
+
+int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp);
