@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <time.h>
+#include <zlib.h>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -26,10 +27,23 @@
 
 #define CHUNK_NAME_SECTION 128
 #define CHUNK_FILE 10
+#define CHUNK_SIZE 16384 // 16KB
 
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
+
+uint64_t random_uint64() {
+    uint64_t value = 0;
+
+    // Generate 4 random 16-bit values and combine them into a 64-bit value
+    for (int i = 0; i < 4; i++) {
+        uint16_t random_value = rand();
+        value |= ((uint64_t)random_value << (i * 16));
+    }
+
+    return value;
+}
 
 /**
     Appends a file name to the input buffer at the given offset.
@@ -98,6 +112,68 @@ int write_file_pkg_entry(WOWS_INDEX_DATA_FILE_ENTRY **file_section, uint64_t *fi
     @return Returns 0 on success, or a non-zero value on failure.
 */
 int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *size_written, uint64_t pkg_id) {
+    int ret;
+    unsigned char in_buffer[CHUNK_SIZE];
+    unsigned char out_buffer[CHUNK_SIZE];
+    size_t in_bytes;
+    z_stream strm;
+    long start = ftell(pkg_fp);
+
+    // Open the input file for reading
+    FILE *input_file = fopen(file_path, "rb");
+    if (input_file == NULL) {
+        return WOWS_ERROR_UNKNOWN;
+    }
+
+    // Initialize the zlib stream
+    memset(&strm, 0, sizeof(strm));
+    ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+    if (ret != Z_OK) {
+        fclose(input_file);
+        return WOWS_ERROR_UNKNOWN;
+    }
+
+    // Read data from the input file, deflate it, and write it to the output file
+    do {
+        in_bytes = fread(in_buffer, 1, CHUNK_SIZE, input_file);
+        if (in_bytes == 0) {
+            break;
+        }
+        strm.next_in = in_buffer;
+        strm.avail_in = in_bytes;
+        do {
+            strm.next_out = out_buffer;
+            strm.avail_out = CHUNK_SIZE;
+            ret = deflate(&strm, Z_FINISH);
+            if (ret == Z_STREAM_ERROR) {
+                deflateEnd(&strm);
+                fclose(input_file);
+                return WOWS_ERROR_UNKNOWN;
+            }
+            size_t out_bytes = CHUNK_SIZE - strm.avail_out;
+            if (fwrite(out_buffer, 1, out_bytes, pkg_fp) != out_bytes) {
+                deflateEnd(&strm);
+                fclose(input_file);
+                return WOWS_ERROR_UNKNOWN;
+            }
+        } while (strm.avail_out == 0);
+    } while (!feof(input_file));
+
+    long end_data = ftell(pkg_fp);
+    *size_written = end_data - start;
+    WOWS_PKG_ID_ENTRY entry;
+    entry.padding_1 = 0;
+    entry.id = pkg_id;
+    entry.padding_2 = 0;
+    fwrite((char *)&entry, 1, sizeof(WOWS_PKG_ID_ENTRY), pkg_fp);
+
+    long end = ftell(pkg_fp);
+    *offset = (uint64_t)end;
+
+    // Clean up and close files
+    deflateEnd(&strm);
+    fclose(input_file);
+
     return 0;
 }
 
@@ -140,26 +216,20 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
     wows_writer *writer = calloc(sizeof(wows_writer), 1);
     writer->index = index;
 
-    // FIXME
-    // Ugly hack done to bypass the index boundaries checks in get_metadata_filename;
-    // writer->index->start_address = 0;
-    // writer->index->end_address = 0;
-    // writer->index->end_address -= 1;
-
     writer->context = context;
     writer->pkg_fp = pkg_fp;
     writer->idx_fp = idx_fp;
-    writer->footer_id = rand();
+    writer->footer_id = random_uint64();
     index->header = calloc(sizeof(WOWS_INDEX_HEADER), 1);
 
     // Setup footer
     index->footer = malloc(sizeof(WOWS_INDEX_FOOTER) + strlen(name_pkg) + 1);
     index->footer->pkg_file_name_size = strlen(name_pkg) + 1;
     index->footer->id = writer->footer_id;
-    index->footer->unknown_7 = rand(); // FIXME dubious, but we don't know what this field does.
+    index->footer->unknown_7 = random_uint64(); // FIXME dubious, but we don't know what this field does.
     memcpy((char *)(index->footer) + sizeof(WOWS_INDEX_FOOTER), name_pkg, strlen(name_pkg) + 1);
 
-    uint64_t parent_id = rand();
+    uint64_t parent_id = random_uint64();
     recursive_writer(writer, in_path, parent_id);
     // Recompute the offset between metadata entries and file names
     // We need to add the offset consituted by the metadata entries we have between one metadata entry and its filename
@@ -216,8 +286,10 @@ int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
             if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
                 continue;
             }
+            // FIXME factorize (in both the dir and file case, we end-up writting a metadata entry)
             uint64_t offset_idx_file_name = writer->filename_section_offset;
-            uint64_t metadata_id = rand();
+            // TODO use the context to check if this entry already exists (if so we must reuse the same ID)
+            uint64_t metadata_id = random_uint64();
 
             write_file_name(&(writer->filename_section), &(writer->filename_section_offset), entry->d_name,
                             &(writer->filename_section_size));
@@ -227,10 +299,11 @@ int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
             recursive_writer(writer, full_path, metadata_id);
         } else if (S_ISREG(info.st_mode)) {
             uint64_t offset_idx_file_name = writer->filename_section_offset;
-            uint64_t metadata_id = rand();
+            uint64_t metadata_id = random_uint64();
             uint64_t offset = 42; // TODO
             uint32_t size = 69;
-            uint64_t pkg_id = rand();
+            // Shift by 16 bits to mimic wows IDs
+            uint64_t pkg_id = random_uint64() >> 16;
             write_data_blob(full_path, writer->pkg_fp, &offset, &size, pkg_id);
             write_file_name(&(writer->filename_section), &(writer->filename_section_offset), entry->d_name,
                             &(writer->filename_section_size));
