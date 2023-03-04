@@ -105,10 +105,10 @@ char **res_files;
 
 
 /* Supported search modes:
-WOWS_SEARCH_FILE_ONLY     /**< Search only on file names. */
-WOWS_SEARCH_DIR_ONLY      /**< Search only on directory names. */
-WOWS_SEARCH_FILE_PLUS_DIR /**< Search on directory and file names. */
-WOWS_SEARCH_FULL_PATH     /**< Search on the full path of files. */
+WOWS_SEARCH_FILE_ONLY     < Search only on file names.
+WOWS_SEARCH_DIR_ONLY      < Search only on directory names.
+WOWS_SEARCH_FILE_PLUS_DIR < Search on directory and file names.
+WOWS_SEARCH_FULL_PATH     < Search on the full path of files.
 */
 
 // PCRE search pattern, please note that the final regex is "^<search_pattern>$"
