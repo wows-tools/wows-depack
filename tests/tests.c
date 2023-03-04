@@ -590,6 +590,17 @@ void test_extract() {
     wows_free_context(context);
 }
 
+void test_extract_file() {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret;
+    ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
+    CU_ASSERT_EQUAL(ret, 0);
+    ret = wows_extract_file(context, "tests.c", "tests-extract");
+    CU_ASSERT_EQUAL(ret, 0);
+    remove("tests-extract");
+    wows_free_context(context);
+}
+
 void test_decompose_path_root() {
     const char *path = "/";
     int dir_count;
@@ -872,6 +883,7 @@ int main() {
     suite = CU_add_suite("Compress/Decompress Suite", NULL, NULL);
     CU_add_test(suite, "test_compress", test_compress);
     CU_add_test(suite, "test_extract", test_extract);
+    CU_add_test(suite, "test_extract_file", test_extract_file);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
