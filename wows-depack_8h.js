@@ -16,6 +16,7 @@ var wows_depack_8h =
     [ "wows_readdir", "wows-depack_8h.html#aa21a99c351b09f0e81fb3b159d840f15", null ],
     [ "wows_search", "wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5", null ],
     [ "wows_stat_path", "wows-depack_8h.html#ab167e3d4eb672688c726a8f8183ac389", null ],
+    [ "wows_write_pkg", "wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092", null ],
     [ "WOWS_DEBUG_FILE_LISTING", "wows-depack_8h.html#a0682e56392858aada1e7505e8c1dc3aa", null ],
     [ "WOWS_DEBUG_RAW_RECORD", "wows-depack_8h.html#a325f7d53f13edf9e8080b349f599e0f9", null ],
     [ "WOWS_ERROR_BAD_MAGIC", "wows-depack_8h.html#a0880033edcca329d8fce1a1c8bb74dd0", null ],

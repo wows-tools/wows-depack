@@ -145,6 +145,8 @@ Functions</h2></td></tr>
 <tr class="memitem:aa4787554ee0be28e87c28a3869181e0f"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#aa4787554ee0be28e87c28a3869181e0f">wows_error_string</a> (int error_code, <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context)</td></tr>
 <tr class="memdesc:aa4787554ee0be28e87c28a3869181e0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an error code into an error message string for the given WoWs resource parser context.  <a href="wows-depack_8h.html#aa4787554ee0be28e87c28a3869181e0f">More...</a><br /></td></tr>
 <tr class="separator:aa4787554ee0be28e87c28a3869181e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">wows_write_pkg</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp)</td></tr>
+<tr class="separator:ae11ba74e9f3e1d1fe97085c25cfcf092"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -774,6 +776,52 @@ Macros</h2></td></tr>
           <td></td>
           <td class="paramtype">char&#160;</td>
           <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae11ba74e9f3e1d1fe97085c25cfcf092"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae11ba74e9f3e1d1fe97085c25cfcf092">&#9670;&nbsp;</a></span>wows_write_pkg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_write_pkg </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>in_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>pkg_fp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>idx_fp</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
