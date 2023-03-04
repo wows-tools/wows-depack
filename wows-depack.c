@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     }
 
     WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
-    // context->debug_level = WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
+    context->debug_level = WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
     // context->debug_level = WOWS_DEBUG_RAW_RECORD;
     // context->debug_level = WOWS_DEBUG_FILE_LISTING;
 
@@ -109,19 +109,29 @@ int main(int argc, char **argv) {
     //     free(res_files[i]);
     // }
     // free(res_files);
-    // FILE *fd_pkg = fopen("GameParams.data", "w+");
-    // wows_extract_file_fp(context, "content/GameParams.data", fd_pkg);
+    FILE *fd_pkg = fopen("stuff.c", "w+");
+    ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
+    if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+        free(err_msg);
+        wows_free_context(context);
+        return ret;
+    }
+
     // FILE *fd_pkg = fopen("aircraft_propeller_quad.anim", "w+");
     // wows_extract_file_fp(context, "content/animation/common/aircraft_propeller_quad.anim", fd_pkg);
 
-    // fclose(fd_pkg);
-    //  wows_print_flat(context);
-
-    FILE *fd_pkg = fopen("stuff.pkg", "w+");
-    FILE *fd_idx = fopen("stuff.idx", "w+");
-    wows_write_pkg(context, "./tests", "stuff", fd_pkg, fd_idx);
     fclose(fd_pkg);
-    fclose(fd_idx);
+    wows_print_flat(context);
+
+    FILE *nfd_pkg = fopen("stuff.pkg", "w+");
+    FILE *nfd_idx = fopen("stuff.idx", "w+");
+    wows_write_pkg(context, "./tests", "stuff.pkg", nfd_pkg, nfd_idx);
+    fclose(nfd_idx);
+    fclose(nfd_pkg);
+    // wows_parse_index_file("stuff.idx", context);
+    // wows_print_flat(context);
     wows_free_context(context);
     return 0;
 }
