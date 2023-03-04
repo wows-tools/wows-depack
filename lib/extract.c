@@ -36,10 +36,19 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
         free(dirs[i]);
     }
     free(dirs);
+    if (file == NULL) {
+        return WOWS_ERROR_NOT_A_FILE;
+    }
+
     if (inode == NULL) {
         free(file);
         return WOWS_ERROR_NOT_FOUND;
     }
+    if (inode->type != WOWS_INODE_TYPE_DIR) {
+        free(file);
+        return WOWS_ERROR_NOT_A_DIR;
+    }
+
     WOWS_DIR_INODE *inode_search = &(WOWS_DIR_INODE){.name = file};
     struct hashmap *map = inode->children_inodes;
     void *inode_ptr = hashmap_get(map, &inode_search);
@@ -57,6 +66,7 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
 }
 
 int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE *out_file) {
+    printf("%s %d\n", file_inode->name, file_inode->type);
     if (file_inode->type != WOWS_INODE_TYPE_FILE) {
         return WOWS_ERROR_NOT_A_FILE;
     }
@@ -138,6 +148,5 @@ int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *dest) {
     if (ret != 0) {
         return ret;
     }
-    extract_file_inode(context, (WOWS_FILE_INODE *)inode, dest);
-    return 0;
+    return extract_file_inode(context, (WOWS_FILE_INODE *)inode, dest);
 }
