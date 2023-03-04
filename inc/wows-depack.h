@@ -278,4 +278,20 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context);
 
 /* ---------- */
 
+/**
+ * @brief Writes a package file and its index.
+ *
+ * This function takes a `WOWS_CONTEXT` pointer, an input directory path, a name for the .pkg file, and pointers to
+ * file streams for the package file and its index. The function writes the package file and its index to the
+ * provided file streams, using the given name.
+ *
+ * @param context Pointer to a `WOWS_CONTEXT` struct.
+ * @param in_path Input directory path to package.
+ * @param name Name for the '.pkg file'.
+ * @param pkg_fp Pointer to a file stream to write the package file to.
+ * @param idx_fp Pointer to a file stream to write the index file to.
+ * @return On success, returns 0. On failure, returns a non-zero error code.
+ *
+ * @note This function is experimental
+ */
 int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp);
