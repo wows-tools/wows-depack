@@ -17,19 +17,21 @@ The reverse engineering story is detailed in [REVERSING_STORY.md](https://github
 ```shell
 ./wows-depack-cli --help
 
-Usage: wows-depack-cli [OPTION...] <-i INPUT_FILE|-I INPUT_DIR>
+Usage: wows-depack-cli [OPTION...]
+            <-i INPUT_FILE | -I INPUT_DIR | -W WOWS_BASE_DIR>
 
 World of Warships resource extractor tool
 
   -e, --extract=FILE_DIR_TO_EXTRACT
                              File or directory to extract
-  -i, --input=INPUT_INDEX    Input file
+  -i, --input=INPUT_INDEX    Input index file
   -I, --input-dir=INPUT_INDEX_DIR
-                             Input file
+                             Input index directory
   -o, --output=OUTPUT_FILE   Output file when extracting one file
   -O, --output-dir=OUTPUT_DIR   Output dir for recursive extract
   -p, --print                Print All files
   -s, --search=SEARCH_PATTERN   Search Regex
+  -W, --wows-dir=WOWS_BASE_DIR   Input World of Warships base directory
   -?, --help                 Give this help list
       --usage                Give a short usage message
   -V, --version              Print program version
