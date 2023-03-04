@@ -848,6 +848,23 @@ void test_wows_search_file(void) {
     wows_free_context(context);
 }
 
+void test_get_latest_idx_dir(void) {
+    char *idx_dir = NULL;
+    int ret = get_latest_idx_dir("./wows_sim_dir", &idx_dir);
+    CU_ASSERT_EQUAL(ret, 0);         // function should return 0 on success
+    CU_ASSERT_PTR_NOT_NULL(idx_dir); // function should allocate memory for idx_dir
+    CU_ASSERT_STRING_EQUAL(idx_dir, "./wows_sim_dir/bin/2234567/idx/");
+    free(idx_dir); // free memory allocated by function
+}
+
+void test_get_latest_idx_dir_errors(void) {
+    char *idx_dir = NULL;
+    int ret = get_latest_idx_dir("./tests", &idx_dir);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_FILE_OPEN_FAILURE);
+    CU_ASSERT_PTR_NULL(idx_dir);
+    free(idx_dir);
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
@@ -891,6 +908,8 @@ int main() {
     CU_add_test(suite, "test_decompose_path_only_dir", test_decompose_path_only_dir);
     CU_add_test(suite, "test_decompose_path_root", test_decompose_path_root);
     CU_add_test(suite, "test_get_pkg_filepath", test_get_pkg_filepath);
+    CU_add_test(suite, "test_get_latest_idx_dir", test_get_latest_idx_dir);
+    CU_add_test(suite, "test_get_latest_idx_dir_errors", test_get_latest_idx_dir_errors);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
