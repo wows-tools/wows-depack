@@ -5,6 +5,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include <pcre.h>
+#include <zlib.h>
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
 
@@ -527,6 +528,67 @@ void test_compress() {
     wows_free_context(context);
 }
 
+void test_extract() {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret;
+
+    ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
+    if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+    }
+
+    char *buf_pkg = NULL;
+    size_t buf_pkg_size = 0;
+    FILE *fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+
+    ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
+    CU_ASSERT_EQUAL(ret, 0);
+    if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+    }
+
+    fclose(fd_pkg);
+    uint64_t crc = crc32(0, NULL, 0);
+    crc = crc32(crc, (const Bytef *)buf_pkg, strlen(buf_pkg)); // update CRC-64 with string data
+
+    CU_ASSERT_NOT_EQUAL(buf_pkg_size, 0);
+    CU_ASSERT_EQUAL(buf_pkg_size, 32393);
+    CU_ASSERT_EQUAL(crc, 0xFF3F3136);
+
+    free(buf_pkg);
+
+    buf_pkg_size = 0;
+    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    ret = wows_extract_file_fp(context, "doesnotexist.c", fd_pkg);
+    fclose(fd_pkg);
+    free(buf_pkg);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_FOUND);
+
+    buf_pkg_size = 0;
+    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    ret = wows_extract_file_fp(context, "data/", fd_pkg);
+    fclose(fd_pkg);
+    free(buf_pkg);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_FILE);
+
+    buf_pkg_size = 0;
+    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    ret = wows_extract_file_fp(context, "data", fd_pkg);
+    fclose(fd_pkg);
+    free(buf_pkg);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_FILE);
+
+    buf_pkg_size = 0;
+    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    ret = wows_extract_file_fp(context, "/data/fake2.idx/test", fd_pkg);
+    fclose(fd_pkg);
+    free(buf_pkg);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_DIR);
+
+    wows_free_context(context);
+}
 
 void test_decompose_path_root() {
     const char *path = "/";
@@ -807,9 +869,9 @@ int main() {
     CU_add_test(suite, "test_match_regex_match", test_match_regex_match);
     CU_add_test(suite, "test_match_regex_no_match", test_match_regex_no_match);
 
-
-    suite = CU_add_suite("Compress Suite", NULL, NULL);
+    suite = CU_add_suite("Compress/Decompress Suite", NULL, NULL);
     CU_add_test(suite, "test_compress", test_compress);
+    CU_add_test(suite, "test_extract", test_extract);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
