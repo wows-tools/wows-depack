@@ -11,6 +11,8 @@
 #include <zlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include "wows-depack.h"
 #include "wows-depack-private.h"
@@ -176,4 +178,55 @@ char *join_path(char **parent_entries, int depth, char *name) {
     combined_path[combined_len + strlen(name)] = '\0';
 
     return combined_path;
+}
+
+int get_latest_idx_dir(char *wows_base_dir, char **idx_dir) {
+    char *bin_dir = calloc(sizeof(char), strlen(wows_base_dir) + 5);
+    sprintf(bin_dir, "%s/bin", wows_base_dir);
+    DIR *dir_ptr = opendir(bin_dir); // open the wows bin directory
+    struct stat info;
+    char *out = NULL;
+    if (dir_ptr == NULL) { // handle error
+        free(bin_dir);
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    struct dirent *entry;  // pointer to directory entry
+    int current_build = 0; // Highest build number we encountered so far
+
+    while ((entry = readdir(dir_ptr)) != NULL) { // read directory entries
+        char full_path[1024];
+        snprintf(full_path, sizeof(full_path), "%s/%s", bin_dir, entry->d_name);
+
+        // Ignore errors
+        if (stat(full_path, &info) != 0) {
+            continue;
+        }
+
+        if (S_ISDIR(info.st_mode)) {
+            int build = atoi(entry->d_name);
+            if (current_build < build) {
+                free(out);
+                out = calloc(sizeof(char), strlen(full_path) + 6);
+                sprintf(out, "%s/idx/", full_path);
+                current_build = build;
+            }
+        }
+    }
+    free(bin_dir);
+    if (out == NULL) {
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    if ((stat(out, &info) != 0) && (!S_ISDIR(info.st_mode))) {
+        free(out);
+        out = NULL;
+        return WOWS_ERROR_FILE_OPEN_FAILURE;
+    }
+
+    *idx_dir = out;
+
+    closedir(dir_ptr); // close the directory
+
+    return 0;
 }

@@ -295,3 +295,18 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context);
  * @note This function is experimental
  */
 int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp);
+
+/**
+ * @brief Gets the latest index directory in the specified WoWs installation directory.
+ *
+ * This function takes a base directory path for a World of Warships installation and a pointer to a char pointer to
+ * store the path of the latest index directory.
+ *
+ * @param wows_base_dir Path to the World of Warships installation directory.
+ * @param idx_dir Pointer to a char pointer to store the name of the latest index directory. The memory for this
+ * pointer will be allocated by the function and must be freed by the caller.
+ * @return On success, returns 0. On failure, returns an error code.
+ *
+ * @note The caller is responsible for freeing the memory allocated for the idx_dir parameter.
+ */
+int get_latest_idx_dir(char *wows_base_dir, char **idx_dir);
