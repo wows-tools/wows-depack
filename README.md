@@ -90,7 +90,8 @@ content/UIParams.data
 To Extract a Single file, do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx -e 'content/GameParams.data' -o GameParams.data
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx \
+	-e 'content/GameParams.data' -o GameParams.data
 ```
 
 ### Extract a whole directory
@@ -98,13 +99,15 @@ To Extract a Single file, do:
 To extract a whole sub directory, do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ -e 'content/' -O out/
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \
+	-e 'content/' -O out/
 ```
 
 To extract everything (rip your free disk space), do:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ -e '/' -O out/
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \
+	-e '/' -O out/
 ```
 
 ## Library
