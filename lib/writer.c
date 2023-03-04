@@ -47,8 +47,8 @@ int write_file_name(char **input_buffer, size_t *offset, char *name, size_t *cur
         *input_buffer = realloc(*input_buffer, *current_size + CHUNK_NAME_SECTION);
         *current_size += CHUNK_NAME_SECTION;
     }
-    memcpy(*input_buffer, name, len);
-    offset += len;
+    memcpy(*input_buffer + *offset, name, len);
+    *offset += len;
     return 0;
 }
 
@@ -139,6 +139,13 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
     wows_writer *writer = calloc(sizeof(wows_writer), 1);
     writer->index = index;
+
+    // FIXME
+    // Ugly hack done to bypass the index boundaries checks in get_metadata_filename;
+    // writer->index->start_address = 0;
+    // writer->index->end_address = 0;
+    // writer->index->end_address -= 1;
+
     writer->context = context;
     writer->pkg_fp = pkg_fp;
     writer->idx_fp = idx_fp;
@@ -150,7 +157,7 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
     index->footer->pkg_file_name_size = strlen(name_pkg) + 1;
     index->footer->id = writer->footer_id;
     index->footer->unknown_7 = rand(); // FIXME dubious, but we don't know what this field does.
-    memcpy(index->footer + sizeof(WOWS_INDEX_HEADER), name_pkg, strlen(name_pkg) + 1);
+    memcpy((char *)(index->footer) + sizeof(WOWS_INDEX_FOOTER), name_pkg, strlen(name_pkg) + 1);
 
     uint64_t parent_id = rand();
     recursive_writer(writer, in_path, parent_id);
@@ -162,9 +169,10 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
     }
     // Concatenate the metadata section and the filename section
     size_t metadata_byte_len = sizeof(WOWS_INDEX_METADATA_ENTRY) * writer->file_plus_dir_count;
-    WOWS_INDEX_METADATA_ENTRY *new_metadata_section = malloc(metadata_byte_len + writer->filename_section_offset);
+    WOWS_INDEX_METADATA_ENTRY *new_metadata_section =
+        calloc(metadata_byte_len + writer->filename_section_offset, sizeof(char));
     memcpy(new_metadata_section, index->metadata, metadata_byte_len);
-    memcpy(new_metadata_section + metadata_byte_len, writer->filename_section, writer->filename_section_offset);
+    memcpy((char *)new_metadata_section + metadata_byte_len, writer->filename_section, writer->filename_section_offset);
     free(index->metadata);
     free(writer->filename_section);
     index->metadata = new_metadata_section;
@@ -265,7 +273,7 @@ int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
     for (size_t i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *metadata_entry = &index->metadata[i];
         char *file_name;
-        get_metadata_filename(metadata_entry, index, &file_name);
+        get_metadata_filename_unsafe(metadata_entry, index, &file_name);
         fwrite(file_name, metadata_entry->file_name_size, 1, f);
         general_offset += metadata_entry->file_name_size;
     }
