@@ -100,19 +100,21 @@ CLI tool</h2>
 Help</h3>
 <div class="fragment"><div class="line">./wows-depack-cli --help</div>
 <div class="line"> </div>
-<div class="line">Usage: wows-depack-cli [OPTION...] &lt;-i INPUT_FILE|-I INPUT_DIR&gt;</div>
+<div class="line">Usage: wows-depack-cli [OPTION...]</div>
+<div class="line">            &lt;-i INPUT_FILE | -I INPUT_DIR | -W WOWS_BASE_DIR&gt;</div>
 <div class="line"> </div>
 <div class="line">World of Warships resource extractor tool</div>
 <div class="line"> </div>
 <div class="line">  -e, --extract=FILE_DIR_TO_EXTRACT</div>
 <div class="line">                             File or directory to extract</div>
-<div class="line">  -i, --input=INPUT_INDEX    Input file</div>
+<div class="line">  -i, --input=INPUT_INDEX    Input index file</div>
 <div class="line">  -I, --input-dir=INPUT_INDEX_DIR</div>
-<div class="line">                             Input file</div>
+<div class="line">                             Input index directory</div>
 <div class="line">  -o, --output=OUTPUT_FILE   Output file when extracting one file</div>
 <div class="line">  -O, --output-dir=OUTPUT_DIR   Output dir for recursive extract</div>
 <div class="line">  -p, --print                Print All files</div>
 <div class="line">  -s, --search=SEARCH_PATTERN   Search Regex</div>
+<div class="line">  -W, --wows-dir=WOWS_BASE_DIR   Input World of Warships base directory</div>
 <div class="line">  -?, --help                 Give this help list</div>
 <div class="line">      --usage                Give a short usage message</div>
 <div class="line">  -V, --version              Print program version</div>
@@ -127,11 +129,13 @@ Parse the index(es)</h3>
 <div class="fragment"><div class="line">./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6831266/idx/system_data.idx</div>
 </div><!-- fragment --><p>Parse all the indexes in the index directory:</p>
 <div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/</div>
-</div><!-- fragment --><p>Note, the other examples are using <code>-I &lt;DIR&gt;</code> , but it could be faster to specify one index file directly through <code>-i &lt;FILE&gt;</code>. Specifically, <code>GameParams,data</code> is referenced in the <code>system_data.idx</code> index.</p>
+</div><!-- fragment --><p>Auto-discovery of the latest idx directory (from WoWs install directory) and parse all index files:</p>
+<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/</div>
+</div><!-- fragment --><p>Note, the other examples are using <code>-W &lt;WOWS DIR&gt;</code> , but it could be faster to specify one index file directly through <code>-i &lt;FILE&gt;</code>. Specifically, <code>GameParams,data</code> is referenced in the <code>system_data.idx</code> index.</p>
 <p>Also, please note that you will need to adapt the path to your WoWs install and the parent of <code>idx/</code> (the <code>6831266</code> part changes with every update).</p>
 <h3><a class="anchor" id="autotoc_md5"></a>
 Print all files</h3>
-<p>To print all the files present: </p><div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/ -p</div>
+<p>To print all the files present: </p><div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ -p</div>
 <div class="line"> </div>
 <div class="line">/gui/modernization_icons/icon_modernization_PCM020_DamageControl_Mod_I.png</div>
 <div class="line">/gui/modernization_icons/icon_modernization_PCM047_Special_Mod_I_Montana.png</div>
@@ -141,7 +145,7 @@ Print all files</h3>
 </div><!-- fragment --> <h3><a class="anchor" id="autotoc_md6"></a>
 Search</h3>
 <p>To search a given file (regular expression):</p>
-<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx -s &#39;.*Params.*&#39;</div>
+<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ -s &#39;.*Params.*&#39;</div>
 <div class="line"> </div>
 <div class="line">Found 3 matching files:</div>
 <div class="line">shipyardParams.xml</div>
@@ -150,15 +154,15 @@ Search</h3>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md7"></a>
 Extract a single file</h3>
 <p>To Extract a Single file, do:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx \</div>
+<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;content/GameParams.data&#39; -o GameParams.data</div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md8"></a>
 Extract a whole directory</h3>
 <p>To extract a whole sub directory, do:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \</div>
+<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;content/&#39; -O out/</div>
 </div><!-- fragment --><p>To extract everything (rip your free disk space), do:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ \</div>
+<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;/&#39; -O out/</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
 Library</h2>
@@ -190,16 +194,29 @@ Initialize Context &amp; Parse Index Files</h4>
 <div class="ttc" id="awows-depack_8h_html_a9ad32a010e06dae6150c2d35a8b6c913"><div class="ttname"><a href="wows-depack_8h.html#a9ad32a010e06dae6150c2d35a8b6c913">wows_init_context</a></div><div class="ttdeci">WOWS_CONTEXT * wows_init_context(uint8_t debug_level)</div><div class="ttdoc">Initializes a WoWs resource extractor context.</div></div>
 <div class="ttc" id="awows-depack_8h_html_aa9acf8360da86592456433d8c0daf5f6"><div class="ttname"><a href="wows-depack_8h.html#aa9acf8360da86592456433d8c0daf5f6">WOWS_NO_DEBUG</a></div><div class="ttdeci">#define WOWS_NO_DEBUG</div><div class="ttdef"><b>Definition:</b> wows-depack.h:32</div></div>
 </div><!-- fragment --><p>To parse the indexes, you can either specify a specific index file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_file_path = <span class="stringliteral">&quot;path/to/file.idx&quot;</span></div>
+<div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_file_path = <span class="stringliteral">&quot;Games/World of Warships/bin/6831266/idx/system_data.idx&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Parse the index file */</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = wows_parse_index(index_file_path, context);</div>
 </div><!-- fragment --><p>Alternatively, you can parse all the index files in a given directory:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_dir_path = <span class="stringliteral">&quot;path/to/index/dir/&quot;</span></div>
+<div class="fragment"><div class="line"><span class="comment">// Note: the &#39;6831266&#39; directory changes every updates</span></div>
+<div class="line"><span class="keywordtype">char</span> *index_dir_path = <span class="stringliteral">&quot;Games/World of Warships/bin/6831266/idx&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Parse the index file */</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = <a class="code" href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a>(index_dir_path, context);</div>
 <div class="ttc" id="awows-depack_8h_html_a1dce2442c50922a4c0a328802d7b98d5"><div class="ttname"><a href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a></div><div class="ttdeci">int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context)</div><div class="ttdoc">Parses all files in a given directory.</div></div>
+</div><!-- fragment --><p>Wows depack also provides a small helper to detect the latest idx directory. </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_dir_path;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">get_latest_idx_dir</a>(<span class="stringliteral">&quot;Games/World of Warships/&quot;</span>, index_dir_path);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* Parse the index file */</span></div>
+<div class="line"><span class="keywordtype">int</span> ret = <a class="code" href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a>(index_dir_path, context);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// [...] do stuff</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// You need to free index_dir_path after</span></div>
+<div class="line">free(index_dir_path);</div>
+<div class="ttc" id="awows-depack_8h_html_acdedb373df71e2565530e77e10564400"><div class="ttname"><a href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">get_latest_idx_dir</a></div><div class="ttdeci">int get_latest_idx_dir(char *wows_base_dir, char **idx_dir)</div><div class="ttdoc">Gets the latest index directory in the specified WoWs installation directory.</div></div>
 </div><!-- fragment --><p>These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.</p>
 <h4><a class="anchor" id="autotoc_md13"></a>
 Searching files/directories</h4>
