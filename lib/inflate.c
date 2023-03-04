@@ -12,6 +12,7 @@
 #include <string.h>
 #include <zlib.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
@@ -139,6 +140,93 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     free(compressed_data);
     free(uncompressed_data);
     inflateEnd(&stream);
+    return 0;
+}
+
+FILE *open_file_with_parents(const char *filename) {
+    char *p, *sep;
+    struct stat sb;
+
+    p = strdup(filename);
+    if (!p) {
+        return NULL;
+    }
+
+    /* Traverse the path, creating directories as needed. */
+    for (sep = strchr(p + 1, '/'); sep; sep = strchr(sep + 1, '/')) {
+        *sep = '\0';
+        if (stat(p, &sb) == 0) {
+            if (!S_ISDIR(sb.st_mode)) {
+                return NULL;
+            }
+        } else {
+            if (mkdir(p, 0755) == -1) {
+                return NULL;
+            }
+        }
+        *sep = '/';
+    }
+
+    /* Open the file for writing. */
+    FILE *file = fopen(filename, "w+");
+    if (!file) {
+        return NULL;
+    }
+
+    free(p);
+
+    return file;
+}
+
+typedef struct {
+    char *base_path;
+    WOWS_CONTEXT *context;
+} extract_context;
+
+bool extract_recursive(const void *item, void *udata) {
+    WOWS_BASE_INODE *inode = *(WOWS_BASE_INODE **)item;
+    extract_context *ctx = (extract_context *)udata;
+
+    char **parent_entries = calloc(WOWS_DIR_MAX_LEVEL, sizeof(char *));
+    int depth;
+    get_path_inode(inode, &depth, parent_entries);
+
+    char *path = join_path(parent_entries, depth, inode->name);
+
+    if (inode->type == WOWS_INODE_TYPE_FILE) {
+        char *out_path = calloc(strlen(path) + strlen(ctx->base_path) + 2, sizeof(char));
+        sprintf(out_path, "%s/%s", ctx->base_path, path);
+        WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
+        FILE *fd = open_file_with_parents(out_path);
+        if (fd <= 0) {
+            printf("%s\n", out_path);
+        } else {
+            free(out_path);
+            extract_file_inode(ctx->context, file_inode, fd);
+            fclose(fd);
+        }
+    } else if (inode->type == WOWS_INODE_TYPE_DIR) {
+        WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
+
+        // recursively extract the directory
+        struct hashmap *map = dir_inode->children_inodes;
+        hashmap_scan(map, extract_recursive, udata);
+    }
+    free(parent_entries);
+    free(path);
+    return true;
+}
+
+int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path) {
+    WOWS_BASE_INODE *inode;
+    int ret = get_inode(context, dir_path, &inode);
+    if (ret != 0) {
+        return ret;
+    }
+    extract_context ctx;
+    ctx.base_path = out_dir_path;
+    ctx.context = context;
+    extract_recursive(&inode, &ctx);
     return 0;
 }
 
