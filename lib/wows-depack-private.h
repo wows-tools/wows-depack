@@ -139,6 +139,7 @@ typedef struct {
     uint64_t file_count;
     uint64_t file_section_size;
     uint64_t footer_id;
+    uint64_t pkg_cur_offset;
 } wows_writer;
 
 /* ---------- */

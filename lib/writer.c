@@ -127,7 +127,11 @@ int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *s
 
     // Initialize the zlib stream
     memset(&strm, 0, sizeof(strm));
-    ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    ret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY);
     if (ret != Z_OK) {
         fclose(input_file);
         return WOWS_ERROR_UNKNOWN;
@@ -306,18 +310,18 @@ int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
         } else if (S_ISREG(info.st_mode)) {
             uint64_t offset_idx_file_name = writer->filename_section_offset;
             uint64_t metadata_id = random_uint64();
-            uint64_t offset = 42; // TODO
-            uint32_t size = 69;
+            uint64_t start_offset = writer->pkg_cur_offset;
+            uint32_t size = 0;
             // Shift by 16 bits to mimic wows IDs
             uint64_t pkg_id = random_uint64() >> 16;
-            write_data_blob(full_path, writer->pkg_fp, &offset, &size, pkg_id);
+            write_data_blob(full_path, writer->pkg_fp, &(writer->pkg_cur_offset), &size, pkg_id);
             write_file_name(&(writer->filename_section), &(writer->filename_section_offset), entry->d_name,
                             &(writer->filename_section_size));
             write_metadata_entry(&(writer->index->metadata), &(writer->metadata_section_size), metadata_id,
                                  (strlen(entry->d_name) + 1), offset_idx_file_name, parent_id,
                                  &(writer->file_plus_dir_count));
             write_file_pkg_entry(&(writer->index->data_file_entry), &(writer->file_section_size), metadata_id,
-                                 writer->footer_id, offset, size, pkg_id, &(writer->file_count));
+                                 writer->footer_id, start_offset, size, pkg_id, &(writer->file_count));
         }
     }
 
