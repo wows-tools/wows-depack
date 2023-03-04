@@ -13,17 +13,23 @@ The reverse engineering story is detailed in [REVERSING_STORY.md](https://github
 
 ## CLI tool
 
-TODO
-
+### Help
 ```shell
 ./wows-depack-cli --help
-Usage: wows-depack-cli [OPTION...] -i INPUT_FILE -o OUTPUT_DIR
+
+Usage: wows-depack-cli [OPTION...] <-i INPUT_FILE|-I INPUT_DIR>
 
 World of Warships resource extractor tool
 
+  -e, --extract=FILE_DIR_TO_EXTRACT
+                             File or directory to extract
   -i, --input=INPUT_INDEX    Input file
   -I, --input-dir=INPUT_INDEX_DIR
                              Input file
+  -o, --output=OUTPUT_FILE   Output file when extracting one file
+  -O, --output-dir=OUTPUT_DIR   Output dir for recursive extract
+  -p, --print                Print All files
+  -s, --search=SEARCH_PATTERN   Search Regex
   -?, --help                 Give this help list
       --usage                Give a short usage message
   -V, --version              Print program version
@@ -34,13 +40,71 @@ for any corresponding short options.
 Report bugs to https://github.com/kakwa/wows-depack/issues.
 ```
 
+### Parse the index(es)
+
+Parse a single Index file:
 
 ```shell
-./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx
+./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6831266/idx/system_data.idx
 ```
 
+Parse all the indexes in the index directory:
+
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/
+```
+
+Note, the other examples are using `-I <DIR>` , but it could be faster to specify one index file directly through `-i <FILE>`.
+Specifically, `GameParams,data` is referenced in the `system_data.idx` index.
+
+Also, please note that you will need to adapt the path to your WoWs install and the parent of `idx/` (the `6831266` part changes with every update).
+
+### Print all files
+
+To print all the files present:
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/ -p
+
+/gui/modernization_icons/icon_modernization_PCM020_DamageControl_Mod_I.png
+/gui/modernization_icons/icon_modernization_PCM047_Special_Mod_I_Montana.png
+[...]
+/clanbase/headquarters_2/6/29/31.png
+/server_stats.xml
+
+```
+### Search
+
+To search a given file (regular expression):
+
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx -s '.*Params.*'
+
+Found 3 matching files:
+shipyardParams.xml
+content/GameParams.data
+content/UIParams.data
+```
+
+### Extract A single file
+
+To Extract a Single file, do:
+
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx -e 'content/GameParams.data' -o GameParams.data
+```
+
+### Extract a whole directory
+
+To extract a whole sub directory, do:
+
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ -e 'content/' -O out/
+```
+
+To extract everything (rip your free disk space), do:
+
+```shell
+./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6775398/idx/ -e '/' -O out/
 ```
 
 ## Library
@@ -169,7 +233,7 @@ wows_free_context(context);
 Most `wows_*` returns 0 on success or error code on failure.
 To convert it to an error message, you can do the following:
 
-```C 
+```C
 // wows_* function call example
 int ret = wows_parse_index(index_file_path, context);
 
