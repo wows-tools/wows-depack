@@ -45,26 +45,129 @@ Report bugs to https://github.com/kakwa/wows-depack/issues.
 
 ## Library
 
+### API documentation
+
+The API documentation [is available here](https://kakwa.github.io/wows-depack/wows-depack_8h.html).
+
 ### Usage examples
 
-TODO
+#### Init Context + Parse indexes
 
+To start searching/extracting file, you first need to init & fill the context.
+
+With a single index file:
 
 ```C
 #include "wows-depack.h"
 
-char *index_file_path = "path/to/file.idx"
-
-WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
 
 /* Other debug categories */
 // WOWS_DEBUG_RAW_RECORD
 // WOWS_DEBUG_FILE_LISTING
-
 /* several debug categories can be enabled like so: */
 // WOWS_DEBUG_FILE_LISTING | WOWS_DEBUG_RAW_RECORD;
 
+
+WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
+
 /* Parse the index file */
+int ret = wows_parse_index(index_file_path, context);
+```
+
+To parse the indexes, you can either specify a specific index file:
+
+```C
+char *index_file_path = "path/to/file.idx"
+
+/* Parse the index file */
+int ret = wows_parse_index(index_file_path, context);
+```
+
+Alternatively, you can parse all the index files in a given directory:
+
+```C
+char *index_dir_path = "path/to/index/dir/"
+
+/* Parse the index file */
+int ret = wows_parse_index_dir(index_dir_path, context);
+```
+
+These operations will parse one or several index files, and construct a filesystem like tree which can be then explored.
+
+#### Searching files/directories
+
+It's possible to search for matching files inside the indexes:
+
+```C
+// Init output variables
+int resc;
+char **res_files;
+
+
+/* Supported search modes:
+WOWS_SEARCH_FILE_ONLY     /**< Search only on file names. */
+WOWS_SEARCH_DIR_ONLY      /**< Search only on directory names. */
+WOWS_SEARCH_FILE_PLUS_DIR /**< Search on directory and file names. */
+WOWS_SEARCH_FULL_PATH     /**< Search on the full path of files. */
+*/
+
+// Search the files
+wows_search(context, ".*Params.*", WOWS_SEARCH_FILE_ONLY, &resc, &res_files);
+
+// Print and free the result
+printf("Found %d matching files:\n", resc);
+for (int i = 0; i < resc; i++) {
+    printf("%s\n", res_files[i]);
+    // Free Each file path must be freed
+    free(res_files[i]);
+}
+// Free the array containing these paths
+free(res_files);
+```
+
+#### Extracting files
+
+To extract files, you can do the following:
+
+```C
+char *output = "path/output.xml"
+
+// Extract to output file
+ret = wows_extract_file(context, "stuff.xml", output);
+```
+
+If you want to control the underlying File Pointer (for example, to write in a memstream), extract functions also provide an `_fp` version whenever possible:
+
+```C
+char *buf = NULL;
+size_t buf_size = 0;
+FILE *f = open_memstream(&buf, &buf_size);
+
+// Extract to File *
+ret = wows_extract_file_fp(context, "stuff.xml", f);
+```
+
+You can also extract files recursively:
+
+```C
+TODO
+```
+
+#### Clean-up
+
+Once done, you need to release the context memory:
+
+```C
+wows_free_context(context);
+```
+
+#### Error Handling & Debugging
+
+Most `wows_*` returns 0 on success or error code on failure.
+To convert it to an error message, you can do the following:
+
+```C 
+// wows_* function call example
 int ret = wows_parse_index(index_file_path, context);
 
 /* Error handling */
@@ -72,24 +175,35 @@ if (ret != 0) {
     /* get an error message + additional info from context + return code */
     char *err_msg = wows_error_string(ret, context);
     printf("Error: %s\n", err_msg);
-
     // the message must be freed
     free(err_msg);
-
-    wows_free_context(context);
-    return ret;
 }
-
-/* Do something with the file */
-wows_print_flat(context);
-
-/* Free the context and munmap the index file */
-wows_free_context(context);
 ```
 
-### API documentation
+To print the whole pseudo-filesystem tree to `stdout`, you can use the following functions:
 
-The API documentation [is available here](https://kakwa.github.io/wows-depack/wows-depack_8h.html).
+```C
+// Print a tree like layout
+wows_print_tree(context);
+
+// Print the full path of each file, one per line
+wows_print_flat(context);
+```
+
+#### Write support
+
+wows-depack provides experimental write support for creating index and pkg files:
+
+```C
+char *input_dir = "./tests";
+FILE *nfd_pkg = fopen("stuff.pkg", "w+");
+FILE *nfd_idx = fopen("stuff.idx", "w+");
+wows_write_pkg(context, input_dir, "stuff.pkg", nfd_pkg, nfd_idx);
+fclose(nfd_idx);
+fclose(nfd_pkg);
+```
+
+Please note that the write support is limited, and was created mainly to generate test data.
 
 # Build & development
 
