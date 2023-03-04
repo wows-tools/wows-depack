@@ -42,9 +42,13 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     }
     WOWS_DIR_INODE *inode_search = &(WOWS_DIR_INODE){.name = file};
     struct hashmap *map = inode->children_inodes;
-    inode = *(WOWS_DIR_INODE **)hashmap_get(map, &inode_search);
+    void *inode_ptr = hashmap_get(map, &inode_search);
 
     free(file);
+    if (inode_ptr == NULL) {
+        return WOWS_ERROR_NOT_FOUND;
+    }
+    inode = *(WOWS_DIR_INODE **)inode_ptr;
     if (inode == NULL) {
         return WOWS_ERROR_NOT_FOUND;
     }
