@@ -191,17 +191,17 @@ int main(int argc, char **argv) {
         }
     }
 
-    // if (args->output_dir != NULL && args->extract != NULL) {
-    //     ret = wows_extract_dir(context, args->extract, args->output_dir);
-    //     if (ret != 0) {
-    //         char *err_msg = wows_error_string(ret, context);
-    //         fprintf(stderr, "error: %s\n", err_msg);
-    //         free(err_msg);
-    //         free(args);
-    //         wows_free_context(context);
-    //         return ret;
-    //     }
-    // }
+    if (args->output_dir != NULL && args->extract != NULL) {
+        ret = wows_extract_dir(context, args->extract, args->output_dir);
+        if (ret != 0) {
+            char *err_msg = wows_error_string(ret, context);
+            fprintf(stderr, "error: %s\n", err_msg);
+            free(err_msg);
+            free(args);
+            wows_free_context(context);
+            return ret;
+        }
+    }
 
     if (wopt) {
         free(args->input_dir);
