@@ -115,7 +115,7 @@ The API documentation [is available here](https://kakwa.github.io/wows-depack/wo
 
 ### Usage examples
 
-#### Init Context + Parse indexes
+#### Initialize Context & Parse Index Files
 
 To start searching/extracting file, you first need to init & fill the context.
 
@@ -156,7 +156,7 @@ char *index_dir_path = "path/to/index/dir/"
 int ret = wows_parse_index_dir(index_dir_path, context);
 ```
 
-These operations will parse one or several index files, and construct a filesystem like tree which can be then explored.
+These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.
 
 #### Searching files/directories
 
@@ -192,7 +192,7 @@ for (int i = 0; i < resc; i++) {
 free(res_files);
 ```
 
-#### Extracting files
+#### Extracting Files
 
 To extract files, you can do the following:
 
@@ -237,7 +237,7 @@ wows_free_context(context);
 
 #### Error Handling & Debugging
 
-Most `wows_*` returns 0 on success or error code on failure.
+Most `wows_*` returns 0 on success or error codes on failure.
 To convert it to an error message, you can do the following:
 
 ```C
@@ -392,4 +392,4 @@ INDEX_DIR="~/Games/World\ of\ Warships/bin/6775398/idx/"
 afl-fuzz -i "$INDEX_DIR" -o ./out -t 10000 -- ./wows-depack-cli -i '@@'
 ```
 
-Then wait for crashes to occure (hopefully this will be in vain).
+Then wait for crashes to occur (hopefully this will be in vain).
