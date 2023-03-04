@@ -300,8 +300,8 @@ Build &amp; development</h1>
 Dependencies</h2>
 <p>Installing the dependencies on Debian:</p>
 <div class="fragment"><div class="line">apt install cmake zlib1g-dev libpcre2-dev clang</div>
-</div><!-- fragment --><p>Installing the test/coverage dependencies:</p>
-<div class="fragment"><div class="line">apt install lcov libcunit1-dev</div>
+</div><!-- fragment --><p>Installing the test/coverage/doc dependencies:</p>
+<div class="fragment"><div class="line">apt install lcov libcunit1-dev doxygen</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md20"></a>
 Build</h2>
 <div class="fragment"><div class="line">cmake .</div>
@@ -324,8 +324,9 @@ Install</h2>
 <div class="line">            └── libwows-depack.so.0.1.0</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md22"></a>
 Test</h2>
-<p>To run the unit tests, do the following </p><div class="fragment"><div class="line"># cmake run (on time)</div>
-<div class="line">cmake -DCOVERAGE=ON .</div>
+<p>To run the unit tests, do the following:</p>
+<div class="fragment"><div class="line"># cmake run (on time)</div>
+<div class="line">cmake -DCOVERAGE=ON -DBUILD_TESTS=ON .</div>
 <div class="line"># run just the unit tests</div>
 <div class="line">make tests</div>
 <div class="line"># run also the coverage tests</div>
@@ -334,7 +335,18 @@ Test</h2>
 <div class="line">./wows-depack-test</div>
 <div class="line"> </div>
 <div class="line"># or with gdb:</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md23"></a>
+<div class="line">gdb --args ./wows-depack-test</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md23"></a>
+Documentation</h2>
+<p>To build the doxygen documentation:</p>
+<div class="fragment"><div class="line">cmake -DBUILD_DOC=ON .</div>
+<div class="line"> </div>
+<div class="line">make doc_doxygen</div>
+</div><!-- fragment --><p>Optionally, get a nicer doxygen theme:</p>
+<div class="fragment"><div class="line">./misc/setup_doxycss.sh</div>
+<div class="line"> </div>
+<div class="line">make doc_doxygen</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md24"></a>
 Fuzzing</h1>
 <p>This tool/lib parses binary data, consequently checking for overflow might be a good idea.</p>
 <p>To do so, install <a href="https://aflplus.plus/">american fuzzy lop++ (afl++)</a>:</p>
