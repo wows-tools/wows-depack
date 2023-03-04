@@ -31,7 +31,7 @@ var NAVTREE =
         [ "Parse the index(es)", "index.html#autotoc_md4", null ],
         [ "Print all files", "index.html#autotoc_md5", null ],
         [ "Search", "index.html#autotoc_md6", null ],
-        [ "Extract A single file", "index.html#autotoc_md7", null ],
+        [ "Extract a single file", "index.html#autotoc_md7", null ],
         [ "Extract a whole directory", "index.html#autotoc_md8", null ]
       ] ],
       [ "Library", "index.html#autotoc_md9", [
