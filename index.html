@@ -165,7 +165,7 @@ API documentation</h3>
 <h3><a class="anchor" id="autotoc_md11"></a>
 Usage examples</h3>
 <h4><a class="anchor" id="autotoc_md12"></a>
-Init Context + Parse indexes</h4>
+Initialize Context &amp; Parse Index Files</h4>
 <p>To start searching/extracting file, you first need to init &amp; fill the context.</p>
 <p>With a single index file:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="wows-depack_8h.html">wows-depack.h</a>&quot;</span></div>
@@ -197,7 +197,7 @@ Init Context + Parse indexes</h4>
 <div class="line"><span class="comment">/* Parse the index file */</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = <a class="code" href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a>(index_dir_path, context);</div>
 <div class="ttc" id="awows-depack_8h_html_a1dce2442c50922a4c0a328802d7b98d5"><div class="ttname"><a href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a></div><div class="ttdeci">int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context)</div><div class="ttdoc">Parses all files in a given directory.</div></div>
-</div><!-- fragment --><p>These operations will parse one or several index files, and construct a filesystem like tree which can be then explored.</p>
+</div><!-- fragment --><p>These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.</p>
 <h4><a class="anchor" id="autotoc_md13"></a>
 Searching files/directories</h4>
 <p>It's possible to search for matching files inside the indexes:</p>
@@ -231,7 +231,7 @@ Searching files/directories</h4>
 <div class="ttc" id="awows-depack_8h_html_a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><div class="ttname"><a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a></div><div class="ttdeci">int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results)</div><div class="ttdoc">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.</div></div>
 <div class="ttc" id="awows-depack_8h_html_ad06e857fe4cab707bc7fcd511cbda4d2"><div class="ttname"><a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:40</div></div>
 </div><!-- fragment --><h4><a class="anchor" id="autotoc_md14"></a>
-Extracting files</h4>
+Extracting Files</h4>
 <p>To extract files, you can do the following:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> *output = <span class="stringliteral">&quot;path/output.xml&quot;</span></div>
 <div class="line"> </div>
@@ -262,7 +262,7 @@ Clean-up</h4>
 <div class="ttc" id="awows-depack_8h_html_af5398ab65db5ef107cbfe67400fe662a"><div class="ttname"><a href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a">wows_free_context</a></div><div class="ttdeci">int wows_free_context(WOWS_CONTEXT *context)</div><div class="ttdoc">Frees a WoWs resource extractor context.</div></div>
 </div><!-- fragment --><h4><a class="anchor" id="autotoc_md16"></a>
 Error Handling &amp; Debugging</h4>
-<p>Most <code>wows_*</code> returns 0 on success or error code on failure. To convert it to an error message, you can do the following:</p>
+<p>Most <code>wows_*</code> returns 0 on success or error codes on failure. To convert it to an error message, you can do the following:</p>
 <div class="fragment"><div class="line"><span class="comment">// wows_* function call example</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = wows_parse_index(index_file_path, context);</div>
 <div class="line"> </div>
@@ -361,7 +361,7 @@ Fuzzing</h2>
 <div class="line">INDEX_DIR=&quot;~/Games/World\ of\ Warships/bin/6775398/idx/&quot;</div>
 <div class="line"> </div>
 <div class="line">afl-fuzz -i &quot;$INDEX_DIR&quot; -o ./out -t 10000 -- ./wows-depack-cli -i &#39;@@&#39;</div>
-</div><!-- fragment --><p>Then wait for crashes to occure (hopefully this will be in vain). </p>
+</div><!-- fragment --><p>Then wait for crashes to occur (hopefully this will be in vain). </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

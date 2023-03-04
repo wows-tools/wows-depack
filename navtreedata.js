@@ -37,9 +37,9 @@ var NAVTREE =
       [ "Library", "index.html#autotoc_md9", [
         [ "API documentation", "index.html#autotoc_md10", null ],
         [ "Usage examples", "index.html#autotoc_md11", [
-          [ "Init Context + Parse indexes", "index.html#autotoc_md12", null ],
+          [ "Initialize Context & Parse Index Files", "index.html#autotoc_md12", null ],
           [ "Searching files/directories", "index.html#autotoc_md13", null ],
-          [ "Extracting files", "index.html#autotoc_md14", null ],
+          [ "Extracting Files", "index.html#autotoc_md14", null ],
           [ "Clean-up", "index.html#autotoc_md15", null ],
           [ "Error Handling & Debugging", "index.html#autotoc_md16", null ],
           [ "Write support", "index.html#autotoc_md17", null ]
