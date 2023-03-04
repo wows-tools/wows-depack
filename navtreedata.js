@@ -50,10 +50,10 @@ var NAVTREE =
       [ "Dependencies", "index.html#autotoc_md19", null ],
       [ "Build", "index.html#autotoc_md20", null ],
       [ "Install", "index.html#autotoc_md21", null ],
-      [ "Test", "index.html#autotoc_md22", null ],
-      [ "Documentation", "index.html#autotoc_md23", null ]
+      [ "Tests", "index.html#autotoc_md22", null ],
+      [ "Documentation", "index.html#autotoc_md23", null ],
+      [ "Fuzzing", "index.html#autotoc_md24", null ]
     ] ],
-    [ "Fuzzing", "index.html#autotoc_md24", null ],
     [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
       [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md26", null ],
       [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md27", null ],
