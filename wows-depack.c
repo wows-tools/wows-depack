@@ -98,11 +98,13 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 int main(int argc, char **argv) {
     struct arguments *args = calloc(sizeof(struct arguments), 1);
     int ret = 0;
+    bool wopt = false;
     argp_parse(&argp, argc, argv, 0, 0, args);
 
     if (args->wows_base_dir != NULL) {
         ret = get_latest_idx_dir(args->wows_base_dir, &args->input_dir);
         char *err_msg = wows_error_string(ret, NULL);
+        wopt = true;
         if (ret != 0) {
             fprintf(stderr, "error: %s\n", err_msg);
             free(err_msg);
@@ -138,6 +140,9 @@ int main(int argc, char **argv) {
     if (ret != 0) {
         char *err_msg = wows_error_string(ret, context);
         fprintf(stderr, "error: %s\n", err_msg);
+        if (wopt) {
+            free(args->input_dir);
+        };
         free(err_msg);
         free(args);
         wows_free_context(context);
@@ -161,6 +166,9 @@ int main(int argc, char **argv) {
         if (ret != 0) {
             char *err_msg = wows_error_string(ret, context);
             fprintf(stderr, "error: %s\n", err_msg);
+            if (wopt) {
+                free(args->input_dir);
+            };
             free(err_msg);
             free(args);
             wows_free_context(context);
@@ -173,6 +181,9 @@ int main(int argc, char **argv) {
         if (ret != 0) {
             char *err_msg = wows_error_string(ret, context);
             fprintf(stderr, "error: %s\n", err_msg);
+            if (wopt) {
+                free(args->input_dir);
+            };
             free(err_msg);
             free(args);
             wows_free_context(context);
@@ -192,6 +203,9 @@ int main(int argc, char **argv) {
     //     }
     // }
 
+    if (wopt) {
+        free(args->input_dir);
+    };
     free(args);
     wows_free_context(context);
     return 0;
