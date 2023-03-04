@@ -504,6 +504,30 @@ void test_decompose_path_only_dir() {
     free(file);
 }
 
+void test_compress() {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    char *buf_idx = NULL;
+    size_t buf_idx_size = 0;
+    FILE *nfd_idx = open_memstream(&buf_idx, &buf_idx_size);
+
+    char *buf_pkg = NULL;
+    size_t buf_pkg_size = 0;
+    FILE *nfd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+
+    int result = wows_write_pkg(context, "./tests", "stuff.pkg", nfd_pkg, nfd_idx);
+    fclose(nfd_pkg);
+    fclose(nfd_idx);
+
+    // TODO add more asserts
+    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_NOT_EQUAL(buf_idx_size, 0);
+    CU_ASSERT_NOT_EQUAL(buf_pkg_size, 0);
+    free(buf_idx);
+    free(buf_pkg);
+    wows_free_context(context);
+}
+
+
 void test_decompose_path_root() {
     const char *path = "/";
     int dir_count;
@@ -782,6 +806,10 @@ int main() {
     CU_add_test(suite, "test_compile_regex", test_compile_regex);
     CU_add_test(suite, "test_match_regex_match", test_match_regex_match);
     CU_add_test(suite, "test_match_regex_no_match", test_match_regex_no_match);
+
+
+    suite = CU_add_suite("Compress Suite", NULL, NULL);
+    CU_add_test(suite, "test_compress", test_compress);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
