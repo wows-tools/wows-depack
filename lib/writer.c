@@ -113,9 +113,8 @@ int write_file_pkg_entry(WOWS_INDEX_DATA_FILE_ENTRY **file_section, uint64_t *fi
 */
 int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *size_written, uint64_t pkg_id) {
     int ret;
-    unsigned char in_buffer[CHUNK_SIZE];
-    unsigned char out_buffer[CHUNK_SIZE];
-    size_t in_bytes;
+    unsigned char in[CHUNK_SIZE];
+    unsigned char out[CHUNK_SIZE];
     z_stream strm;
     long start = ftell(pkg_fp);
 
@@ -137,31 +136,33 @@ int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *s
         return WOWS_ERROR_UNKNOWN;
     }
 
-    // Read data from the input file, deflate it, and write it to the output file
+    int flush = 0;
+    unsigned have = 0;
+    /* compress until end of file */
     do {
-        in_bytes = fread(in_buffer, 1, CHUNK_SIZE, input_file);
-        if (in_bytes == 0) {
-            break;
+        strm.avail_in = fread(in, 1, CHUNK_SIZE, input_file);
+        if (ferror(input_file)) {
+            (void)deflateEnd(&strm);
+            return Z_ERRNO;
         }
-        strm.next_in = in_buffer;
-        strm.avail_in = in_bytes;
+        flush = feof(input_file) ? Z_FINISH : Z_NO_FLUSH;
+        strm.next_in = in;
+        /* run deflate() on input until output buffer not full, finish
+           compression if all of source has been read in */
         do {
-            strm.next_out = out_buffer;
             strm.avail_out = CHUNK_SIZE;
-            ret = deflate(&strm, Z_FINISH);
-            if (ret == Z_STREAM_ERROR) {
-                deflateEnd(&strm);
-                fclose(input_file);
-                return WOWS_ERROR_UNKNOWN;
-            }
-            size_t out_bytes = CHUNK_SIZE - strm.avail_out;
-            if (fwrite(out_buffer, 1, out_bytes, pkg_fp) != out_bytes) {
-                deflateEnd(&strm);
-                fclose(input_file);
-                return WOWS_ERROR_UNKNOWN;
+            strm.next_out = out;
+            ret = deflate(&strm, flush);   /* no bad return value */
+            assert(ret != Z_STREAM_ERROR); /* state not clobbered */
+            have = CHUNK_SIZE - strm.avail_out;
+            if (fwrite(out, 1, have, pkg_fp) != have || ferror(pkg_fp)) {
+                (void)deflateEnd(&strm);
+                return Z_ERRNO;
             }
         } while (strm.avail_out == 0);
-    } while (!feof(input_file));
+        assert(strm.avail_in == 0); /* all input will be used */
+        /* done when last data in file processed */
+    } while (flush != Z_FINISH);
 
     long end_data = ftell(pkg_fp);
     *size_written = end_data - start;
