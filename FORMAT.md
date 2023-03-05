@@ -207,8 +207,8 @@ This section  is repeated for each file (`header->file_count`).
 | `metadata_id`     | 64 bits | ID of the corresponding metadata entry                          |
 | `footer_id`       | 64 bits | ID of the footer entry (only one entry possible in practice)    |
 | `offset_pkg_data` | 64 bits | Offset to the compressed data from the start of the `.pkg` file |
-| `type_1`          | 32 bits | Some kind of type, role unknown                                 |
-| `type_2`          | 32 bits | Some kind of type, role unknown                                 |
+| `type_1`          | 32 bits | Compression param 1 (`0x0` for uncompressed, `0x5` for deflate) |
+| `type_2`          | 32 bits | Compression param 2 (`0x0` for uncompressed, `0x1` for deflate) |
 | `size_pkg_data`   | 32 bits | Size of the compressed data section in the `.pkg` file          |
 | `id_pkg_data`     | 64 bits | ID of the data section in the `.pkg` file                       |
 | `padding`         | 32 bits | Always `0x00000000`                                             |
@@ -244,14 +244,14 @@ This section  is repeated for each file (`header->file_count`).
 
 ### PKG Entry
 
-The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.
+The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) or raw/uncompressed data blobs (one for each file) separated by an ID.
 
 #### Layout
 
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 |                                                                                 |
-|                      Compressed Data (RFC 1951/Deflate)                         |
+|                   Compressed (RFC 1951/Deflate) or Raw Data                     |
 |                                                                                 |
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 +====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
