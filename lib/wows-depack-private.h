@@ -202,3 +202,4 @@ int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadat
                          uint64_t file_name_size, uint64_t offset_idx_file_name, uint64_t parent_id,
                          uint64_t *file_plus_dir_count);
 int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id);
+int copy_data(FILE *in, FILE *out, long offset, size_t size);

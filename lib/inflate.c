@@ -80,6 +80,40 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     return 0;
 }
 
+int copy_data(FILE *in, FILE *out, long offset, size_t size) {
+    char buffer[BUFSIZ];
+    size_t bytes_read, bytes_written;
+    long total_bytes_read = 0;
+    int fseek_result;
+
+    // seek to the specified offset in the input file
+    fseek_result = fseek(in, offset, SEEK_SET);
+    if (fseek_result != 0) {
+        return WOWS_ERROR_UNKNOWN;
+    }
+
+    // copy data from the input file to the output file
+    while (total_bytes_read < size && !feof(in) && !ferror(in)) {
+        // read up to BUFSIZ bytes or the remaining number of bytes to read
+        bytes_read = fread(buffer, 1, (size - total_bytes_read < BUFSIZ) ? (size - total_bytes_read) : BUFSIZ, in);
+        if (bytes_read == 0) {
+            break;
+        }
+
+        bytes_written = fwrite(buffer, 1, bytes_read, out);
+        if (bytes_written != bytes_read) {
+            return WOWS_ERROR_UNKNOWN;
+        }
+
+        total_bytes_read += bytes_read;
+    }
+
+    if (total_bytes_read != size) {
+        return WOWS_ERROR_UNKNOWN;
+    }
+    return 0;
+}
+
 int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE *out_file) {
     if (file_inode->type != WOWS_INODE_TYPE_FILE) {
         return WOWS_ERROR_NOT_A_FILE;
@@ -97,15 +131,6 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     }
     free(pkg_file_path);
 
-    // TODO we probably have other stuff than zlib/deflate (probably controlled by entry->type_1 and or entry->type_2)
-    z_stream stream = {0};
-    stream.zalloc = Z_NULL;
-    stream.zfree = Z_NULL;
-    stream.opaque = Z_NULL;
-    stream.avail_in = 0;
-    stream.next_in = Z_NULL;
-    inflateInit2(&stream, -15);
-
     WOWS_INDEX_DATA_FILE_ENTRY *entry_search = &(WOWS_INDEX_DATA_FILE_ENTRY){.metadata_id = file_inode->id};
     void *res = hashmap_get(context->file_map, &entry_search);
     if (res == NULL) {
@@ -114,45 +139,67 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     WOWS_INDEX_DATA_FILE_ENTRY *entry = *(WOWS_INDEX_DATA_FILE_ENTRY **)res;
 
     int ret = 0;
-    char *compressed_data = malloc(CHUNK_SIZE);
-    char *uncompressed_data = malloc(CHUNK_SIZE);
     uint64_t offset = entry->offset_pkg_data;
+    uint32_t size = entry->size_pkg_data;
 
-    fseek(fd_pkg, offset, SEEK_SET);
-
-    // TODO count the number of bytes we read and actually check it against entry->size_pkg_data
-    do {
-        // Read a chunk of compressed data from the input file
-        const size_t compressed_bytes_read = fread(compressed_data, 1, CHUNK_SIZE, fd_pkg);
-        // TODO also stop when the bytes counter reaches entry->size_pkg_data
-        if (compressed_bytes_read == 0 && feof(fd_pkg)) {
-            break; // Reached end of the data chunk input file
+    // FIXME entry->type_1 and entry->type_2 are probably more than on/off switch for compression.
+    // Most likely, it's something like "id of compression algorithm" + "compression level"
+    // But in the real world files, so far, we only encountered:
+    // * (0x0, 0x0) for uncompressed
+    // * (0x5, 0x1) for deflate/RFC 1951)
+    // So it's good for now.
+    if (entry->type_1 == 0 && entry->type_2 == 0) {
+        ret = copy_data(fd_pkg, out_file, offset, size);
+        if (ret != 0) {
+            fclose(fd_pkg);
+            return ret;
         }
-        if (ferror(fd_pkg)) {
-            ret = WOWS_ERROR_CORRUPTED_FILE;
-            break;
-        }
+    } else {
+        // TODO could probably be moved in a dedicated function (like copy_data)
+        fseek(fd_pkg, offset, SEEK_SET);
+        char *compressed_data = malloc(CHUNK_SIZE);
+        char *uncompressed_data = malloc(CHUNK_SIZE);
+        z_stream stream = {0};
+        stream.zalloc = Z_NULL;
+        stream.zfree = Z_NULL;
+        stream.opaque = Z_NULL;
+        stream.avail_in = 0;
+        stream.next_in = Z_NULL;
+        inflateInit2(&stream, -15);
 
-        // Decompress the chunk of data
-        stream.next_in = (Bytef *)compressed_data;
-        stream.avail_in = (uInt)compressed_bytes_read;
+        // TODO count the number of bytes we read and actually check it against entry->size_pkg_data
         do {
-            stream.next_out = (Bytef *)uncompressed_data;
-            stream.avail_out = CHUNK_SIZE;
-            inflate(&stream, Z_NO_FLUSH);
-
-            // Write the decompressed data to the output file
-            const size_t uncompressed_bytes_written = CHUNK_SIZE - stream.avail_out;
-            if (fwrite(uncompressed_data, 1, uncompressed_bytes_written, out_file) != uncompressed_bytes_written) {
-                ret = WOWS_ERROR_FILE_WRITE;
+            // Read a chunk of compressed data from the input file
+            const size_t compressed_bytes_read = fread(compressed_data, 1, CHUNK_SIZE, fd_pkg);
+            if (compressed_bytes_read == 0 && feof(fd_pkg)) {
+                break; // Reached end of the data chunk input file
+            }
+            if (ferror(fd_pkg)) {
+                ret = WOWS_ERROR_CORRUPTED_FILE;
                 break;
             }
-        } while (stream.avail_out == 0);
-    } while (ret == 0);
+
+            // Decompress the chunk of data
+            stream.next_in = (Bytef *)compressed_data;
+            stream.avail_in = (uInt)compressed_bytes_read;
+            do {
+                stream.next_out = (Bytef *)uncompressed_data;
+                stream.avail_out = CHUNK_SIZE;
+                inflate(&stream, Z_NO_FLUSH);
+
+                // Write the decompressed data to the output file
+                const size_t uncompressed_bytes_written = CHUNK_SIZE - stream.avail_out;
+                if (fwrite(uncompressed_data, 1, uncompressed_bytes_written, out_file) != uncompressed_bytes_written) {
+                    ret = WOWS_ERROR_FILE_WRITE;
+                    break;
+                }
+            } while (stream.avail_out == 0);
+        } while (ret == 0);
+        free(compressed_data);
+        free(uncompressed_data);
+        inflateEnd(&stream);
+    }
     fclose(fd_pkg);
-    free(compressed_data);
-    free(uncompressed_data);
-    inflateEnd(&stream);
     return 0;
 }
 
