@@ -77,6 +77,8 @@ typedef struct {
  * @param debug_level The debug level for the parser.
  *
  * @return A pointer to the newly created context, or NULL if an error occurred.
+ *
+ * @note Call wows_free_context() to liberate context memory
  */
 WOWS_CONTEXT *wows_init_context(uint8_t debug_level);
 
@@ -87,7 +89,7 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level);
  *
  * @param context A pointer to the context to free.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_free_context(WOWS_CONTEXT *context);
 
@@ -100,7 +102,7 @@ int wows_free_context(WOWS_CONTEXT *context);
  *
  * @param context A pointer to the context to free.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_free_context_no_munmap(WOWS_CONTEXT *context);
 /* ---------- */
@@ -116,7 +118,7 @@ int wows_free_context_no_munmap(WOWS_CONTEXT *context);
  * @param index_file_path The path to the WoWs resource index file to parse.
  * @param context A pointer to the parser context to update.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_parse_index_file(const char *index_file_path, WOWS_CONTEXT *context);
 
@@ -129,7 +131,7 @@ int wows_parse_index_file(const char *index_file_path, WOWS_CONTEXT *context);
  * @param index_dir_path The path to the directory containing the WoWs resource index files to parse.
  * @param context A pointer to the parser context to update.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context);
 
@@ -145,7 +147,7 @@ int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context);
  * @param fd The file descriptor associated with the index file.
  * @param context A pointer to the parser context to update.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_parse_index_buffer(char *contents, size_t length, const char *index_file_path, int fd, WOWS_CONTEXT *context);
 
@@ -173,16 +175,21 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
  * value of the `mode` parameter. The names of the matching files or directories are stored in the `results` array, and
  * the number of matches is stored in the `result_count` variable. The caller is responsible for freeing the memory
  * allocated for the `results` array and its elements.
+ *
+ * @return 0 on success, or an error code if an error occurred.
+ *
+ * @note It's up to the caller to free each entry in the results array and free the array itself.
+ *
  */
 int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results);
 
 /* read the content of a directory */
 // Not implemented
-int wows_readdir(WOWS_CONTEXT *context, char dir_path, char **result[]);
+// int wows_readdir(WOWS_CONTEXT *context, char dir_path, char **result[]);
 
 // Not implemented
 /* give the stat of a given path (mainly if it's a directory or a file, and the file size) */
-int wows_stat_path(WOWS_CONTEXT *context, char path);
+// int wows_stat_path(WOWS_CONTEXT *context, char path);
 
 /* ---------- */
 
@@ -195,23 +202,21 @@ int wows_stat_path(WOWS_CONTEXT *context, char path);
  * @param file_path  Path of the file to extract.
  * @param output  Pointer to a FILE structure to write the output to.
  *
- * @return 0 if the file was opened successfully and the header was written,
- *         otherwise a negative value indicating the error.
+ * @return 0 on success, or an error code if an error occurred.
+ *
+ * @note It's up to the caller to open and close FILE *output
  */
 int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *output);
 
 /**
  * @brief Extract a given file from the archive (output file version).
  *
- * Not implemented yet
  *
  * @param context  Pointer to a WOWS_CONTEXT structure.
  * @param file_path  Path of the file to extract.
  * @param out_path  Path to the output file.
  *
- * Not implemented yet
- * @return 0 if the file was opened successfully and the header was written,
- *         otherwise a negative value indicating the error.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path);
 
@@ -221,14 +226,12 @@ int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path);
  * This function will extract all files under the given directory.
  * The whole directory tree from the archive will be recreated under out_dir_path.
  *
- * Not implemented yet
  *
  * @param context  Pointer to a WOWS_CONTEXT structure.
  * @param dir_path  Path of the directory to extract.
  * @param out_dir_path  Path to the output directory.
  *
- * @return 0 if the file was opened successfully and the header was written,
- *         otherwise a negative value indicating the error.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path);
 
@@ -243,7 +246,7 @@ int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path);
  *
  * @param context A pointer to the WoWs resource parser context to print.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_print_tree(WOWS_CONTEXT *context);
 
@@ -260,7 +263,7 @@ int wows_print_tree(WOWS_CONTEXT *context);
  *
  * @param context A pointer to the WoWs resource parser context to print.
  *
- * @return 0 on success, or a negative value if an error occurred.
+ * @return 0 on success, or an error code if an error occurred.
  */
 int wows_print_flat(WOWS_CONTEXT *context);
 
@@ -272,7 +275,9 @@ int wows_print_flat(WOWS_CONTEXT *context);
  * @param error_code The error code to convert.
  * @param context A pointer to the WoWs resource parser context to use.
  *
- * @return A pointer to a string containing the error message.
+ * @return 0 on success, or an error code if an error occurred.
+ *
+ * @note It's up to the caller to free the returned string
  */
 char *wows_error_string(int error_code, WOWS_CONTEXT *context);
 
@@ -290,7 +295,7 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context);
  * @param name Name for the '.pkg file'.
  * @param pkg_fp Pointer to a file stream to write the package file to.
  * @param idx_fp Pointer to a file stream to write the index file to.
- * @return On success, returns 0. On failure, returns a non-zero error code.
+ * @return 0 on success, or an error code if an error occurred.
  *
  * @note This function is experimental
  */
@@ -305,7 +310,7 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_f
  * @param wows_base_dir Path to the World of Warships installation directory.
  * @param idx_dir Pointer to a char pointer to store the name of the latest index directory. The memory for this
  * pointer will be allocated by the function and must be freed by the caller.
- * @return On success, returns 0. On failure, returns an error code.
+ * @return 0 on success, or an error code if an error occurred.
  *
  * @note The caller is responsible for freeing the memory allocated for the idx_dir parameter.
  */
