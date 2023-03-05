@@ -610,11 +610,7 @@ void test_decompose_path_root() {
 
     CU_ASSERT_EQUAL(result, 0);
     CU_ASSERT_EQUAL(dir_count, 0);
-
-    for (int i = 0; i < dir_count; i++) {
-        free(dirs[i]);
-    }
-    CU_ASSERT_STRING_EQUAL(file, "/");
+    CU_ASSERT_PTR_NULL(file);
     free(dirs);
     free(file);
 }
