@@ -861,6 +861,114 @@ void test_get_latest_idx_dir_errors(void) {
     free(idx_dir);
 }
 
+#define BUFSIZ_TEST 20
+
+void test_copy_data(void) {
+    // create an input buffer with some data
+    char input_buffer[] = "Hello, world!";
+    size_t input_size = strlen(input_buffer);
+
+    // create an input memory stream
+    FILE *in = fmemopen(input_buffer, input_size, "rb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(in);
+
+    // create an output memory stream
+    char output_buffer[BUFSIZ_TEST];
+    FILE *out = fmemopen(output_buffer, BUFSIZ_TEST, "wb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(out);
+
+    // copy the data using the function being tested
+    int result = copy_data(in, out, 0, input_size);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
+
+    // clean up the memory streams
+    fclose(in);
+    fclose(out);
+
+    // check that the output buffer contains the expected data
+    CU_ASSERT_NSTRING_EQUAL_FATAL(output_buffer, input_buffer, input_size);
+}
+
+void test_copy_data_with_offset(void) {
+    // create an input buffer with some data
+    char input_buffer[] = "Hello, world!";
+    size_t input_size = strlen(input_buffer);
+
+    // create an input memory stream
+    FILE *in = fmemopen(input_buffer, input_size, "rb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(in);
+
+    // create an output memory stream
+    char output_buffer[BUFSIZ_TEST];
+    FILE *out = fmemopen(output_buffer, BUFSIZ_TEST, "wb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(out);
+
+    // copy only part of the data using the function being tested
+    long offset = 3;
+    size_t size = 8;
+    int result = copy_data(in, out, offset, size);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
+
+    // clean up the memory streams
+    fclose(in);
+    fclose(out);
+
+    // check that the output buffer contains the expected data
+    CU_ASSERT_NSTRING_EQUAL_FATAL(output_buffer, &input_buffer[offset], size);
+}
+
+void test_copy_data_with_offset_and_size(void) {
+    // create an input buffer with some data
+    char input_buffer[] = "Hello, world!";
+    size_t input_size = strlen(input_buffer);
+
+    // create an input memory stream
+    FILE *in = fmemopen(input_buffer, input_size, "rb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(in);
+
+    // create an output memory stream
+    char output_buffer[BUFSIZ_TEST];
+    FILE *out = fmemopen(output_buffer, BUFSIZ_TEST, "wb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(out);
+
+    // try to copy more data than is available, should return an error
+    long offset = 2;
+    size_t size = 6;
+    int result = copy_data(in, out, offset, size);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
+
+    // clean up the memory streams
+    fclose(in);
+    fclose(out);
+
+    CU_ASSERT_STRING_EQUAL(output_buffer, "llo, w");
+}
+
+void test_copy_data_with_offset_and_too_large_size(void) {
+    // create an input buffer with some data
+    char input_buffer[] = "Hello, world!";
+    size_t input_size = strlen(input_buffer);
+
+    // create an input memory stream
+    FILE *in = fmemopen(input_buffer, input_size, "rb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(in);
+
+    // create an output memory stream
+    char output_buffer[BUFSIZ_TEST];
+    FILE *out = fmemopen(output_buffer, BUFSIZ_TEST, "wb");
+    CU_ASSERT_PTR_NOT_NULL_FATAL(out);
+
+    // try to copy more data than is available, should return an error
+    long offset = 3;
+    size_t size = 100;
+    int result = copy_data(in, out, offset, size);
+    CU_ASSERT_NOT_EQUAL_FATAL(result, 0);
+
+    // clean up the memory streams
+    fclose(in);
+    fclose(out);
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
@@ -906,6 +1014,10 @@ int main() {
     CU_add_test(suite, "test_get_pkg_filepath", test_get_pkg_filepath);
     CU_add_test(suite, "test_get_latest_idx_dir", test_get_latest_idx_dir);
     CU_add_test(suite, "test_get_latest_idx_dir_errors", test_get_latest_idx_dir_errors);
+    CU_add_test(suite, "test_copy_data", test_copy_data);
+    CU_add_test(suite, "test_copy_data_with_offset", test_copy_data_with_offset);
+    CU_add_test(suite, "test_copy_data_with_offset_and_size", test_copy_data_with_offset_and_size);
+    CU_add_test(suite, "test_copy_data_with_offset_and_too_large_size", test_copy_data_with_offset_and_too_large_size);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
