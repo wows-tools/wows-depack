@@ -241,6 +241,7 @@ FILE *open_file_with_parents(const char *filename) {
 typedef struct {
     char *base_path;
     WOWS_CONTEXT *context;
+    FILE *magic_fp;
 } extract_context;
 
 bool extract_recursive(const void *item, void *udata) {
@@ -257,13 +258,18 @@ bool extract_recursive(const void *item, void *udata) {
         char *out_path = calloc(strlen(path) + strlen(ctx->base_path) + 2, sizeof(char));
         sprintf(out_path, "%s/%s", ctx->base_path, path);
         WOWS_FILE_INODE *file_inode = (WOWS_FILE_INODE *)inode;
-        FILE *fd = open_file_with_parents(out_path);
-        if (fd <= 0) {
-            printf("%s\n", out_path);
+        FILE *fd;
+        if (ctx->magic_fp == NULL) {
+            fd = open_file_with_parents(out_path);
         } else {
-            free(out_path);
+            fd = ctx->magic_fp;
+        }
+        free(out_path);
+        if (fd > 0) {
             extract_file_inode(ctx->context, file_inode, fd);
-            fclose(fd);
+            if (ctx->magic_fp == NULL) {
+                fclose(fd);
+            }
         }
     } else if (inode->type == WOWS_INODE_TYPE_DIR) {
         WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
@@ -278,6 +284,10 @@ bool extract_recursive(const void *item, void *udata) {
 }
 
 int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path) {
+    return internal_wows_extract_dir(context, dir_path, out_dir_path, NULL);
+}
+
+int internal_wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path, FILE *magic_fp) {
     WOWS_BASE_INODE *inode;
     int ret = get_inode(context, dir_path, &inode);
     if (ret != 0) {
@@ -286,6 +296,7 @@ int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path) 
     extract_context ctx;
     ctx.base_path = out_dir_path;
     ctx.context = context;
+    ctx.magic_fp = magic_fp;
     if (inode->type != WOWS_INODE_TYPE_DIR) {
         return WOWS_ERROR_NOT_A_DIR;
     }
