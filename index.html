@@ -273,9 +273,13 @@ Extracting Files</h4>
 <div class="line"> </div>
 <div class="line">free(buff);</div>
 <div class="ttc" id="awows-depack_8h_html_aaef72db46268e68876a6fb6b1534f1a3"><div class="ttname"><a href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">wows_extract_file_fp</a></div><div class="ttdeci">int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *output)</div><div class="ttdoc">Extract a given file from the archive (file pointer version).</div></div>
-</div><!-- fragment --><p>You can also extract files recursively:</p>
-<div class="fragment"><div class="line">TODO</div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md15"></a>
+</div><!-- fragment --><p>You can also extract files recursively under a given directory:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">char</span> *output_dir = <span class="stringliteral">&quot;./out/&quot;</span></div>
+<div class="line"> </div>
+<div class="line">ret = <a class="code" href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">wows_extract_dir</a>(context, <span class="stringliteral">&quot;/wows-resources/dockyard/&quot;</span>, output_dir);</div>
+<div class="ttc" id="awows-depack_8h_html_af9547c79e9b759a2acf595739b3c3a54"><div class="ttname"><a href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">wows_extract_dir</a></div><div class="ttdeci">int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path)</div><div class="ttdoc">Extract a given directory (recursively) from the archive (output file version).</div></div>
+</div><!-- fragment --><p>Note that with this extract, wows-depack will reproduce the pseudo-filesystem in the archive with <code>output_dir</code> as its root.</p>
+<h4><a class="anchor" id="autotoc_md15"></a>
 Clean-up</h4>
 <p>Once done, you need to release the context memory:</p>
 <div class="fragment"><div class="line"><a class="code" href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a">wows_free_context</a>(context);</div>
