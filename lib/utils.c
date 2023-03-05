@@ -188,7 +188,7 @@ char *join_path(char **parent_entries, int depth, char *name) {
     return combined_path;
 }
 
-int get_latest_idx_dir(char *wows_base_dir, char **idx_dir) {
+int wows_get_latest_idx_dir(char *wows_base_dir, char **idx_dir) {
     char *bin_dir = calloc(sizeof(char), strlen(wows_base_dir) + 5);
     sprintf(bin_dir, "%s/bin", wows_base_dir);
     DIR *dir_ptr = opendir(bin_dir); // open the wows bin directory

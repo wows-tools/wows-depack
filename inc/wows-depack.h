@@ -309,4 +309,4 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_f
  *
  * @note The caller is responsible for freeing the memory allocated for the idx_dir parameter.
  */
-int get_latest_idx_dir(char *wows_base_dir, char **idx_dir);
+int wows_get_latest_idx_dir(char *wows_base_dir, char **idx_dir);
