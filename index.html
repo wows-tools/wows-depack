@@ -226,7 +226,7 @@ Initialize Context &amp; Parse Index Files</h4>
 <div class="ttc" id="awows-depack_8h_html_a1dce2442c50922a4c0a328802d7b98d5"><div class="ttname"><a href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a></div><div class="ttdeci">int wows_parse_index_dir(const char *index_dir_path, WOWS_CONTEXT *context)</div><div class="ttdoc">Parses all files in a given directory.</div></div>
 </div><!-- fragment --><p>Wows depack also provides a small helper to detect the latest idx directory. </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_dir_path;</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">get_latest_idx_dir</a>(<span class="stringliteral">&quot;Games/World of Warships/&quot;</span>, index_dir_path);</div>
+<div class="line">get_latest_idx_dir(<span class="stringliteral">&quot;Games/World of Warships/&quot;</span>, index_dir_path);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Parse the index file */</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = <a class="code" href="wows-depack_8h.html#a1dce2442c50922a4c0a328802d7b98d5">wows_parse_index_dir</a>(index_dir_path, context);</div>
@@ -235,7 +235,6 @@ Initialize Context &amp; Parse Index Files</h4>
 <div class="line"> </div>
 <div class="line"><span class="comment">// You need to free index_dir_path after</span></div>
 <div class="line">free(index_dir_path);</div>
-<div class="ttc" id="awows-depack_8h_html_acdedb373df71e2565530e77e10564400"><div class="ttname"><a href="wows-depack_8h.html#acdedb373df71e2565530e77e10564400">get_latest_idx_dir</a></div><div class="ttdeci">int get_latest_idx_dir(char *wows_base_dir, char **idx_dir)</div><div class="ttdoc">Gets the latest index directory in the specified WoWs installation directory.</div></div>
 </div><!-- fragment --><p>These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.</p>
 <h4><a class="anchor" id="autotoc_md15"></a>
 Searching files/directories</h4>
