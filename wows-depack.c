@@ -40,6 +40,7 @@ static struct argp_option options[] = {{"input", 'i', "INPUT_INDEX", 0, "Input i
                                        {"search", 's', "SEARCH_PATTERN", 0, "Search Regex"},
                                        {"extract", 'e', "FILE_DIR_TO_EXTRACT", 0, "File or directory to extract"},
                                        {"print", 'p', NULL, 0, "Print All files"},
+                                       {"debug", 'd', NULL, 0, "Debug Output"},
                                        {0}};
 
 /* A description of the arguments we accept. */
@@ -55,6 +56,7 @@ struct arguments {
     char *input;
     char *input_dir;
     bool print;
+    bool debug;
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -86,6 +88,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         break;
     case 'p':
         arguments->print = true;
+        break;
+    case 'd':
+        arguments->debug = true;
         break;
     default:
         return ARGP_ERR_UNKNOWN;
@@ -129,7 +134,12 @@ int main(int argc, char **argv) {
     }
 
     // Parsing the content
-    WOWS_CONTEXT *context = wows_init_context(WOWS_NO_DEBUG);
+    WOWS_CONTEXT *context;
+    if (args->debug) {
+        context = wows_init_context(WOWS_DEBUG_RAW_RECORD | WOWS_DEBUG_FILE_LISTING);
+    } else {
+        context = wows_init_context(WOWS_NO_DEBUG);
+    }
 
     if (args->input != NULL) {
         ret = wows_parse_index_file(args->input, context);
