@@ -617,6 +617,23 @@ void test_extract_dir() {
     wows_free_context(context);
 }
 
+void test_extract_dir_failure() {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret;
+
+    ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
+    CU_ASSERT_EQUAL(ret, 0);
+
+    ret = wows_extract_dir(context, "/does/not/exist/anywhere", "./out");
+    if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+    }
+    CU_ASSERT_NOT_EQUAL(ret, 0);
+
+    wows_free_context(context);
+}
+
 void test_extract_file() {
     WOWS_CONTEXT *context = wows_init_context(0);
     int ret;
@@ -996,6 +1013,24 @@ void test_copy_data_with_offset_and_too_large_size(void) {
     fclose(out);
 }
 
+void test_open_file_with_parents(void) {
+    /* Set up test input. */
+    const char *filename = "test_folder/test_file.txt";
+
+    /* Call the function being tested. */
+    FILE *file = open_file_with_parents(filename);
+
+    /* Check that the function returns a non-NULL file pointer. */
+    CU_ASSERT_PTR_NOT_NULL(file);
+
+    /* Clean up. */
+    fclose(file);
+
+    /* Remove the test file and directory. */
+    remove(filename);
+    rmdir("test_folder");
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
@@ -1046,6 +1081,7 @@ int main() {
     CU_add_test(suite, "test_copy_data_with_offset", test_copy_data_with_offset);
     CU_add_test(suite, "test_copy_data_with_offset_and_size", test_copy_data_with_offset_and_size);
     CU_add_test(suite, "test_copy_data_with_offset_and_too_large_size", test_copy_data_with_offset_and_too_large_size);
+    CU_add_test(suite, "test_open_file_with_parents", test_open_file_with_parents);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
