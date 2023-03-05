@@ -3,13 +3,33 @@
 [![Ubuntu-x86_64](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml/badge.svg)](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml)
 [![Coverage Status](https://coveralls.io/repos/github/kakwa/wows-depack/badge.svg?branch=main)](https://coveralls.io/github/kakwa/wows-depack?branch=main)
 
-World of Warships resource files unpacker
+Open-Source World of Warships resource files unpacker.
 
-The format specification is presented in [FORMAT.md](https://github.com/kakwa/wows-depack/blob/main/FORMAT.md).
+# Links
 
-The reverse engineering story is detailed in [REVERSING_STORY.md](https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md)
+Interesting links:
+
+* Git repository: [github.com/kakwa/wows-depack](https://github.com/kakwa/wows-depack/)
+* Format specification: [FORMAT.md](https://github.com/kakwa/wows-depack/blob/main/FORMAT.md).
+* Reverse Engineering process: [REVERSING_STORY.md](https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md)
+* Library API: [C API documentation](https://kakwa.github.io/wows-depack/wows-depack_8h.html)
 
 # Usage
+
+## Build
+
+```shell
+# Install deps Debian/Ubuntu
+apt install git cmake zlib1g-dev libpcre2-dev clang
+
+# git clone + go in project dir
+git clone https://github.com/kakwa/wows-depack.git
+cd wows-depack/
+
+# build
+cmake .
+make
+```
 
 ## CLI tool
 
@@ -56,7 +76,7 @@ Parse all the indexes in the index directory:
 ./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/
 ```
 
-Auto-discovery of the latest idx directory (from WoWs install directory) and parse all index files:
+Auto-discovery of the latest `idx/` directory (from WoWs install directory) and parse all index files:
 
 ```shell
 ./wows-depack-cli -I ~/Games/World\ of\ Warships/
