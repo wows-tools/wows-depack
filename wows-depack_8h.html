@@ -123,10 +123,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *pattern, int mode, int *result_count, char ***results)</td></tr>
 <tr class="memdesc:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.  <a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">More...</a><br /></td></tr>
 <tr class="separator:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa21a99c351b09f0e81fb3b159d840f15"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#aa21a99c351b09f0e81fb3b159d840f15">wows_readdir</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char dir_path, char **result[])</td></tr>
-<tr class="separator:aa21a99c351b09f0e81fb3b159d840f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab167e3d4eb672688c726a8f8183ac389"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab167e3d4eb672688c726a8f8183ac389">wows_stat_path</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char path)</td></tr>
-<tr class="separator:ab167e3d4eb672688c726a8f8183ac389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaef72db46268e68876a6fb6b1534f1a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">wows_extract_file_fp</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *file_path, FILE *output)</td></tr>
 <tr class="memdesc:aaef72db46268e68876a6fb6b1534f1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a given file from the archive (file pointer version).  <a href="wows-depack_8h.html#aaef72db46268e68876a6fb6b1534f1a3">More...</a><br /></td></tr>
 <tr class="separator:aaef72db46268e68876a6fb6b1534f1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -242,7 +238,8 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A pointer to a string containing the error message. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>It's up to the caller to free the returned string </dd></dl>
 
 </div>
 </div>
@@ -280,7 +277,6 @@ Macros</h2></td></tr>
 
 <p>Extract a given directory (recursively) from the archive (output file version). </p>
 <p>This function will extract all files under the given directory. The whole directory tree from the archive will be recreated under out_dir_path.</p>
-<p>Not implemented yet</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> structure. </td></tr>
@@ -289,7 +285,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -326,7 +322,6 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Extract a given file from the archive (output file version). </p>
-<p>Not implemented yet</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> structure. </td></tr>
@@ -335,7 +330,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Not implemented yet </p><dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -380,7 +375,8 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if the file was opened successfully and the header was written, otherwise a negative value indicating the error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>It's up to the caller to open and close FILE *output </dd></dl>
 
 </div>
 </div>
@@ -408,7 +404,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -436,7 +432,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -475,7 +471,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>On success, returns 0. On failure, returns an error code.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The caller is responsible for freeing the memory allocated for the idx_dir parameter. </dd></dl>
 
 </div>
@@ -504,7 +500,8 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A pointer to the newly created context, or NULL if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the newly created context, or NULL if an error occurred.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Call <a class="el" href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a" title="Frees a WoWs resource extractor context.">wows_free_context()</a> to liberate context memory </dd></dl>
 
 </div>
 </div>
@@ -564,7 +561,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -603,7 +600,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -642,7 +639,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -671,7 +668,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -699,41 +696,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative value if an error occurred. </dd></dl>
-
-</div>
-</div>
-<a id="aa21a99c351b09f0e81fb3b159d840f15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa21a99c351b09f0e81fb3b159d840f15">&#9670;&nbsp;</a></span>wows_readdir()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int wows_readdir </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>dir_path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char **&#160;</td>
-          <td class="paramname"><em>result</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred. </dd></dl>
 
 </div>
 </div>
@@ -799,35 +762,9 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, or a non-zero error code on failure.</dd></dl>
-<p>This function searches recursively through the WOWS archive tree for files or directories that match the given PCRE regular expression pattern. The search can be restricted to files, directories, or the full path, depending on the value of the <code>mode</code> parameter. The names of the matching files or directories are stored in the <code>results</code> array, and the number of matches is stored in the <code>result_count</code> variable. The caller is responsible for freeing the memory allocated for the <code>results</code> array and its elements. </p>
-
-</div>
-</div>
-<a id="ab167e3d4eb672688c726a8f8183ac389"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab167e3d4eb672688c726a8f8183ac389">&#9670;&nbsp;</a></span>wows_stat_path()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int wows_stat_path </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>path</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>This function searches recursively through the WOWS archive tree for files or directories that match the given PCRE regular expression pattern. The search can be restricted to files, directories, or the full path, depending on the value of the <code>mode</code> parameter. The names of the matching files or directories are stored in the <code>results</code> array, and the number of matches is stored in the <code>result_count</code> variable. The caller is responsible for freeing the memory allocated for the <code>results</code> array and its elements.</p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>It's up to the caller to free each entry in the results array and free the array itself. </dd></dl>
 
 </div>
 </div>
@@ -887,7 +824,7 @@ Macros</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>On success, returns 0. On failure, returns a non-zero error code.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function is experimental </dd></dl>
 
 </div>
