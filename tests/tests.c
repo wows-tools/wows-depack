@@ -1068,6 +1068,7 @@ int main() {
     CU_add_test(suite, "test_extract", test_extract);
     CU_add_test(suite, "test_extract_file", test_extract_file);
     CU_add_test(suite, "test_extract_dir", test_extract_dir);
+    CU_add_test(suite, "test_extract_dir_failure", test_extract_dir_failure);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
