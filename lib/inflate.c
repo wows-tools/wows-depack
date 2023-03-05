@@ -22,7 +22,7 @@
 int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     int dir_count;
     char **dirs;
-    char *file;
+    char *file = NULL;
     int ret = decompose_path(path, &dir_count, &dirs, &file);
     if (ret != 0) {
         return ret;
@@ -32,21 +32,30 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
         if (inode != NULL && inode->type == WOWS_INODE_TYPE_DIR) {
             WOWS_DIR_INODE *inode_search = &(WOWS_DIR_INODE){.name = dirs[i]};
             struct hashmap *map = inode->children_inodes;
-            inode = *(WOWS_DIR_INODE **)hashmap_get(map, &inode_search);
+            void *inode_ptr = hashmap_get(map, &inode_search);
+            if (inode_ptr != NULL) {
+                wows_set_error_details(context, "directory '%s' doesn't exist", dirs[i]);
+                inode = *(WOWS_DIR_INODE **)inode_ptr;
+            } else {
+                inode = NULL;
+            }
         }
         // We don't break here just to free each path items
         free(dirs[i]);
     }
     free(dirs);
-    if (file == NULL) {
-        return WOWS_ERROR_NOT_A_FILE;
+    if (file == NULL && inode != NULL) {
+        *out_inode = (WOWS_BASE_INODE *)inode;
+        return 0;
     }
 
     if (inode == NULL) {
+        wows_set_error_details(context, "file/dir '%s' doesn't exist", file);
         free(file);
         return WOWS_ERROR_NOT_FOUND;
     }
     if (inode->type != WOWS_INODE_TYPE_DIR) {
+        wows_set_error_details(context, "'%s' is not a directory", inode->name);
         free(file);
         return WOWS_ERROR_NOT_A_DIR;
     }
@@ -55,14 +64,18 @@ int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     struct hashmap *map = inode->children_inodes;
     void *inode_ptr = hashmap_get(map, &inode_search);
 
-    free(file);
     if (inode_ptr == NULL) {
+        wows_set_error_details(context, "file/dir '%s' doesn't exist", file);
+        free(file);
         return WOWS_ERROR_NOT_FOUND;
     }
     inode = *(WOWS_DIR_INODE **)inode_ptr;
     if (inode == NULL) {
+        wows_set_error_details(context, "file/dir '%s' doesn't exist", file);
+        free(file);
         return WOWS_ERROR_NOT_FOUND;
     }
+    free(file);
     *out_inode = (WOWS_BASE_INODE *)inode;
     return 0;
 }
@@ -226,7 +239,13 @@ int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path) 
     extract_context ctx;
     ctx.base_path = out_dir_path;
     ctx.context = context;
-    extract_recursive(&inode, &ctx);
+    if (inode->type != WOWS_INODE_TYPE_DIR) {
+        return WOWS_ERROR_NOT_A_DIR;
+    }
+    WOWS_DIR_INODE *dir_inode = (WOWS_DIR_INODE *)inode;
+    struct hashmap *map = dir_inode->children_inodes;
+    hashmap_scan(map, extract_recursive, &ctx);
+
     return 0;
 }
 
