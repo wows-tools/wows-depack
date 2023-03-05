@@ -281,9 +281,9 @@ Field descriptions</h3>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>offset_pkg_data</code>   </td><td class="markdownTableBodyNone">64 bits   </td><td class="markdownTableBodyNone">Offset to the compressed data from the start of the <code>.pkg</code> file    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>type_1</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Some kind of type, role unknown    </td></tr>
+<td class="markdownTableBodyNone"><code>type_1</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Compression param 1 (<code>0x0</code> for uncompressed, <code>0x5</code> for deflate)    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>type_2</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Some kind of type, role unknown    </td></tr>
+<td class="markdownTableBodyNone"><code>type_2</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Compression param 2 (<code>0x0</code> for uncompressed, <code>0x1</code> for deflate)    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>size_pkg_data</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Size of the compressed data section in the <code>.pkg</code> file    </td></tr>
 <tr class="markdownTableRowOdd">
@@ -322,12 +322,12 @@ Field descriptions</h3>
 PKG format</h1>
 <h2><a class="anchor" id="autotoc_md47"></a>
 PKG Entry</h2>
-<p>The <code>.pkg</code> format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.</p>
+<p>The <code>.pkg</code> format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) or raw/uncompressed data blobs (one for each file) separated by an ID.</p>
 <h3><a class="anchor" id="autotoc_md48"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</div>
 <div class="line">|                                                                                 |</div>
-<div class="line">|                      Compressed Data (RFC 1951/Deflate)                         |</div>
+<div class="line">|                   Compressed (RFC 1951/Deflate) or Raw Data                     |</div>
 <div class="line">|                                                                                 |</div>
 <div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</div>
 <div class="line">+====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+</div>
