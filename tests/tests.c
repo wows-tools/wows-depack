@@ -590,6 +590,33 @@ void test_extract() {
     wows_free_context(context);
 }
 
+void test_extract_dir() {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret;
+
+    ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
+    CU_ASSERT_EQUAL(ret, 0);
+
+    char *buf_pkg = NULL;
+    size_t buf_pkg_size = 0;
+    FILE *fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+
+    ret = internal_wows_extract_dir(context, "/", "./out", fd_pkg);
+    if (ret != 0) {
+        char *err_msg = wows_error_string(ret, context);
+        printf("Error: %s\n", err_msg);
+    }
+
+    fclose(fd_pkg);
+    uint64_t crc = crc32(0, NULL, 0);
+    crc = crc32(crc, (const Bytef *)buf_pkg, strlen(buf_pkg)); // update CRC-64 with string data
+    CU_ASSERT_EQUAL(buf_pkg_size, 33059);
+    CU_ASSERT_EQUAL(crc, 0x64EAE135);
+
+    free(buf_pkg);
+    wows_free_context(context);
+}
+
 void test_extract_file() {
     WOWS_CONTEXT *context = wows_init_context(0);
     int ret;
@@ -1005,6 +1032,7 @@ int main() {
     CU_add_test(suite, "test_compress", test_compress);
     CU_add_test(suite, "test_extract", test_extract);
     CU_add_test(suite, "test_extract_file", test_extract_file);
+    CU_add_test(suite, "test_extract_dir", test_extract_dir);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
