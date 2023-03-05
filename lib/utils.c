@@ -138,6 +138,14 @@ int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char 
         cur_dir = next_dir;
     }
 
+    // Remove remaining '/' from the file name
+    int limit = 0;
+    while (limit < MAX_DIRS && (sep = strchr(cur_dir, DIR_SEP))) {
+        next_dir = sep + 1;
+        cur_dir = next_dir;
+        limit++;
+    }
+
     char *file;
     if (strlen(cur_dir) != 0) {
         file = calloc(sizeof(char), (strlen(cur_dir) + 1));
