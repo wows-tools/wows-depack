@@ -252,11 +252,15 @@ fclose(f);
 free(buff);
 ```
 
-You can also extract files recursively:
+You can also extract files recursively under a given directory:
 
 ```C
-TODO
+char *output_dir = "./out/"
+
+ret = wows_extract_dir(context, "/wows-resources/dockyard/", output_dir);
 ```
+
+Note that with this extract, wows-depack will reproduce the pseudo-filesystem in the archive with `output_dir` as its root.
 
 #### Clean-up
 
