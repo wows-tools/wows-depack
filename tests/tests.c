@@ -625,10 +625,6 @@ void test_extract_dir_failure() {
     CU_ASSERT_EQUAL(ret, 0);
 
     ret = wows_extract_dir(context, "/does/not/exist/anywhere", "./out");
-    if (ret != 0) {
-        char *err_msg = wows_error_string(ret, context);
-        printf("Error: %s\n", err_msg);
-    }
     CU_ASSERT_NOT_EQUAL(ret, 0);
 
     wows_free_context(context);
