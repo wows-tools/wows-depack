@@ -886,7 +886,7 @@ void test_wows_search_file(void) {
 
 void test_get_latest_idx_dir(void) {
     char *idx_dir = NULL;
-    int ret = get_latest_idx_dir("./wows_sim_dir", &idx_dir);
+    int ret = wows_get_latest_idx_dir("./wows_sim_dir", &idx_dir);
     CU_ASSERT_EQUAL(ret, 0);         // function should return 0 on success
     CU_ASSERT_PTR_NOT_NULL(idx_dir); // function should allocate memory for idx_dir
     CU_ASSERT_STRING_EQUAL(idx_dir, "./wows_sim_dir/bin/2234567/idx/");
@@ -895,7 +895,7 @@ void test_get_latest_idx_dir(void) {
 
 void test_get_latest_idx_dir_errors(void) {
     char *idx_dir = NULL;
-    int ret = get_latest_idx_dir("./tests", &idx_dir);
+    int ret = wows_get_latest_idx_dir("./tests", &idx_dir);
     CU_ASSERT_EQUAL(ret, WOWS_ERROR_FILE_OPEN_FAILURE);
     CU_ASSERT_PTR_NULL(idx_dir);
     free(idx_dir);

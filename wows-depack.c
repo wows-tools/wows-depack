@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     argp_parse(&argp, argc, argv, 0, 0, args);
 
     if (args->wows_base_dir != NULL) {
-        ret = get_latest_idx_dir(args->wows_base_dir, &args->input_dir);
+        ret = wows_get_latest_idx_dir(args->wows_base_dir, &args->input_dir);
         char *err_msg = wows_error_string(ret, NULL);
         wopt = true;
         if (ret != 0) {
