@@ -12,7 +12,7 @@ Interesting links:
 * Git repository: [github.com/kakwa/wows-depack](https://github.com/kakwa/wows-depack/)
 * Format specification: [FORMAT.md](https://github.com/kakwa/wows-depack/blob/main/FORMAT.md).
 * Reverse Engineering process: [REVERSING_STORY.md](https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md)
-* Library API: [C API documentation](https://kakwa.github.io/wows-depack/wows-depack_8h.html)
+* Library API: [C API documentation](https://wows-tools.github.io/wows-depack/wows-depack_8h.html)
 
 # Usage
 
@@ -144,7 +144,7 @@ To extract everything (rip your free disk space), do:
 
 ### API documentation
 
-The API documentation [is available here](https://kakwa.github.io/wows-depack/wows-depack_8h.html).
+The API documentation [is available here](https://wows-tools.github.io/wows-depack/wows-depack_8h.html).
 
 ### Usage examples
 
