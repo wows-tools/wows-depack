@@ -9,7 +9,7 @@ Open-Source World of Warships resource files unpacker.
 
 Interesting links:
 
-* Git repository: [github.com/kakwa/wows-depack](https://github.com/kakwa/wows-depack/)
+* Git repository: [github.com/wows-tools/wows-depack](https://github.com/wows-tools/wows-depack)
 * Format specification: [FORMAT.md](https://github.com/kakwa/wows-depack/blob/main/FORMAT.md).
 * Reverse Engineering process: [REVERSING_STORY.md](https://github.com/kakwa/wows-depack/blob/main/REVERSING_STORY.md)
 * Library API: [C API documentation](https://wows-tools.github.io/wows-depack/wows-depack_8h.html)
