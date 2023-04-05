@@ -20,7 +20,7 @@ Interesting links:
 
 ```shell
 # Install deps Debian/Ubuntu
-apt install git cmake zlib1g-dev libpcre2-dev clang
+apt install git cmake zlib1g-dev libpcre3-dev clang
 
 # git clone + go in project dir
 git clone https://github.com/kakwa/wows-depack.git
@@ -341,7 +341,7 @@ Please note that the write support is limited, and was created mainly to generat
 Installing the dependencies on Debian:
 
 ```shell
-apt install cmake zlib1g-dev libpcre2-dev clang
+apt install cmake zlib1g-dev libpcre3-dev clang
 ```
 
 Installing the test/coverage/doc dependencies:
