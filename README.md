@@ -79,7 +79,7 @@ Parse all the indexes in the index directory:
 Auto-discovery of the latest `idx/` directory (from WoWs install directory) and parse all index files:
 
 ```shell
-./wows-depack-cli -I ~/Games/World\ of\ Warships/
+./wows-depack-cli -W ~/Games/World\ of\ Warships/
 ```
 
 
