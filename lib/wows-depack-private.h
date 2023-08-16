@@ -3,8 +3,6 @@
 #include <pcre.h>
 #include "hashmap.h"
 
-#pragma pack(1)
-
 /* Limits */
 
 // Maximum number of directories in a path (protection against infinite loops)
