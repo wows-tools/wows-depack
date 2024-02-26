@@ -167,7 +167,7 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
         stream.next_in = Z_NULL;
         inflateInit2(&stream, -15);
 
-        // TODO count the number of bytes we read and actually check it against entry->size_pkg_data
+        size_t total_read = 0;
         do {
             // Read a chunk of compressed data from the input file
             const size_t compressed_bytes_read = fread(compressed_data, 1, CHUNK_SIZE, fd_pkg);
@@ -178,6 +178,7 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
                 ret = WOWS_ERROR_CORRUPTED_FILE;
                 break;
             }
+            total_read += compressed_bytes_read;
 
             // Decompress the chunk of data
             stream.next_in = (Bytef *)compressed_data;
@@ -194,6 +195,9 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
                     break;
                 }
             } while (stream.avail_out == 0);
+            if (total_read > size) {
+                break;
+            }
         } while (ret == 0);
         free(compressed_data);
         free(uncompressed_data);
