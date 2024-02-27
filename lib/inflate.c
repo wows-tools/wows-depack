@@ -17,7 +17,8 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-#define CHUNK_SIZE 16384 // 16KB
+#define COMP_CHUNK_SIZE 1024 * 1024 // 16KB
+#define INFL_CHUNK_SIZE 10 * COMP_CHUNK_SIZE // 16KB
 
 int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     int dir_count;
@@ -157,8 +158,8 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     } else {
         // TODO could probably be moved in a dedicated function (like copy_data)
         fseek(fd_pkg, offset, SEEK_SET);
-        char *compressed_data = malloc(CHUNK_SIZE);
-        char *uncompressed_data = malloc(CHUNK_SIZE);
+        char *compressed_data = malloc(COMP_CHUNK_SIZE);
+        char *uncompressed_data = malloc(INFL_CHUNK_SIZE);
         z_stream stream = {0};
         stream.zalloc = Z_NULL;
         stream.zfree = Z_NULL;
@@ -170,7 +171,7 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
         size_t total_read = 0;
         do {
             // Read a chunk of compressed data from the input file
-            const size_t compressed_bytes_read = fread(compressed_data, 1, CHUNK_SIZE, fd_pkg);
+            const size_t compressed_bytes_read = fread(compressed_data, 1, COMP_CHUNK_SIZE, fd_pkg);
             if (compressed_bytes_read == 0 && feof(fd_pkg)) {
                 break; // Reached end of the data chunk input file
             }
@@ -185,11 +186,11 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
             stream.avail_in = (uInt)compressed_bytes_read;
             do {
                 stream.next_out = (Bytef *)uncompressed_data;
-                stream.avail_out = CHUNK_SIZE;
+                stream.avail_out = INFL_CHUNK_SIZE;
                 inflate(&stream, Z_NO_FLUSH);
 
                 // Write the decompressed data to the output file
-                const size_t uncompressed_bytes_written = CHUNK_SIZE - stream.avail_out;
+                const size_t uncompressed_bytes_written = INFL_CHUNK_SIZE - stream.avail_out;
                 if (fwrite(uncompressed_data, 1, uncompressed_bytes_written, out_file) != uncompressed_bytes_written) {
                     ret = WOWS_ERROR_FILE_WRITE;
                     break;
