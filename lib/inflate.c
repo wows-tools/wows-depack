@@ -17,8 +17,8 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-#define COMP_CHUNK_SIZE 1024 * 1024 // 16KB
-#define INFL_CHUNK_SIZE 10 * COMP_CHUNK_SIZE // 16KB
+#define COMP_CHUNK_SIZE 1024 * 1024          // 1MB for compressed buffer
+#define INFL_CHUNK_SIZE 10 * COMP_CHUNK_SIZE // 10MB for inflated buffer
 
 int get_inode(WOWS_CONTEXT *context, char *path, WOWS_BASE_INODE **out_inode) {
     int dir_count;
