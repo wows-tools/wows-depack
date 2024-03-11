@@ -61,6 +61,7 @@ typedef struct {
     void **indexes;       // Array of structures representing each index file (WOWS_INDEX
                           // **indexes;)
     uint32_t index_count; // Size of the array
+    bool is_le;           // Flag for endianess (true if LE, false if BE)
     char *err_msg;        // Last error message
 } WOWS_CONTEXT;
 

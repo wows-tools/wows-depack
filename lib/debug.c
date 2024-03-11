@@ -8,7 +8,7 @@
 
 int print_header(WOWS_INDEX_HEADER *header) {
     printf("* magic:                     %.4s\n", (char *)&header->magic);
-    printf("* unknown_1:                 0x%x\n", header->unknown_1);
+    printf("* endianess:                 0x%x\n", header->endianess);
     printf("* id:                        0x%x\n", header->id);
     printf("* unknown_2:                 0x%x\n", header->unknown_2);
     printf("* file_dir_count:            %u\n", header->file_dir_count);

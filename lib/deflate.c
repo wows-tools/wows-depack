@@ -254,7 +254,7 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
 
     // Setup header
     memcpy(index->header->magic, "ISFP", 4);
-    index->header->unknown_1 = 0x2000000;
+    index->header->endianess = 0x2000000;
     index->header->id = (uint32_t)rand();
     index->header->unknown_2 = 0x40;
     index->header->file_dir_count = writer->file_plus_dir_count;

@@ -3,8 +3,6 @@
 #include <pcre.h>
 #include "hashmap.h"
 
-#pragma pack(1)
-
 /* Limits */
 
 // Maximum number of directories in a path (protection against infinite loops)
@@ -12,6 +10,8 @@
 #define WOWS_DIR_MAX_LEVEL 32
 // Put some limits on the file name size
 #define WOWS_PATH_MAX 4096
+
+#pragma pack(1)
 
 /* ---------- */
 
@@ -31,7 +31,7 @@
 // INDEX file header
 typedef struct {
     char magic[4];
-    uint32_t unknown_1;
+    uint32_t endianess;
     uint32_t id;
     uint32_t unknown_2;
     uint32_t file_dir_count;
@@ -41,6 +41,8 @@ typedef struct {
     uint64_t offset_idx_data_section;
     uint64_t offset_idx_footer_section;
 } WOWS_INDEX_HEADER;
+
+#define SIZE_WOWS_INDEX_HEADER 56
 
 // INDEX file metadata entry
 typedef struct {
@@ -149,7 +151,7 @@ int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, c
 int get_metadata_filename_unsafe(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out);
 int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index, char **out);
 int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
-int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in);
+int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context);
 char *wows_render_str(char *fmt, ...);
 void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...);
 int print_header(WOWS_INDEX_HEADER *header);
