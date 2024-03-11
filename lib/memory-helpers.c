@@ -32,6 +32,7 @@ int wows_free_context_internal(WOWS_CONTEXT *context, int flag) {
             close(index->fd);
         }
         free(index->index_file_path);
+        free(index->header);
         free(index);
     }
 

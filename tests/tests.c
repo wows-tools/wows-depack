@@ -203,7 +203,8 @@ static void test_map_index_file() {
     memcpy(contents + MAGIC_SECTION_OFFSET + 1024, &footer, sizeof(WOWS_INDEX_FOOTER));
 
     // Test map_index_file function
-    int result = map_index_file(contents, TEST_DATA_SIZE, &index);
+    WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
+    int result = map_index_file(contents, TEST_DATA_SIZE, &index, context);
 
     CU_ASSERT_EQUAL(result, 0);
     CU_ASSERT_PTR_NOT_NULL(index);
@@ -248,6 +249,7 @@ static void test_map_index_file() {
     CU_ASSERT_EQUAL(index->footer->id, 42);
 
     free(index);
+    free(context);
 }
 
 void test_wows_parse_index_buffer() {
@@ -343,7 +345,7 @@ void test_wows_parse_index_buffer() {
 
 void test_wows_dump_index_to_file(void) {
     WOWS_INDEX_HEADER header = {.magic = "WoWS",
-                                .unknown_1 = 0x10000,
+                                .endianess = 0x20000,
                                 .id = 0x12345678,
                                 .unknown_2 = 0x20000,
                                 .file_dir_count = 2,
@@ -752,7 +754,8 @@ void test_get_pkg_filepath() {
     memcpy(contents + MAGIC_SECTION_OFFSET + 1024 + sizeof(WOWS_INDEX_FOOTER), "foot", 5);
 
     WOWS_INDEX *index;
-    map_index_file(contents, 2048, &index);
+    WOWS_CONTEXT *context = wows_init_context(0);
+    map_index_file(contents, 2048, &index, context);
     index->index_file_path = "/path/to/wows/bin/6831266/idx/basecontent.idx";
     char *out;
 
@@ -764,6 +767,7 @@ void test_get_pkg_filepath() {
     CU_ASSERT_STRING_EQUAL("/path/to/wows/res_packages/foot", out);
 
     free(out);
+    wows_free_context(context);
     free(contents);
     free(index);
 }

@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE 500
 // TODO clean-up this mess
 #include <string.h>
@@ -17,6 +18,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <endian.h>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -102,27 +104,61 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     return context;
 }
 
+uint32_t datatoh32(char *data, size_t offset, WOWS_CONTEXT *context) {
+    uint32_t *ret = (uint32_t *)(data + offset);
+    if (context->is_le) {
+        return le32toh(*ret);
+    } else {
+        return be32toh(*ret);
+    }
+}
+
+uint64_t datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
+    uint64_t *ret = (uint64_t *)(data + offset);
+    if (context->is_le) {
+        return le64toh(*ret);
+    } else {
+        return be64toh(*ret);
+    }
+}
+
 // Map the different section of the index file content to an index struct
-int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in) {
+int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context) {
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
     index->start_address = contents;
     index->end_address = contents + length;
     index->length = length;
 
-    // Get the header section
-    WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
-    index->header = header;
     // Check header section boundaries
-    returnOutIndex((char *)header, contents + sizeof(WOWS_INDEX_HEADER), index);
+    returnOutIndex((char *)contents, contents + SIZE_WOWS_INDEX_HEADER, index);
 
+    // Allocate an header section
+    WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)calloc(sizeof(WOWS_INDEX_HEADER), 1);
+    index->header = header;
+
+    strncpy(header->magic, contents, 4);
     // Check that the magic do match
     if (strncmp(header->magic, "ISFP", 4) != 0) {
         return WOWS_ERROR_BAD_MAGIC;
     }
 
+    // Recover the endianess marker and set endianess in context
+    memcpy(&(header->endianess), contents + 4, sizeof(uint32_t));
+    context->is_le = (header->endianess == 0x2000000);
+
+    // Extract the header data
+    header->id = datatoh32(contents, 8, context);
+    header->unknown_2 = datatoh32(contents, 12, context);
+    header->file_dir_count = datatoh32(contents, 16, context);
+    header->file_count = datatoh32(contents, 20, context);
+    header->unknown_3 = datatoh32(contents, 24, context);
+    header->header_size = datatoh64(contents, 32, context);
+    header->offset_idx_data_section = datatoh64(contents, 40, context);
+    header->offset_idx_footer_section = datatoh64(contents, 48, context);
+
     // Get the start of the metadata array
     WOWS_INDEX_METADATA_ENTRY *metadatas;
-    metadatas = (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
+    metadatas = (WOWS_INDEX_METADATA_ENTRY *)(contents + SIZE_WOWS_INDEX_HEADER);
     index->metadata = metadatas;
     // Check metadatas section boundaries
     returnOutIndex((char *)metadatas, (char *)&metadatas[header->file_dir_count], index);
@@ -243,7 +279,7 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     int i;
 
     WOWS_INDEX *index;
-    int err = map_index_file(contents, length, &index);
+    int err = map_index_file(contents, length, &index, context);
     if (err != 0) {
         return err;
     }
