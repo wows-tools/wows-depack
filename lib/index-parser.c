@@ -55,8 +55,7 @@ int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, c
 }
 
 int get_pkg_filepath(WOWS_INDEX *index, char **out) {
-    char *pkg_file_name;
-    get_footer_filename(index->footer, index, &pkg_file_name);
+    char *pkg_file_name = index->footer->_file_name;
     const int num_parents = 4;
 
     char *current_path = strdup(index->index_file_path);
