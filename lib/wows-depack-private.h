@@ -50,7 +50,10 @@ typedef struct {
     uint64_t offset_idx_file_name;
     uint64_t id;
     uint64_t parent_id;
+    char *_file_name;
 } WOWS_INDEX_METADATA_ENTRY;
+
+#define SIZE_WOWS_INDEX_METADATA_ENTRY 32
 
 // INDEX file pkg data pointer entry
 typedef struct {
@@ -64,12 +67,17 @@ typedef struct {
     uint32_t padding;
 } WOWS_INDEX_DATA_FILE_ENTRY;
 
+#define SIZE_WOWS_INDEX_DATA_FILE_ENTRY 48
+
 // INDEX file footer
 typedef struct {
     uint64_t pkg_file_name_size;
     uint64_t unknown_7;
     uint64_t id;
+    char *_file_name;
 } WOWS_INDEX_FOOTER;
+
+#define SIZE_WOWS_INDEX_FOOTER 24
 
 // PKG file ID + padding
 typedef struct {

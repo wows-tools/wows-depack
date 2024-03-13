@@ -33,6 +33,13 @@ int wows_free_context_internal(WOWS_CONTEXT *context, int flag) {
         }
         free(index->index_file_path);
         free(index->header);
+        for (int j = 0; j < index->header->file_dir_count; j++) {
+            free(index->metadata[j]._file_name);
+        }
+        free(index->metadata);
+        free(index->data_file_entry);
+        free(index->footer->_file_name);
+        free(index->footer);
         free(index);
     }
 
