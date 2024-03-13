@@ -356,8 +356,7 @@ int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
     // Write the file name strings
     for (size_t i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *metadata_entry = &index->metadata[i];
-        char *file_name;
-        get_metadata_filename_unsafe(metadata_entry, index, &file_name);
+        char *file_name = metadata_entry->_file_name;
         fwrite(file_name, metadata_entry->file_name_size, 1, f);
         general_offset += metadata_entry->file_name_size;
     }

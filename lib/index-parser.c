@@ -33,9 +33,7 @@
 #include "hashmap.h"
 
 int get_metadata_filename_unsafe(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
-    char *filename = (char *)entry;
-    filename += entry->offset_idx_file_name;
-    *out = filename;
+    *out = entry->_file_name;
     return 0;
 }
 
@@ -124,6 +122,7 @@ uint64_t datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
 
 // Map the different section of the index file content to an index struct
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context) {
+    int i;
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
     index->start_address = contents;
     index->end_address = contents + length;
@@ -157,25 +156,63 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     header->offset_idx_footer_section = datatoh64(contents, 48, context);
 
     // Get the start of the metadata array
-    WOWS_INDEX_METADATA_ENTRY *metadatas;
-    metadatas = (WOWS_INDEX_METADATA_ENTRY *)(contents + SIZE_WOWS_INDEX_HEADER);
-    index->metadata = metadatas;
-    // Check metadatas section boundaries
-    returnOutIndex((char *)metadatas, (char *)&metadatas[header->file_dir_count], index);
+    char *metadata_section = (contents + SIZE_WOWS_INDEX_HEADER);
+    // Check the metadata section
+    returnOutIndex(metadata_section, metadata_section + header->file_dir_count * SIZE_WOWS_INDEX_METADATA_ENTRY, index);
+
+    WOWS_INDEX_METADATA_ENTRY *metadata = calloc(sizeof(WOWS_INDEX_METADATA_ENTRY), header->file_dir_count);
+    index->metadata = metadata;
+    for (i = 0; i < header->file_dir_count; i++) {
+        size_t offset = i * SIZE_WOWS_INDEX_METADATA_ENTRY;
+        metadata[i].file_name_size = datatoh64(metadata_section + offset, 0, context);
+        metadata[i].offset_idx_file_name = datatoh64(metadata_section + offset, 8, context);
+        metadata[i].id = datatoh64(metadata_section + offset, 16, context);
+        metadata[i].parent_id = datatoh64(metadata_section + offset, 24, context);
+
+        char *file_name = calloc(sizeof(char), metadata[i].file_name_size);
+        char *file_name_src = metadata_section + offset + metadata[i].offset_idx_file_name;
+        returnOutIndex(file_name_src, file_name_src + metadata[i].offset_idx_file_name, index);
+        strncpy(file_name, file_name_src, metadata[i].file_name_size);
+        metadata[i]._file_name = file_name;
+    }
 
     // Get the start pkg data pointer section
+    char *data_file_entry_section = (contents + header->offset_idx_data_section + MAGIC_SECTION_OFFSET);
+
+    //// Check data_file_entries section boundaries
+    returnOutIndex(data_file_entry_section,
+                   data_file_entry_section + header->file_count * SIZE_WOWS_INDEX_DATA_FILE_ENTRY, index);
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
-        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents + header->offset_idx_data_section + MAGIC_SECTION_OFFSET);
+        (WOWS_INDEX_DATA_FILE_ENTRY *)calloc(sizeof(WOWS_INDEX_DATA_FILE_ENTRY), header->file_count);
     index->data_file_entry = data_file_entry;
-    // Check data_file_entries section boundaries
-    returnOutIndex((char *)data_file_entry, (char *)&data_file_entry[header->file_count], index);
+
+    for (i = 0; i < header->file_count; i++) {
+        size_t offset = i * SIZE_WOWS_INDEX_DATA_FILE_ENTRY;
+        data_file_entry[i].metadata_id = datatoh64(data_file_entry_section + offset, 0, context);
+        data_file_entry[i].footer_id = datatoh64(data_file_entry_section + offset, 8, context);
+        data_file_entry[i].offset_pkg_data = datatoh64(data_file_entry_section + offset, 16, context);
+        data_file_entry[i].type_1 = datatoh32(data_file_entry_section + offset, 24, context);
+        data_file_entry[i].type_2 = datatoh32(data_file_entry_section + offset, 28, context);
+        data_file_entry[i].size_pkg_data = datatoh64(data_file_entry_section + offset, 32, context);
+        data_file_entry[i].id_pkg_data = datatoh32(data_file_entry_section + offset, 40, context);
+    }
 
     // Get the footer section
-    WOWS_INDEX_FOOTER *footer =
-        (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section + MAGIC_SECTION_OFFSET);
-    index->footer = footer;
+    char *footer_src = (contents + header->offset_idx_footer_section + MAGIC_SECTION_OFFSET);
     // Check footer section boundaries
-    returnOutIndex((char *)footer, (char *)footer + sizeof(WOWS_INDEX_FOOTER), index);
+    returnOutIndex((char *)footer_src, (char *)footer_src + SIZE_WOWS_INDEX_FOOTER, index);
+
+    WOWS_INDEX_FOOTER *footer = calloc(sizeof(WOWS_INDEX_FOOTER), 1);
+    index->footer = footer;
+
+    footer->pkg_file_name_size = datatoh64(footer_src, 0, context);
+    footer->unknown_7 = datatoh64(footer_src, 8, context);
+    footer->id = datatoh64(footer_src, 16, context);
+    ;
+    footer->_file_name = calloc(sizeof(char), footer->pkg_file_name_size);
+    char *file_name_src = footer_src + SIZE_WOWS_INDEX_FOOTER;
+    returnOutIndex(file_name_src, file_name_src + footer->pkg_file_name_size, index);
+    strncpy(footer->_file_name, file_name_src, footer->pkg_file_name_size);
     *index_in = index;
     return 0;
 }
@@ -298,17 +335,10 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
         print_debug_files(index, context->metadata_map);
     }
 
-    char *filler;
-
     // Index all the metadata entries into an hmap
     for (i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *entry = &index->metadata[i];
         // Check that we can correctly recover the file names
-        int ret = get_metadata_filename(entry, index, &filler);
-        if (ret != 0) {
-            wows_set_error_details(context, "problematic metadata entry id '0x%lx'", entry->id);
-            return ret;
-        }
         hashmap_set(context->metadata_map, &entry);
     }
     // Do the same for all the file entries
@@ -318,14 +348,9 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     }
 
     // Check that we can correctly recover the file names
-    int ret = get_footer_filename(index->footer, index, &filler);
-    if (ret != 0) {
-        wows_set_error_details(context, "problematic footer section");
-        return ret;
-    }
 
     uint32_t current_index_context = add_index_context(context, index);
 
     err = build_inode_tree(index, current_index_context, context);
-    return ret;
+    return err;
 }
