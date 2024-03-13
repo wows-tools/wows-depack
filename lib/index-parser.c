@@ -122,7 +122,6 @@ uint64_t datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
 
 // Map the different section of the index file content to an index struct
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context) {
-    int i;
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
     index->start_address = contents;
     index->end_address = contents + length;
@@ -162,7 +161,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
 
     WOWS_INDEX_METADATA_ENTRY *metadata = calloc(sizeof(WOWS_INDEX_METADATA_ENTRY), header->file_dir_count);
     index->metadata = metadata;
-    for (i = 0; i < header->file_dir_count; i++) {
+    for (int i = 0; i < header->file_dir_count; i++) {
         size_t offset = i * SIZE_WOWS_INDEX_METADATA_ENTRY;
         metadata[i].file_name_size = datatoh64(metadata_section + offset, 0, context);
         metadata[i].offset_idx_file_name = datatoh64(metadata_section + offset, 8, context);
@@ -186,7 +185,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
         (WOWS_INDEX_DATA_FILE_ENTRY *)calloc(sizeof(WOWS_INDEX_DATA_FILE_ENTRY), header->file_count);
     index->data_file_entry = data_file_entry;
 
-    for (i = 0; i < header->file_count; i++) {
+    for (int i = 0; i < header->file_count; i++) {
         size_t offset = i * SIZE_WOWS_INDEX_DATA_FILE_ENTRY;
         data_file_entry[i].metadata_id = datatoh64(data_file_entry_section + offset, 0, context);
         data_file_entry[i].footer_id = datatoh64(data_file_entry_section + offset, 8, context);
