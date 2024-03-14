@@ -206,7 +206,7 @@ static void test_map_index_file() {
     WOWS_CONTEXT *context = calloc(sizeof(WOWS_CONTEXT), 1);
     int result = map_index_file(contents, TEST_DATA_SIZE, &index, context);
 
-    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
     CU_ASSERT_PTR_NOT_NULL(index);
     CU_ASSERT_PTR_EQUAL(index->start_address, contents);
     CU_ASSERT_PTR_EQUAL(index->end_address, contents + TEST_DATA_SIZE);
@@ -522,7 +522,7 @@ void test_compress() {
     fclose(nfd_idx);
 
     // TODO add more asserts
-    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
     CU_ASSERT_NOT_EQUAL(buf_idx_size, 0);
     CU_ASSERT_NOT_EQUAL(buf_pkg_size, 0);
     free(buf_idx);
@@ -681,7 +681,7 @@ void test_wows_parse_index_dir(void) {
     // Parse the index file
     int ret = wows_parse_index_dir("./tests/data/", context);
     // Assert that the return value is 0 (success)
-    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL_FATAL(ret, 0);
 
     char *err_msg = wows_error_string(ret, context);
     printf("Error: %s\n", err_msg);
@@ -755,13 +755,14 @@ void test_get_pkg_filepath() {
 
     WOWS_INDEX *index;
     WOWS_CONTEXT *context = wows_init_context(0);
-    map_index_file(contents, 2048, &index, context);
+    int result = map_index_file(contents, 2048, &index, context);
+    CU_ASSERT_EQUAL_FATAL(0, result);
     index->index_file_path = "/path/to/wows/bin/6831266/idx/basecontent.idx";
     char *out;
 
-    int result = get_pkg_filepath(index, &out);
+    result = get_pkg_filepath(index, &out);
 
-    CU_ASSERT_EQUAL(0, result);
+    CU_ASSERT_EQUAL_FATAL(0, result);
     CU_ASSERT_PTR_NOT_NULL(out);
     // Ensure the output path is correct
     CU_ASSERT_STRING_EQUAL("/path/to/wows/res_packages/foot", out);
@@ -779,7 +780,7 @@ void test_wows_search_file(void) {
     // Parse the index file
     int ret = wows_parse_index_dir("./tests/data/", context);
     // Assert that the return value is 0 (success)
-    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL_FATAL(ret, 0);
 
     char *err_msg = wows_error_string(ret, context);
     printf("Error: %s\n", err_msg);
@@ -796,10 +797,10 @@ void test_wows_search_file(void) {
     int result = wows_search(context, pattern, mode, &result_count, &results);
 
     // Check result code
-    CU_ASSERT_EQUAL(result, 0);
+    CU_ASSERT_EQUAL_FATAL(result, 0);
 
     // Check number of matching files
-    CU_ASSERT_EQUAL(result_count, expected_result_count);
+    CU_ASSERT_EQUAL_FATAL(result_count, expected_result_count);
 
     // Check file names
     CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234/b1234");
