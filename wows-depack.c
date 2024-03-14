@@ -28,7 +28,7 @@
 
 const char *argp_program_version = BFD_VERSION;
 
-const char *argp_program_bug_address = "https://github.com/kakwa/wows-depack/issues";
+const char *argp_program_bug_address = "https://github.com/wows-tools/wows-depack/issues";
 
 static char doc[] = "\nWorld of Warships resource extractor tool";
 
