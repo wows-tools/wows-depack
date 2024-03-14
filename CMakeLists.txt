@@ -32,27 +32,22 @@ set(CMAKE_CXX_FLAGS
 # Options
 option(DEBUG "compile with debug symbol" OFF)
 option(STATIC "compile statically" OFF)
-option(USE_CLANG "build application with clang" OFF)
-option(USE_GCC "build application with gcc" OFF)
-option(FORCELE "force little endian architecture" OFF)
 option(COVERAGE "Enable code coverage" OFF)
 option(BUILD_DOC "Build documentation" OFF)
 option(BUILD_TESTS "Build tests" OFF)
-
-if(USE_CLANG)
-  set(CMAKE_CXX_COMPILER "clang++")
-  set(CMAKE_CC_COMPILER "clang")
-endif(USE_CLANG)
-
-if(USE_GCC)
-  set(CMAKE_CXX_COMPILER "g++")
-  set(CMAKE_CC_COMPILER "gcc")
-endif(USE_GCC)
 
 if(DEBUG)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
   set(CMAKE_BUILD_TYPE Debug)
 endif(DEBUG)
+
+# Build external dependancies if we are on OSX
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # Mac OS X specific code
+  set(EXTERNAL_ICONV "iconv")
+  set(EXTERNAL_ARGP "argp")
+  add_definitions(-DDARWIN)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 if(STATIC)
   set(SHARED "")
@@ -66,14 +61,6 @@ endif(STATIC)
 if(UNIX)
   link_libraries(m)
 endif(UNIX)
-
-# Build external dependancies if we are on OSX
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # Mac OS X specific code
-  set(EXTERNAL_ICONV "iconv")
-  set(EXTERNAL_ARGP "argp")
-  add_definitions(-DDARWIN)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 # linking directories
 link_directories(${CMAKE_BINARY_DIR}/ /usr/local/lib /usr/lib/)
