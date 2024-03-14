@@ -169,7 +169,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
 
         char *file_name = calloc(sizeof(char), metadata[i].file_name_size);
         char *file_name_src = metadata_section + offset + metadata[i].offset_idx_file_name;
-        returnOutIndex(file_name_src, file_name_src + metadata[i].offset_idx_file_name, index);
+        returnOutIndex(file_name_src, file_name_src + metadata[i].file_name_size, index);
         strncpy(file_name, file_name_src, metadata[i].file_name_size);
         metadata[i]._file_name = file_name;
     }
@@ -177,7 +177,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     // Get the start pkg data pointer section
     char *data_file_entry_section = (contents + header->offset_idx_data_section + MAGIC_SECTION_OFFSET);
 
-    //// Check data_file_entries section boundaries
+    // Check data_file_entries section boundaries
     returnOutIndex(data_file_entry_section,
                    data_file_entry_section + header->file_count * SIZE_WOWS_INDEX_DATA_FILE_ENTRY, index);
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
