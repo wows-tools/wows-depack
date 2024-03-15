@@ -191,8 +191,8 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
         data_file_entry[i].offset_pkg_data = datatoh64(data_file_entry_section + offset, 16, context);
         data_file_entry[i].type_1 = datatoh32(data_file_entry_section + offset, 24, context);
         data_file_entry[i].type_2 = datatoh32(data_file_entry_section + offset, 28, context);
-        data_file_entry[i].size_pkg_data = datatoh64(data_file_entry_section + offset, 32, context);
-        data_file_entry[i].id_pkg_data = datatoh32(data_file_entry_section + offset, 40, context);
+        data_file_entry[i].size_pkg_data = datatoh32(data_file_entry_section + offset, 32, context);
+        data_file_entry[i].id_pkg_data = datatoh64(data_file_entry_section + offset, 36, context);
     }
 
     // Get the footer section
