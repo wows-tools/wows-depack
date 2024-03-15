@@ -744,6 +744,7 @@ void test_get_pkg_filepath() {
     // Prepare test data
     char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
+                                .endianess = 0x2000000,
                                 .file_dir_count = 5,
                                 .file_count = 2,
                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
