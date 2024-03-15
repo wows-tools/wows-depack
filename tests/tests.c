@@ -86,39 +86,39 @@ void test_wows_error_string() {
     WOWS_CONTEXT *context = wows_init_context(0);
 
     char *error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted");
+    CU_ASSERT_STRING_EQUAL(error_string, "index is corrupted");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_BAD_MAGIC, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index has an invalid magic number");
+    CU_ASSERT_STRING_EQUAL(error_string, "index has an invalid magic number");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_MISSING_METADATA_ENTRY, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The file is missing a required metadata entry");
+    CU_ASSERT_STRING_EQUAL(error_string, "file is missing a required metadata entry");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_MAX_LEVEL_REACHED, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The maximum level has been reached");
+    CU_ASSERT_STRING_EQUAL(error_string, "maximum depth level has been reached");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_NON_ZERO_TERMINATED_STRING, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "A string in the index is not null-terminated");
+    CU_ASSERT_STRING_EQUAL(error_string, "string in index file not null-terminated");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_PATH_TOO_LONG, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The file path is too long");
+    CU_ASSERT_STRING_EQUAL(error_string, "file path too long");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_UNKNOWN, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "An unknown error occurred");
+    CU_ASSERT_STRING_EQUAL(error_string, "unknown error occurred");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_ID_COLLISION_FILE_DIR, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "There is an ID collision between a file and a directory");
+    CU_ASSERT_STRING_EQUAL(error_string, "ID collision between a file and a directory");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_FILE_OPEN_FAILURE, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index could not be opened");
+    CU_ASSERT_STRING_EQUAL(error_string, "index file could not be opened");
     free(error_string);
 
     error_string = wows_error_string(WOWS_ERROR_DECOMPOSE_PATH, context);
@@ -145,6 +145,10 @@ void test_wows_error_string() {
     CU_ASSERT_STRING_EQUAL(error_string, "file write error");
     free(error_string);
 
+    error_string = wows_error_string(WOWS_ERROR_MAX_FILE, context);
+    CU_ASSERT_STRING_EQUAL(error_string, "maximum number of file/dir in index reached");
+    free(error_string);
+
     error_string = wows_error_string(9999999, context);
     CU_ASSERT_STRING_EQUAL(error_string, "unrecognized error code");
     free(error_string);
@@ -152,13 +156,13 @@ void test_wows_error_string() {
     // Test with a context error message.
     wows_set_error_details(context, "Test error message %s", "variable");
     error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message variable");
+    CU_ASSERT_STRING_EQUAL(error_string, "index is corrupted: Test error message variable");
     free(error_string);
 
     // Test with a context error message.
     wows_set_error_details(context, "Test error message 2");
     error_string = wows_error_string(WOWS_ERROR_CORRUPTED_FILE, context);
-    CU_ASSERT_STRING_EQUAL(error_string, "The index is corrupted: Test error message 2");
+    CU_ASSERT_STRING_EQUAL(error_string, "index is corrupted: Test error message 2");
     free(error_string);
 
     wows_free_context(context);
