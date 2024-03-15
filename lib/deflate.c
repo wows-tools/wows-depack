@@ -202,7 +202,7 @@ int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *s
 */
 int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadata_section_size, uint64_t metadata_id,
                          uint64_t file_name_size, uint64_t offset_idx_file_name, uint64_t parent_id,
-                         uint64_t *file_plus_dir_count) {
+                         uint64_t *file_plus_dir_count, char *file_name) {
     // If the metadata section array is full, allocate more space for it.
     if ((*metadata_section_size - *file_plus_dir_count) == 0) {
         *metadata = realloc(*metadata, sizeof(WOWS_INDEX_METADATA_ENTRY) * (*file_plus_dir_count + CHUNK_FILE));
@@ -212,6 +212,7 @@ int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadat
     (*metadata)[*file_plus_dir_count].file_name_size = file_name_size;
     (*metadata)[*file_plus_dir_count].offset_idx_file_name = offset_idx_file_name;
     (*metadata)[*file_plus_dir_count].parent_id = parent_id;
+    (*metadata)[*file_plus_dir_count]._file_name = file_name;
     (*file_plus_dir_count)++;
     return 0;
 }
@@ -306,7 +307,8 @@ int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
                             &(writer->filename_section_size));
             write_metadata_entry(&(writer->index->metadata), &(writer->metadata_section_size), metadata_id,
                                  (strlen(entry->d_name) + 1), offset_idx_file_name, parent_id,
-                                 &(writer->file_plus_dir_count));
+                                 &(writer->file_plus_dir_count),
+                                 writer->filename_section + writer->filename_section_offset);
             recursive_writer(writer, full_path, metadata_id);
         } else if (S_ISREG(info.st_mode)) {
             uint64_t offset_idx_file_name = writer->filename_section_offset;
@@ -320,7 +322,8 @@ int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id) {
                             &(writer->filename_section_size));
             write_metadata_entry(&(writer->index->metadata), &(writer->metadata_section_size), metadata_id,
                                  (strlen(entry->d_name) + 1), offset_idx_file_name, parent_id,
-                                 &(writer->file_plus_dir_count));
+                                 &(writer->file_plus_dir_count),
+                                 writer->filename_section + writer->filename_section_offset);
             write_file_pkg_entry(&(writer->index->data_file_entry), &(writer->file_section_size), metadata_id,
                                  writer->footer_id, start_offset, size, pkg_id, &(writer->file_count));
         }
@@ -357,7 +360,7 @@ int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f) {
     for (size_t i = 0; i < index->header->file_dir_count; i++) {
         WOWS_INDEX_METADATA_ENTRY *metadata_entry = &index->metadata[i];
         char *file_name = metadata_entry->_file_name;
-        if (file_name)
+        if (file_name != NULL && metadata_entry->file_name_size != 0)
             fwrite(file_name, metadata_entry->file_name_size, 1, f);
         general_offset += metadata_entry->file_name_size;
     }
