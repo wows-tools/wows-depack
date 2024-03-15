@@ -11,8 +11,6 @@
 // Put some limits on the file name size
 #define WOWS_PATH_MAX 4096
 
-#pragma pack(1)
-
 /* ---------- */
 
 /* Errors */
@@ -207,7 +205,7 @@ int write_data_blob(char *file_path, FILE *pkg_fp, uint64_t *offset, uint32_t *s
 
 int write_metadata_entry(WOWS_INDEX_METADATA_ENTRY **metadata, uint64_t *metadata_section_size, uint64_t metadata_id,
                          uint64_t file_name_size, uint64_t offset_idx_file_name, uint64_t parent_id,
-                         uint64_t *file_plus_dir_count);
+                         uint64_t *file_plus_dir_count, char *file_name);
 int recursive_writer(wows_writer *writer, char *path, uint64_t parent_id);
 int copy_data(FILE *in, FILE *out, long offset, size_t size);
 int internal_wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path, FILE *magic_fp);
