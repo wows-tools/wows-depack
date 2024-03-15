@@ -114,6 +114,14 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     header->offset_idx_data_section = datatoh64(contents, 40, context);
     header->offset_idx_footer_section = datatoh64(contents, 48, context);
 
+    if (header->file_dir_count > WOWS_FILE_DIR_MAX) {
+        return WOWS_ERROR_MAX_FILE;
+    }
+
+    if (header->file_count > WOWS_FILE_DIR_MAX) {
+        return WOWS_ERROR_MAX_FILE;
+    }
+
     // Get the start of the metadata array
     char *metadata_section = (contents + SIZE_WOWS_INDEX_HEADER);
     // Check the metadata section
@@ -141,6 +149,7 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     // Check data_file_entries section boundaries
     returnOutIndex(data_file_entry_section,
                    data_file_entry_section + header->file_count * SIZE_WOWS_INDEX_DATA_FILE_ENTRY, index);
+
     WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
         (WOWS_INDEX_DATA_FILE_ENTRY *)calloc(sizeof(WOWS_INDEX_DATA_FILE_ENTRY), header->file_count);
     index->data_file_entry = data_file_entry;

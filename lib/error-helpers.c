@@ -58,6 +58,9 @@ char *wows_error_string(int error_code, WOWS_CONTEXT *context) {
     case WOWS_ERROR_FILE_WRITE:
         error_string = "file write error";
         break;
+    case WOWS_ERROR_MAX_FILE:
+        error_string = "maximum number of file/dir in index reached";
+        break;
     case 0:
         error_string = "no recent error";
         break;

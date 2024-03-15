@@ -24,6 +24,7 @@
 #define WOWS_ERROR_NOT_A_DIR 13                 /**< path is not a directory */
 #define WOWS_ERROR_NOT_FOUND 14                 /**< file or directory not found */
 #define WOWS_ERROR_FILE_WRITE 15                /**< file write error */
+#define WOWS_ERROR_MAX_FILE 16                  /**< maximum number of file/dir */
 
 /* ---------- */
 

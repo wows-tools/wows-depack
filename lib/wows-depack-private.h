@@ -11,6 +11,7 @@
 // Put some limits on the file name size
 #define WOWS_PATH_MAX 4096
 
+#define WOWS_FILE_DIR_MAX 32 * 1024 * 1024
 /* ---------- */
 
 /* Errors */
