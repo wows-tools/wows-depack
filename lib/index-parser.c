@@ -135,6 +135,9 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
         metadata[i].offset_idx_file_name = datatoh64(metadata_section + offset, 8, context);
         metadata[i].id = datatoh64(metadata_section + offset, 16, context);
         metadata[i].parent_id = datatoh64(metadata_section + offset, 24, context);
+        if (metadata[i].file_name_size > WOWS_PATH_MAX) {
+            return WOWS_ERROR_PATH_TOO_LONG;
+        }
 
         char *file_name = calloc(sizeof(char), metadata[i].file_name_size);
         char *file_name_src = metadata_section + offset + metadata[i].offset_idx_file_name;
@@ -176,7 +179,10 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     footer->pkg_file_name_size = datatoh64(footer_src, 0, context);
     footer->unknown_7 = datatoh64(footer_src, 8, context);
     footer->id = datatoh64(footer_src, 16, context);
-    ;
+    if (footer->pkg_file_name_size > WOWS_PATH_MAX) {
+        return WOWS_ERROR_PATH_TOO_LONG;
+    }
+
     footer->_file_name = calloc(sizeof(char), footer->pkg_file_name_size);
     char *file_name_src = footer_src + SIZE_WOWS_INDEX_FOOTER;
     returnOutIndex(file_name_src, file_name_src + footer->pkg_file_name_size, index);
