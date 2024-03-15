@@ -807,7 +807,9 @@ void test_get_pkg_filepath() {
     WOWS_CONTEXT *context = wows_init_context(0);
     int result = map_index_file(contents, 2048, &index, context);
     CU_ASSERT_EQUAL_FATAL(0, result);
-    index->index_file_path = "/path/to/wows/bin/6831266/idx/basecontent.idx";
+    char *file_name = "/path/to/wows/bin/6831266/idx/basecontent.idx";
+    index->index_file_path = calloc(sizeof(char), strlen(file_name) + 1);
+    memcpy(index->index_file_path, file_name, strlen(file_name));
     char *out;
 
     result = get_pkg_filepath(index, &out);
