@@ -32,28 +32,6 @@
 #include "wows-depack-private.h"
 #include "hashmap.h"
 
-int get_metadata_filename_unsafe(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
-    *out = entry->_file_name;
-    return 0;
-}
-
-int get_metadata_filename(WOWS_INDEX_METADATA_ENTRY *entry, WOWS_INDEX *index, char **out) {
-    char *filename = (char *)entry;
-    filename += entry->offset_idx_file_name;
-    // Check that the file name is not too long
-    if (entry->file_name_size > WOWS_PATH_MAX) {
-        return WOWS_ERROR_PATH_TOO_LONG;
-    }
-    // Check that the string is actually within the index boundaries
-    returnOutIndex(filename, filename + entry->file_name_size, index);
-    // Check that it is null terminated
-    if (filename[entry->file_name_size - 1] != '\0') {
-        return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
-    }
-    *out = filename;
-    return 0;
-}
-
 int get_pkg_filepath(WOWS_INDEX *index, char **out) {
     char *pkg_file_name = index->footer->_file_name;
     const int num_parents = 4;
@@ -70,23 +48,6 @@ int get_pkg_filepath(WOWS_INDEX *index, char **out) {
 
     free(current_path);
     *out = out_path;
-    return 0;
-}
-
-int get_footer_filename(WOWS_INDEX_FOOTER *footer, WOWS_INDEX *index, char **out) {
-    char *pkg_filename = (char *)footer;
-    pkg_filename += sizeof(WOWS_INDEX_FOOTER);
-    // Check that the file name is not too long
-    if (footer->pkg_file_name_size > WOWS_PATH_MAX) {
-        return WOWS_ERROR_PATH_TOO_LONG;
-    }
-    // Check that the string is actually within the index boundaries
-    returnOutIndex(pkg_filename, pkg_filename + footer->pkg_file_name_size, index);
-    // Check that it is null terminated
-    if (pkg_filename[footer->pkg_file_name_size - 1] != '\0') {
-        return WOWS_ERROR_NON_ZERO_TERMINATED_STRING;
-    }
-    *out = pkg_filename;
     return 0;
 }
 
