@@ -83,6 +83,7 @@ uint64_t datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
 // Map the different section of the index file content to an index struct
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context) {
     WOWS_INDEX *index = calloc(sizeof(WOWS_INDEX), 1);
+    *index_in = index;
     index->start_address = contents;
     index->end_address = contents + length;
     index->length = length;
@@ -187,7 +188,6 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     char *file_name_src = footer_src + SIZE_WOWS_INDEX_FOOTER;
     returnOutIndex(file_name_src, file_name_src + footer->pkg_file_name_size, index);
     strncpy(footer->_file_name, file_name_src, footer->pkg_file_name_size);
-    *index_in = index;
     return 0;
 }
 
@@ -292,6 +292,7 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     WOWS_INDEX *index;
     int err = map_index_file(contents, length, &index, context);
     if (err != 0) {
+        wows_free_index(index, 0);
         return err;
     }
 

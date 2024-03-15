@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
             free(args);
             return ret;
         }
+        free(err_msg);
     }
 
     if (args->input == NULL && args->input_dir == NULL) {
