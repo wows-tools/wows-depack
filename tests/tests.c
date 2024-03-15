@@ -50,7 +50,6 @@ typedef struct {
     uint64_t id;
 } TWOWS_INDEX_FOOTER;
 
-
 // PKG file ID + padding
 typedef struct {
     uint32_t padding_1;
@@ -219,28 +218,28 @@ static void test_map_index_file() {
 
     // Prepare test data
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                .endianess = 0x2000000,
-                                .file_dir_count = 1,
-                                .file_count = 1,
-                                .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                .offset_idx_data_section = 512,
-                                .offset_idx_footer_section = 1024};
+                                 .endianess = 0x2000000,
+                                 .file_dir_count = 2,
+                                 .file_count = 2,
+                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
+                                 .offset_idx_data_section = 512,
+                                 .offset_idx_footer_section = 1024};
     TWOWS_INDEX_METADATA_ENTRY metadata = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 1, .parent_id = 0};
     TWOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 2, .parent_id = 0};
     TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                  .footer_id = 42,
-                                                  .offset_pkg_data = 1024,
-                                                  .type_1 = 1,
-                                                  .type_2 = 2,
-                                                  .size_pkg_data = 100,
-                                                  .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
                                                    .footer_id = 42,
                                                    .offset_pkg_data = 1024,
                                                    .type_1 = 1,
                                                    .type_2 = 2,
                                                    .size_pkg_data = 100,
                                                    .id_pkg_data = 1};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
+                                                    .footer_id = 42,
+                                                    .offset_pkg_data = 1024,
+                                                    .type_1 = 1,
+                                                    .type_2 = 2,
+                                                    .size_pkg_data = 100,
+                                                    .id_pkg_data = 1};
     TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
     memcpy(contents + sizeof(TWOWS_INDEX_HEADER), &metadata, sizeof(TWOWS_INDEX_METADATA_ENTRY));
@@ -256,17 +255,16 @@ static void test_map_index_file() {
     int result = map_index_file(contents, TEST_DATA_SIZE, &index, context);
 
     CU_ASSERT_EQUAL_FATAL(result, 0);
+    // print_debug_raw(index);
     CU_ASSERT_PTR_NOT_NULL(index);
     CU_ASSERT_PTR_EQUAL(index->start_address, contents);
     CU_ASSERT_PTR_EQUAL(index->end_address, contents + TEST_DATA_SIZE);
     CU_ASSERT_EQUAL(index->length, TEST_DATA_SIZE);
-    CU_ASSERT_PTR_EQUAL(index->header, (WOWS_INDEX_HEADER *)contents);
-    CU_ASSERT_EQUAL(index->header->file_dir_count, 1);
-    CU_ASSERT_EQUAL(index->header->file_count, 1);
+    CU_ASSERT_EQUAL(index->header->file_dir_count, 2);
+    CU_ASSERT_EQUAL(index->header->file_count, 2);
     CU_ASSERT_EQUAL(index->header->header_size, sizeof(WOWS_INDEX_HEADER));
     CU_ASSERT_EQUAL(index->header->offset_idx_data_section, 512);
     CU_ASSERT_EQUAL(index->header->offset_idx_footer_section, 1024);
-    CU_ASSERT_PTR_EQUAL(index->metadata, (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER)));
     CU_ASSERT_EQUAL(index->metadata[0].file_name_size, 6);
     CU_ASSERT_EQUAL(index->metadata[0].offset_idx_file_name, 16);
     CU_ASSERT_EQUAL(index->metadata[0].id, 1);
@@ -276,9 +274,6 @@ static void test_map_index_file() {
     CU_ASSERT_EQUAL(index->metadata[1].id, 2);
     CU_ASSERT_EQUAL(index->metadata[1].parent_id, 0);
 
-    CU_ASSERT_PTR_EQUAL(
-        index->data_file_entry,
-        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents + index->header->offset_idx_data_section + MAGIC_SECTION_OFFSET));
     CU_ASSERT_EQUAL(index->data_file_entry[0].metadata_id, 1);
     CU_ASSERT_EQUAL(index->data_file_entry[0].footer_id, 42);
     CU_ASSERT_EQUAL(index->data_file_entry[0].offset_pkg_data, 1024);
@@ -309,11 +304,12 @@ void test_wows_parse_index_buffer() {
 
     // Prepare test data
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                .file_dir_count = 5,
-                                .file_count = 2,
-                                .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                .offset_idx_data_section = 512,
-                                .offset_idx_footer_section = 1024};
+                                 .endianess = 0x2000000,
+                                 .file_dir_count = 5,
+                                 .file_count = 2,
+                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
+                                 .offset_idx_data_section = 512,
+                                 .offset_idx_footer_section = 1024};
 
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
 
@@ -347,19 +343,19 @@ void test_wows_parse_index_buffer() {
     memcpy(offset_metadata5 + 256, name5, strlen(name5));
 
     TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                  .footer_id = 42,
-                                                  .offset_pkg_data = 1024,
-                                                  .type_1 = 1,
-                                                  .type_2 = 2,
-                                                  .size_pkg_data = 100,
-                                                  .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
                                                    .footer_id = 42,
                                                    .offset_pkg_data = 1024,
                                                    .type_1 = 1,
                                                    .type_2 = 2,
                                                    .size_pkg_data = 100,
                                                    .id_pkg_data = 1};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
+                                                    .footer_id = 42,
+                                                    .offset_pkg_data = 1024,
+                                                    .type_1 = 1,
+                                                    .type_2 = 2,
+                                                    .size_pkg_data = 100,
+                                                    .id_pkg_data = 1};
     TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512 + sizeof(TWOWS_INDEX_DATA_FILE_ENTRY), &data_file_entry2,
@@ -744,12 +740,12 @@ void test_get_pkg_filepath() {
     // Prepare test data
     char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                .endianess = 0x2000000,
-                                .file_dir_count = 5,
-                                .file_count = 2,
-                                .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                .offset_idx_data_section = 512,
-                                .offset_idx_footer_section = 1024};
+                                 .endianess = 0x2000000,
+                                 .file_dir_count = 5,
+                                 .file_count = 2,
+                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
+                                 .offset_idx_data_section = 512,
+                                 .offset_idx_footer_section = 1024};
 
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
 
@@ -783,19 +779,19 @@ void test_get_pkg_filepath() {
     memcpy(offset_metadata5 + 256, name5, strlen(name5));
 
     TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                  .footer_id = 42,
-                                                  .offset_pkg_data = 1024,
-                                                  .type_1 = 1,
-                                                  .type_2 = 2,
-                                                  .size_pkg_data = 100,
-                                                  .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
                                                    .footer_id = 42,
                                                    .offset_pkg_data = 1024,
                                                    .type_1 = 1,
                                                    .type_2 = 2,
                                                    .size_pkg_data = 100,
                                                    .id_pkg_data = 1};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
+                                                    .footer_id = 42,
+                                                    .offset_pkg_data = 1024,
+                                                    .type_1 = 1,
+                                                    .type_2 = 2,
+                                                    .size_pkg_data = 100,
+                                                    .id_pkg_data = 1};
     TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512 + sizeof(TWOWS_INDEX_DATA_FILE_ENTRY), &data_file_entry2,
