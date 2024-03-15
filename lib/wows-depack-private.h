@@ -154,6 +154,7 @@ typedef struct {
 /* ---------- */
 
 bool checkOutOfIndex(char *start, char *end, WOWS_INDEX *index);
+int wows_free_index(WOWS_INDEX *index, int flag);
 int wows_parse_index(char *index_file_path, WOWS_CONTEXT *context);
 int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CONTEXT *context);
 char *wows_render_str(char *fmt, ...);

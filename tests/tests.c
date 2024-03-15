@@ -296,8 +296,8 @@ static void test_map_index_file() {
     CU_ASSERT_EQUAL(index->footer->pkg_file_name_size, 5);
     CU_ASSERT_EQUAL(index->footer->id, 42);
 
-    free(index);
-    free(context);
+    wows_free_context(context);
+    wows_free_index(index, 0);
 }
 
 void test_wows_parse_index_buffer() {
@@ -820,7 +820,7 @@ void test_get_pkg_filepath() {
     free(out);
     wows_free_context(context);
     free(contents);
-    free(index);
+    wows_free_index(index, 0);
 }
 
 void test_wows_search_file(void) {
