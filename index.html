@@ -208,10 +208,10 @@ Initialize Context &amp; Parse Index Files</h4>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Parse the index file */</span></div>
 <div class="line"><span class="keywordtype">int</span> ret = wows_parse_index(index_file_path, context);</div>
-<div class="ttc" id="astruct_w_o_w_s___c_o_n_t_e_x_t_html"><div class="ttname"><a href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a></div><div class="ttdef"><b>Definition:</b> wows-depack.h:55</div></div>
+<div class="ttc" id="astruct_w_o_w_s___c_o_n_t_e_x_t_html"><div class="ttname"><a href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a></div><div class="ttdef"><b>Definition:</b> wows-depack.h:56</div></div>
 <div class="ttc" id="awows-depack_8h_html"><div class="ttname"><a href="wows-depack_8h.html">wows-depack.h</a></div><div class="ttdoc">Header file for the wows-depack library.</div></div>
 <div class="ttc" id="awows-depack_8h_html_a9ad32a010e06dae6150c2d35a8b6c913"><div class="ttname"><a href="wows-depack_8h.html#a9ad32a010e06dae6150c2d35a8b6c913">wows_init_context</a></div><div class="ttdeci">WOWS_CONTEXT * wows_init_context(uint8_t debug_level)</div><div class="ttdoc">Initializes a WoWs resource extractor context.</div></div>
-<div class="ttc" id="awows-depack_8h_html_aa9acf8360da86592456433d8c0daf5f6"><div class="ttname"><a href="wows-depack_8h.html#aa9acf8360da86592456433d8c0daf5f6">WOWS_NO_DEBUG</a></div><div class="ttdeci">#define WOWS_NO_DEBUG</div><div class="ttdef"><b>Definition:</b> wows-depack.h:32</div></div>
+<div class="ttc" id="awows-depack_8h_html_aa9acf8360da86592456433d8c0daf5f6"><div class="ttname"><a href="wows-depack_8h.html#aa9acf8360da86592456433d8c0daf5f6">WOWS_NO_DEBUG</a></div><div class="ttdeci">#define WOWS_NO_DEBUG</div><div class="ttdef"><b>Definition:</b> wows-depack.h:33</div></div>
 </div><!-- fragment --><p>To parse the indexes, you can either specify a specific index file:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> *index_file_path = <span class="stringliteral">&quot;Games/World of Warships/bin/6831266/idx/system_data.idx&quot;</span></div>
 <div class="line"> </div>
@@ -267,7 +267,7 @@ Searching files/directories</h4>
 <div class="line"><span class="comment">// Free the array containing these paths</span></div>
 <div class="line">free(res_files);</div>
 <div class="ttc" id="awows-depack_8h_html_a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><div class="ttname"><a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a></div><div class="ttdeci">int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results)</div><div class="ttdoc">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.</div></div>
-<div class="ttc" id="awows-depack_8h_html_ad06e857fe4cab707bc7fcd511cbda4d2"><div class="ttname"><a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:40</div></div>
+<div class="ttc" id="awows-depack_8h_html_ad06e857fe4cab707bc7fcd511cbda4d2"><div class="ttname"><a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:41</div></div>
 </div><!-- fragment --><h4><a class="anchor" id="autotoc_md16"></a>
 Extracting Files</h4>
 <p>To extract files, you can do the following:</p>

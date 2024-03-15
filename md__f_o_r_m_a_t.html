@@ -159,7 +159,7 @@ Layout</h3>
 <div class="fragment"><div class="line">+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+</div>
 <div class="line">| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |</div>
 <div class="line">+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+</div>
-<div class="line">|&lt;----- magic -----&gt;||&lt;--- unknown_1 ---&gt;||&lt;------- id ------&gt;||&lt;--- unknown_2 ---&gt;|</div>
+<div class="line">|&lt;----- magic -----&gt;||&lt;--- endianess ---&gt;||&lt;------- id ------&gt;||&lt;--- unknown_2 ---&gt;|</div>
 <div class="line">|     32 bits       ||      32 bits      ||     32 bits       ||      32 bits      |</div>
 <div class="line"> </div>
 <div class="line">+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+</div>
@@ -187,7 +187,7 @@ Field descriptions</h3>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>magic</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Magic bytes, always "ISFP"    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>unknown_1</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Unknown, always 0x2000000    </td></tr>
+<td class="markdownTableBodyNone"><code>endianess</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Endianess marker, always 0x2000000 if LE    </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>id</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Unsure, unique per index file, not referenced anywhere else    </td></tr>
 <tr class="markdownTableRowEven">

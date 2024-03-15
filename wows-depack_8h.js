@@ -25,6 +25,7 @@ var wows_depack_8h =
     [ "WOWS_ERROR_FILE_WRITE", "wows-depack_8h.html#a0270ae4bafceaf7367d099673fe3438a", null ],
     [ "WOWS_ERROR_ID_COLLISION_FILE_DIR", "wows-depack_8h.html#a72e3a4d04e4e6987283580d16b73e80c", null ],
     [ "WOWS_ERROR_INVALID_SEARCH_PATTERN", "wows-depack_8h.html#af1e1cc985b2cd3e0429d9d762ec540fc", null ],
+    [ "WOWS_ERROR_MAX_FILE", "wows-depack_8h.html#a00f89a45f665915156646a09df4958c4", null ],
     [ "WOWS_ERROR_MAX_LEVEL_REACHED", "wows-depack_8h.html#a61e8a06a7e0780410f88a9330542eb64", null ],
     [ "WOWS_ERROR_MISSING_METADATA_ENTRY", "wows-depack_8h.html#a605f9855d4dec2b94ccbe93a786b2215", null ],
     [ "WOWS_ERROR_NON_ZERO_TERMINATED_STRING", "wows-depack_8h.html#a660020092f0da403a73ea53ad2a71dbd", null ],
