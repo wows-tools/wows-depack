@@ -119,40 +119,11 @@ CLI tool</h2>
 Help</h3>
 <div class="fragment"><div class="line">./wows-depack-cli --help</div>
 <div class="line"> </div>
-<div class="line">Usage: wows-depack-cli [OPTION...]</div>
-<div class="line">            &lt;-i INPUT_FILE | -I INPUT_DIR | -W WOWS_BASE_DIR&gt;</div>
+<div class="line">Usage: wows-depack-cli [OPTION...] -W WOWS_BASE_DIR</div>
 <div class="line"> </div>
-<div class="line">World of Warships resource extractor tool</div>
-<div class="line"> </div>
-<div class="line">  -e, --extract=FILE_DIR_TO_EXTRACT</div>
-<div class="line">                             File or directory to extract</div>
-<div class="line">  -i, --input=INPUT_INDEX    Input index file</div>
-<div class="line">  -I, --input-dir=INPUT_INDEX_DIR</div>
-<div class="line">                             Input index directory</div>
-<div class="line">  -o, --output=OUTPUT_FILE   Output file when extracting one file</div>
-<div class="line">  -O, --output-dir=OUTPUT_DIR   Output dir for recursive extract</div>
-<div class="line">  -p, --print                Print All files</div>
-<div class="line">  -s, --search=SEARCH_PATTERN   Search Regex</div>
-<div class="line">  -W, --wows-dir=WOWS_BASE_DIR   Input World of Warships base directory</div>
-<div class="line">  -?, --help                 Give this help list</div>
-<div class="line">      --usage                Give a short usage message</div>
-<div class="line">  -V, --version              Print program version</div>
-<div class="line"> </div>
-<div class="line">Mandatory or optional arguments to long options are also mandatory or optional</div>
-<div class="line">for any corresponding short options.</div>
-<div class="line"> </div>
-<div class="line">Report bugs to https://github.com/kakwa/wows-depack/issues.</div>
+<div class="line">World of Warships resource extractor tool.</div>
+<div class="line">[...]</div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md6"></a>
-Parse the index(es)</h3>
-<p>Parse a single Index file:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6831266/idx/system_data.idx</div>
-</div><!-- fragment --><p>Parse all the indexes in the index directory:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/</div>
-</div><!-- fragment --><p>Auto-discovery of the latest <code>idx/</code> directory (from WoWs install directory) and parse all index files:</p>
-<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/</div>
-</div><!-- fragment --><p>Note, the other examples are using <code>-W &lt;WOWS DIR&gt;</code> , but it could be faster to specify one index file directly through <code>-i &lt;FILE&gt;</code>. Specifically, <code>GameParams,data</code> is referenced in the <code>system_data.idx</code> index.</p>
-<p>Also, please note that you will need to adapt the path to your WoWs install and the parent of <code>idx/</code> (the <code>6831266</code> part changes with every update).</p>
-<h3><a class="anchor" id="autotoc_md7"></a>
 Print all files</h3>
 <p>To print all the files present: </p><div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ -p</div>
 <div class="line"> </div>
@@ -161,36 +132,47 @@ Print all files</h3>
 <div class="line">[...]</div>
 <div class="line">/clanbase/headquarters_2/6/29/31.png</div>
 <div class="line">/server_stats.xml</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md8"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md7"></a>
 Search</h3>
-<p>To search a given file (regular expression):</p>
-<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ -s &#39;.*Params.*&#39;</div>
+<p>Search files by name pattern (perl compatible regular expression):</p>
+<div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ -s &#39;.*[Pp]arams.*&#39;</div>
 <div class="line"> </div>
 <div class="line">Found 3 matching files:</div>
 <div class="line">shipyardParams.xml</div>
 <div class="line">content/GameParams.data</div>
 <div class="line">content/UIParams.data</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md9"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md8"></a>
 Extract a single file</h3>
 <p>To Extract a Single file, do:</p>
 <div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;content/GameParams.data&#39; -o GameParams.data</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md10"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md9"></a>
 Extract a whole directory</h3>
 <p>To extract a whole sub directory, do:</p>
 <div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;content/&#39; -O out/</div>
-</div><!-- fragment --><p>To extract everything (rip your free disk space), do:</p>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md10"></a>
+Extract every World of Warships resource files</h3>
+<p>To extract everything (rip your free disk space), run:</p>
 <div class="fragment"><div class="line">./wows-depack-cli -W ~/Games/World\ of\ Warships/ \</div>
 <div class="line">    -e &#39;/&#39; -O out/</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md11"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md11"></a>
+Parse Specific index file(s)</h3>
+<p>Instead of <code>-W/--wows-dir</code>, a specific index file or directory can be specified through the <code>-i</code> or <code>-I</code> options.</p>
+<p>Parse a single index file:</p>
+<div class="fragment"><div class="line">./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6831266/idx/system_data.idx -p</div>
+</div><!-- fragment --><p>Parse all the indexes in an index directory:</p>
+<div class="fragment"><div class="line">./wows-depack-cli -I ~/Games/World\ of\ Warships/bin/6831266/idx/ -p</div>
+</div><!-- fragment --><p>Note, the other examples are using <code>-W &lt;WOWS DIR&gt;</code> , but it could be faster to specify one index file directly through <code>-i &lt;FILE&gt;</code>. Specifically, <code>GameParams,data</code> is referenced in the <code>system_data.idx</code> index.</p>
+<p>Also, please note that you will need to adapt the path to your WoWs install and the parent of <code>idx/</code> (the <code>6831266</code> part changes with every update).</p>
+<h2><a class="anchor" id="autotoc_md12"></a>
 Library</h2>
-<h3><a class="anchor" id="autotoc_md12"></a>
+<h3><a class="anchor" id="autotoc_md13"></a>
 API documentation</h3>
 <p>The API documentation <a href="https://wows-tools.github.io/wows-depack/wows-depack_8h.html">is available here</a>.</p>
-<h3><a class="anchor" id="autotoc_md13"></a>
+<h3><a class="anchor" id="autotoc_md14"></a>
 Usage examples</h3>
-<h4><a class="anchor" id="autotoc_md14"></a>
+<h4><a class="anchor" id="autotoc_md15"></a>
 Initialize Context &amp; Parse Index Files</h4>
 <p>To start searching/extracting file, you first need to init &amp; fill the context.</p>
 <p>With a single index file:</p>
@@ -236,7 +218,7 @@ Initialize Context &amp; Parse Index Files</h4>
 <div class="line"><span class="comment">// You need to free index_dir_path after</span></div>
 <div class="line">free(index_dir_path);</div>
 </div><!-- fragment --><p>These operations will parse one or several index files, and construct a pseudo-filesystem tree which can be then explored.</p>
-<h4><a class="anchor" id="autotoc_md15"></a>
+<h4><a class="anchor" id="autotoc_md16"></a>
 Searching files/directories</h4>
 <p>It's possible to search for matching files inside the indexes:</p>
 <div class="fragment"><div class="line"><span class="comment">// Init output variables</span></div>
@@ -268,7 +250,7 @@ Searching files/directories</h4>
 <div class="line">free(res_files);</div>
 <div class="ttc" id="awows-depack_8h_html_a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><div class="ttname"><a href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a></div><div class="ttdeci">int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results)</div><div class="ttdoc">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.</div></div>
 <div class="ttc" id="awows-depack_8h_html_ad06e857fe4cab707bc7fcd511cbda4d2"><div class="ttname"><a href="wows-depack_8h.html#ad06e857fe4cab707bc7fcd511cbda4d2">WOWS_SEARCH_FILE_ONLY</a></div><div class="ttdeci">#define WOWS_SEARCH_FILE_ONLY</div><div class="ttdef"><b>Definition:</b> wows-depack.h:41</div></div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md16"></a>
+</div><!-- fragment --><h4><a class="anchor" id="autotoc_md17"></a>
 Extracting Files</h4>
 <p>To extract files, you can do the following:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> *output = <span class="stringliteral">&quot;path/output.xml&quot;</span></div>
@@ -297,12 +279,12 @@ Extracting Files</h4>
 <div class="line">ret = <a class="code" href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">wows_extract_dir</a>(context, <span class="stringliteral">&quot;/wows-resources/dockyard/&quot;</span>, output_dir);</div>
 <div class="ttc" id="awows-depack_8h_html_af9547c79e9b759a2acf595739b3c3a54"><div class="ttname"><a href="wows-depack_8h.html#af9547c79e9b759a2acf595739b3c3a54">wows_extract_dir</a></div><div class="ttdeci">int wows_extract_dir(WOWS_CONTEXT *context, char *dir_path, char *out_dir_path)</div><div class="ttdoc">Extract a given directory (recursively) from the archive (output file version).</div></div>
 </div><!-- fragment --><p>Note that with this extract, wows-depack will reproduce the pseudo-filesystem in the archive with <code>output_dir</code> as its root.</p>
-<h4><a class="anchor" id="autotoc_md17"></a>
+<h4><a class="anchor" id="autotoc_md18"></a>
 Clean-up</h4>
 <p>Once done, you need to release the context memory:</p>
 <div class="fragment"><div class="line"><a class="code" href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a">wows_free_context</a>(context);</div>
 <div class="ttc" id="awows-depack_8h_html_af5398ab65db5ef107cbfe67400fe662a"><div class="ttname"><a href="wows-depack_8h.html#af5398ab65db5ef107cbfe67400fe662a">wows_free_context</a></div><div class="ttdeci">int wows_free_context(WOWS_CONTEXT *context)</div><div class="ttdoc">Frees a WoWs resource extractor context.</div></div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md18"></a>
+</div><!-- fragment --><h4><a class="anchor" id="autotoc_md19"></a>
 Error Handling &amp; Debugging</h4>
 <p>Most <code>wows_*</code> returns 0 on success or error codes on failure. To convert it to an error message, you can do the following:</p>
 <div class="fragment"><div class="line"><span class="comment">// wows_* function call example</span></div>
@@ -325,7 +307,7 @@ Error Handling &amp; Debugging</h4>
 <div class="line"><a class="code" href="wows-depack_8h.html#a871fde74cda9e5454e50ce1397419472">wows_print_flat</a>(context);</div>
 <div class="ttc" id="awows-depack_8h_html_a871fde74cda9e5454e50ce1397419472"><div class="ttname"><a href="wows-depack_8h.html#a871fde74cda9e5454e50ce1397419472">wows_print_flat</a></div><div class="ttdeci">int wows_print_flat(WOWS_CONTEXT *context)</div><div class="ttdoc">Prints the directory tree of the given WoWs resource parser context in a flat format.</div></div>
 <div class="ttc" id="awows-depack_8h_html_a9c69ea035a86734bee5959a56c99a12f"><div class="ttname"><a href="wows-depack_8h.html#a9c69ea035a86734bee5959a56c99a12f">wows_print_tree</a></div><div class="ttdeci">int wows_print_tree(WOWS_CONTEXT *context)</div><div class="ttdoc">Prints the directory tree of the given WoWs resource parser context in a tree format.</div></div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md19"></a>
+</div><!-- fragment --><h4><a class="anchor" id="autotoc_md20"></a>
 Write support</h4>
 <p>wows-depack provides experimental write support for creating index and pkg files:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> *input_dir = <span class="stringliteral">&quot;./tests&quot;</span>;</div>
@@ -336,19 +318,19 @@ Write support</h4>
 <div class="line">fclose(nfd_pkg);</div>
 <div class="ttc" id="awows-depack_8h_html_ae11ba74e9f3e1d1fe97085c25cfcf092"><div class="ttname"><a href="wows-depack_8h.html#ae11ba74e9f3e1d1fe97085c25cfcf092">wows_write_pkg</a></div><div class="ttdeci">int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name, FILE *pkg_fp, FILE *idx_fp)</div><div class="ttdoc">Writes a package file and its index.</div></div>
 </div><!-- fragment --><p>Please note that the write support is limited, and was created mainly to generate test data.</p>
-<h1><a class="anchor" id="autotoc_md20"></a>
+<h1><a class="anchor" id="autotoc_md21"></a>
 Build &amp; development</h1>
-<h2><a class="anchor" id="autotoc_md21"></a>
+<h2><a class="anchor" id="autotoc_md22"></a>
 Dependencies</h2>
 <p>Installing the dependencies on Debian:</p>
 <div class="fragment"><div class="line">apt install cmake zlib1g-dev libpcre3-dev clang</div>
 </div><!-- fragment --><p>Installing the test/coverage/doc dependencies:</p>
 <div class="fragment"><div class="line">apt install lcov libcunit1-dev doxygen</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md22"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md23"></a>
 Build</h2>
 <div class="fragment"><div class="line">cmake .</div>
 <div class="line">make</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md23"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md24"></a>
 Install</h2>
 <div class="fragment"><div class="line"># Remove DESTDIR for system installation</div>
 <div class="line">make install DESTDIR=fakeroot</div>
@@ -364,7 +346,7 @@ Install</h2>
 <div class="line">            ├── libwows-depack.so -&gt; libwows-depack.so.0</div>
 <div class="line">            ├── libwows-depack.so.0 -&gt; libwows-depack.so.0.1.0</div>
 <div class="line">            └── libwows-depack.so.0.1.0</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md24"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md25"></a>
 Tests</h2>
 <p>To run the unit tests, do the following:</p>
 <div class="fragment"><div class="line"># cmake run (on time)</div>
@@ -378,7 +360,7 @@ Tests</h2>
 <div class="line"> </div>
 <div class="line"># or with gdb:</div>
 <div class="line">gdb --args ./wows-depack-test</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md25"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md26"></a>
 Documentation</h2>
 <p>To build the doxygen documentation:</p>
 <div class="fragment"><div class="line">cmake -DBUILD_DOC=ON .</div>
@@ -388,7 +370,7 @@ Documentation</h2>
 <div class="fragment"><div class="line">./misc/setup_doxycss.sh</div>
 <div class="line"> </div>
 <div class="line">make doc_doxygen</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md26"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md27"></a>
 Fuzzing</h2>
 <p>This tool/lib parses binary data, consequently checking for overflow might be a good idea.</p>
 <p>To do so, install <a href="https://aflplus.plus/">american fuzzy lop++ (afl++)</a>:</p>
