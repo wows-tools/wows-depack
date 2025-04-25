@@ -95,8 +95,8 @@ $(document).ready(function(){initNavTree('md__f_o_r_m_a_t.html',''); initResizab
   <div class="headertitle"><div class="title">WoWs .pkg &amp; .idx Format</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md28"></a> </p>
-<h1><a class="anchor" id="autotoc_md29"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md20"></a> </p>
+<h1><a class="anchor" id="autotoc_md21"></a>
 Introduction</h1>
 <p>The WoWs resources are packed into something similar to a <code>.zip</code> archive (WoTs and WoWPs actually use zip files).</p>
 <p>Each archive is actually separated in two files:</p>
@@ -104,10 +104,10 @@ Introduction</h1>
 <li>a <code>.pkg</code> containing the compressed files concatenated together. This file is in the <code>res_package/</code> directory.</li>
 <li>a <code>.idx</code> containing the index of the files contained in the <code>.pkg</code> and their metadata (name, path, type, etc). This file is located in the <code>./bin/&lt;build_number&gt;/idx/</code> directory.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md30"></a>
+<h1><a class="anchor" id="autotoc_md22"></a>
 Disclaimer</h1>
 <p>This documentation has been created through reverse engineering, consequently errors and inaccuracies are not unlikely.</p>
-<h1><a class="anchor" id="autotoc_md31"></a>
+<h1><a class="anchor" id="autotoc_md23"></a>
 Convention</h1>
 <p>A <b>byte/8 bits</b> is represented as follows: </p><div class="fragment"><div class="line">+====+</div>
 <div class="line">| XX |</div>
@@ -120,13 +120,13 @@ Convention</h1>
 <div class="fragment"><div class="line">...=++=...</div>
 <div class="line">    ||</div>
 <div class="line">...=++=...</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md32"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md24"></a>
 Misc</h1>
 <p>Integers (offset and size in particular) are <code>Big Endian</code>.</p>
 <p>Strings seems limited to ASCII and are <code>\0</code> terminated.</p>
-<h1><a class="anchor" id="autotoc_md33"></a>
+<h1><a class="anchor" id="autotoc_md25"></a>
 Index file</h1>
-<h2><a class="anchor" id="autotoc_md34"></a>
+<h2><a class="anchor" id="autotoc_md26"></a>
 General format</h2>
 <p>The index file is composed of 5 sections:</p>
 <div class="fragment"><div class="line">|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^</div>
@@ -160,9 +160,9 @@ General format</h2>
 <div class="line">|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^</div>
 <div class="line">|           Footer           | } index footer (corresponding `.pkg` file name)</div>
 <div class="line">|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md35"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md27"></a>
 Header</h2>
-<h3><a class="anchor" id="autotoc_md36"></a>
+<h3><a class="anchor" id="autotoc_md28"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+</div>
 <div class="line">| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |</div>
@@ -187,7 +187,7 @@ Layout</h3>
 <div class="line">+====+====+====+====+====+====+====+=====+</div>
 <div class="line">|&lt;----- offset_idx_footer_section ------&gt;|</div>
 <div class="line">|               64 bits                  |</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md37"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md29"></a>
 Field descriptions</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -213,10 +213,10 @@ Field descriptions</h3>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>offset_idx_footer_section</code>   </td><td class="markdownTableBodyNone">64 bits   </td><td class="markdownTableBodyNone">Offset to the footer section, the offset is computed from <code>file_plus_dir_count</code> so <code>0x10</code> needs to be added   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md38"></a>
+<h2><a class="anchor" id="autotoc_md30"></a>
 File metadata</h2>
 <p>This section is repeated for each file and directory (<code>header-&gt;file_dir_count</code>).</p>
-<h3><a class="anchor" id="autotoc_md39"></a>
+<h3><a class="anchor" id="autotoc_md31"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+</div>
 <div class="line">| NS | NS | NS | NS | NS | NS | NS | NS  ||  OF | OF | OF | OF | OF | OF | OF | OF |</div>
@@ -231,7 +231,7 @@ Layout</h3>
 <div class="line">|                64 bits                 ||                64 bits                 |</div>
 <div class="line"> </div>
 <div class="line">[...repeat...]</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md40"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md32"></a>
 Field descriptions</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -245,19 +245,19 @@ Field descriptions</h3>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>parent_id</code>   </td><td class="markdownTableBodyNone">64 bits   </td><td class="markdownTableBodyNone">ID of the potential parent record (in particular, a directory record)   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md41"></a>
+<h2><a class="anchor" id="autotoc_md33"></a>
 File names section</h2>
 <p>This section is just <code>\0</code> separated list of strings:</p>
-<h3><a class="anchor" id="autotoc_md42"></a>
+<h3><a class="anchor" id="autotoc_md34"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+</div>
 <div class="line">|             file name string         | 00 |</div>
 <div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+</div>
 <div class="line">[...repeat...]</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md43"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md35"></a>
 File ".pkg" pointers</h2>
 <p>This section is repeated for each file (<code>header-&gt;file_count</code>).</p>
-<h3><a class="anchor" id="autotoc_md44"></a>
+<h3><a class="anchor" id="autotoc_md36"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+</div>
 <div class="line">| UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |</div>
@@ -277,7 +277,7 @@ Layout</h3>
 <div class="line">|&lt;- size_pkg_data -&gt;||&lt;------------ id_pkg_data ------------&gt;||&lt;---- padding ----&gt;|</div>
 <div class="line">|     32 bits       ||               64 bits                 ||      32 bits      |</div>
 <div class="line">[...repeat...]</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md45"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md37"></a>
 Field descriptions</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -299,9 +299,9 @@ Field descriptions</h3>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><code>padding</code>   </td><td class="markdownTableBodyNone">32 bits   </td><td class="markdownTableBodyNone">Always <code>0x00000000</code>   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md46"></a>
+<h2><a class="anchor" id="autotoc_md38"></a>
 Footer</h2>
-<h3><a class="anchor" id="autotoc_md47"></a>
+<h3><a class="anchor" id="autotoc_md39"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+</div>
 <div class="line">| UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |</div>
@@ -314,7 +314,7 @@ Layout</h3>
 <div class="line">+====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...</div>
 <div class="line">|&lt;----------------- id -----------------&gt;|</div>
 <div class="line">|                64 bits                 |</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md48"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md40"></a>
 Field descriptions</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -326,12 +326,12 @@ Field descriptions</h3>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>id</code>   </td><td class="markdownTableBodyNone">64 bits   </td><td class="markdownTableBodyNone">ID of the footer entry   </td></tr>
 </table>
-<h1><a class="anchor" id="autotoc_md49"></a>
+<h1><a class="anchor" id="autotoc_md41"></a>
 PKG format</h1>
-<h2><a class="anchor" id="autotoc_md50"></a>
+<h2><a class="anchor" id="autotoc_md42"></a>
 PKG Entry</h2>
 <p>The <code>.pkg</code> format is rather simple, it's bunch of concatenated compressed (RFC 1951/Deflate) or raw/uncompressed data blobs (one for each file) separated by an ID.</p>
-<h3><a class="anchor" id="autotoc_md51"></a>
+<h3><a class="anchor" id="autotoc_md43"></a>
 Layout</h3>
 <div class="fragment"><div class="line">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</div>
 <div class="line">|                                                                                 |</div>
@@ -345,7 +345,7 @@ Layout</h3>
 <div class="line">|     32 bits       ||               64 bits                 ||      32 bits      |</div>
 <div class="line"> </div>
 <div class="line">[...repeat...]</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md52"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md44"></a>
 Field descriptions</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">

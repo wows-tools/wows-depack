@@ -27,67 +27,56 @@ var NAVTREE =
   [ "WoWs depack", "index.html", [
     [ "Links", "index.html#autotoc_md1", null ],
     [ "Usage", "index.html#autotoc_md2", [
-      [ "Build", "index.html#autotoc_md3", null ],
-      [ "CLI tool", "index.html#autotoc_md4", [
-        [ "Help", "index.html#autotoc_md5", null ],
-        [ "Print all files", "index.html#autotoc_md6", null ],
-        [ "Search", "index.html#autotoc_md7", null ],
-        [ "Extract a single file", "index.html#autotoc_md8", null ],
-        [ "Extract a whole directory", "index.html#autotoc_md9", null ],
-        [ "Extract every World of Warships resource files", "index.html#autotoc_md10", null ],
-        [ "Parse Specific index file(s)", "index.html#autotoc_md11", null ]
-      ] ],
-      [ "Library", "index.html#autotoc_md12", [
-        [ "API documentation", "index.html#autotoc_md13", null ],
-        [ "Usage examples", "index.html#autotoc_md14", [
-          [ "Initialize Context & Parse Index Files", "index.html#autotoc_md15", null ],
-          [ "Searching files/directories", "index.html#autotoc_md16", null ],
-          [ "Extracting Files", "index.html#autotoc_md17", null ],
-          [ "Clean-up", "index.html#autotoc_md18", null ],
-          [ "Error Handling & Debugging", "index.html#autotoc_md19", null ],
-          [ "Write support", "index.html#autotoc_md20", null ]
-        ] ]
-      ] ]
+      [ "Install", "index.html#autotoc_md3", null ]
     ] ],
-    [ "Build & development", "index.html#autotoc_md21", [
-      [ "Dependencies", "index.html#autotoc_md22", null ],
-      [ "Build", "index.html#autotoc_md23", null ],
-      [ "Install", "index.html#autotoc_md24", null ],
-      [ "Tests", "index.html#autotoc_md25", null ],
-      [ "Documentation", "index.html#autotoc_md26", null ],
-      [ "Fuzzing", "index.html#autotoc_md27", null ]
+    [ "Install deps Debian/Ubuntu", "index.html#autotoc_md4", null ],
+    [ "git clone + go in project dir", "index.html#autotoc_md5", null ],
+    [ "build", "index.html#autotoc_md6", null ],
+    [ "Remove DESTDIR for system installation", "index.html#autotoc_md7", null ],
+    [ "cmake run (on time)", "index.html#autotoc_md8", null ],
+    [ "run just the unit tests", "index.html#autotoc_md9", null ],
+    [ "run also the coverage tests", "index.html#autotoc_md10", null ],
+    [ "directly:", "index.html#autotoc_md11", null ],
+    [ "or with gdb:", "index.html#autotoc_md12", null ],
+    [ "Debian/Ubuntu", "index.html#autotoc_md13", null ],
+    [ "Mac OS", "index.html#autotoc_md14", null ],
+    [ "Replace with your WoWs install directory", "index.html#autotoc_md15", null ],
+    [ "Versions", "index.html#autotoc_md16", [
+      [ "0.3.0", "index.html#autotoc_md17", null ],
+      [ "0.2.0", "index.html#autotoc_md18", null ],
+      [ "0.1.0", "index.html#autotoc_md19", null ]
     ] ],
     [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
-      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md29", null ],
-      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md30", null ],
-      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md31", null ],
-      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md32", null ],
-      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md33", [
-        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md34", null ],
-        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md35", [
+      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md21", null ],
+      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md22", null ],
+      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md23", null ],
+      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md24", null ],
+      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md25", [
+        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md26", null ],
+        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md27", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md28", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md29", null ]
+        ] ],
+        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md30", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md31", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md32", null ]
+        ] ],
+        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md33", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md34", null ]
+        ] ],
+        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md35", [
           [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md36", null ],
           [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md37", null ]
         ] ],
-        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md38", [
+        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md38", [
           [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md39", null ],
           [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md40", null ]
-        ] ],
-        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md41", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md42", null ]
-        ] ],
-        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md43", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md44", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md45", null ]
-        ] ],
-        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md46", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md47", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md48", null ]
         ] ]
       ] ],
-      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md49", [
-        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md50", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md51", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md52", null ]
+      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md41", [
+        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md42", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md43", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md44", null ]
         ] ]
       ] ]
     ] ],

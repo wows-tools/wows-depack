@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['metadata_0',['File metadata',['../md__f_o_r_m_a_t.html#autotoc_md38',1,'']]],
-  ['metadata_5fmap_1',['metadata_map',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#a4301f2820f4e38abca3ed6b0820f5175',1,'WOWS_CONTEXT']]],
-  ['misc_2',['Misc',['../md__f_o_r_m_a_t.html#autotoc_md32',1,'']]]
+  ['gdb_3a_0',['or with gdb:',['../index.html#autotoc_md12',1,'']]],
+  ['general_20format_1',['General format',['../md__f_o_r_m_a_t.html#autotoc_md26',1,'']]],
+  ['git_20clone_20go_20in_20project_20dir_2',['git clone + go in project dir',['../index.html#autotoc_md5',1,'']]],
+  ['go_20in_20project_20dir_3',['git clone + go in project dir',['../index.html#autotoc_md5',1,'']]]
 ];
