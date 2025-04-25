@@ -20,7 +20,7 @@ Interesting links:
 
 ```shell
 # Install deps Debian/Ubuntu
-apt install git cmake zlib1g-dev libpcre3-dev clang
+apt install git cmake zlib1g-dev libpcre2-dev clang
 
 # git clone + go in project dir
 git clone https://github.com/kakwa/wows-depack.git
