@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include <pcre.h>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 #include "hashmap.h"
 
 /* Limits */
@@ -194,9 +195,9 @@ int wows_dump_index_to_file(WOWS_INDEX *index, FILE *f);
 
 int decompose_path(const char *path, int *out_dir_count, char ***out_dirs, char **out_file);
 char *join_path(char **parent_entries, int depth, char *name);
-pcre *compile_regex(const char *pattern);
-bool match_regex(pcre *re, const char *subject);
-int free_regex(pcre *re);
+pcre2_code *compile_regex(const char *pattern);
+bool match_regex(pcre2_code *re, const char *subject);
+int free_regex(pcre2_code *re);
 
 int write_file_name(wows_writer *writer, char *name);
 int write_file_pkg_entry(WOWS_INDEX_DATA_FILE_ENTRY **file_section, uint64_t *file_section_size, uint64_t metadata_id,

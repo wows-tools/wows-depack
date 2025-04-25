@@ -433,9 +433,11 @@ bool hashmap_iter(struct hashmap *map, size_t *i, void **item) {
 //-----------------------------------------------------------------------------
 static uint64_t SIP64(const uint8_t *in, const size_t inlen, uint64_t seed0, uint64_t seed1) {
 #define U8TO64_LE(p)                                                                                                   \
-    {(((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8) | ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) |     \
-      ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) | ((uint64_t)((p)[6]) << 48) |                           \
-      ((uint64_t)((p)[7]) << 56))}
+    {                                                                                                                  \
+        (((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8) | ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) |  \
+         ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) | ((uint64_t)((p)[6]) << 48) |                        \
+         ((uint64_t)((p)[7]) << 56))                                                                                   \
+    }
 #define U64TO8_LE(p, v)                                                                                                \
     {                                                                                                                  \
         U32TO8_LE((p), (uint32_t)((v)));                                                                               \

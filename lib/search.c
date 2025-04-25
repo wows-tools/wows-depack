@@ -7,14 +7,14 @@
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"
-#include <pcre.h>
+#include <pcre2.h>
 
 #define SEARCH_RESULT_ALLOC_SIZE 10
 
 typedef struct {
     WOWS_CONTEXT *context;
     char *pattern;
-    pcre *matcher;
+    pcre2_code *matcher;
     int mode;
     char **results;
     int result_count;

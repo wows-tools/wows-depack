@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
-#include <pcre.h>
 #include <zlib.h>
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
@@ -454,7 +453,7 @@ void test_wows_dump_index_to_file(void) {
     free(buf);
 }
 
-pcre *re;
+pcre2_code *re;
 
 void test_decompose_path_no_sep() {
     const char *path = "filename.txt";
@@ -474,10 +473,10 @@ void test_decompose_path_no_sep() {
 // Initialize test suite
 int regex_init_suite(void) {
     const char *pattern = "quick\\s(brown|red) fox";
-    int erroffset;
-    const char *error;
+    size_t erroroffset;
+    int errorcode;
 
-    re = pcre_compile(pattern, 0, &error, &erroffset, NULL);
+    re = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroroffset, NULL);
     if (!re) {
         return -1;
     }
@@ -487,14 +486,14 @@ int regex_init_suite(void) {
 
 // Cleanup test suite
 int regex_clean_suite(void) {
-    pcre_free(re);
+    pcre2_code_free(re);
     return 0;
 }
 
 // Test compile_regex function
 void test_compile_regex(void) {
     const char *pattern = "quick\\s(brown|red) fox";
-    pcre *compiled = compile_regex(pattern);
+    pcre2_code *compiled = compile_regex(pattern);
     CU_ASSERT_PTR_NOT_NULL_FATAL(compiled);
     int result = free_regex(compiled);
     CU_ASSERT_EQUAL(result, 0);

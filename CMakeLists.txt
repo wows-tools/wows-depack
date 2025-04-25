@@ -19,7 +19,7 @@ else(STATIC)
 endif(STATIC)
 
 find_package(ZLIB REQUIRED)
-find_package(PCRE REQUIRED)
+find_package(PCRE2 REQUIRED)
 find_library(CUNIT_LIBRARY cunit)
 
 set(wows-depack_VERSION
@@ -66,7 +66,7 @@ endif(UNIX)
 link_directories(${CMAKE_BINARY_DIR}/ /usr/local/lib /usr/lib/)
 
 # headers directories
-include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE_INCLUDE_DIRS}
+include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS}
                     /usr/include/ /sw/include/)
 
 file(GLOB WOWS_SOURCES lib/*.c)
@@ -77,10 +77,10 @@ set_target_properties(
 
 # Compile the executable
 add_executable(wows-depack-cli wows-depack.c)
-target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE_LIBRARY})
+target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY})
 
 target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
-                      ${PCRE_LIBRARY})
+                      ${PCRE2_LIBRARY})
 
 if(BUILD_TESTS)
   if(CUNIT_LIBRARY)
@@ -95,7 +95,7 @@ if(BUILD_TESTS)
     set_target_properties(hashmap-test PROPERTIES COMPILE_FLAGS
                                                   "-DHASHMAP_TEST")
     target_link_libraries(wows-depack-test wows-depack ${ZLIB_LIBRARIES}
-                          ${PCRE_LIBRARY} ${CUNIT_LIBRARY})
+                          ${PCRE2_LIBRARY} ${CUNIT_LIBRARY})
 
     # Add the test target
     add_custom_target(
