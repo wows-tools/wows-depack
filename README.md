@@ -16,6 +16,25 @@ Interesting links:
 
 # Usage
 
+## Install
+
+Packages are available for most major distributions in [this repository](https://github.com/kakwa/kakwalab-pkg/blob/main/README.md).
+
+Follow the instructions to setup the repository and install the following packages:
+
+```bash
+# Switch to dnf on RHEL
+
+# CLI Tool
+apt install wows-depack-cli
+
+# Library
+apt install libwows-depack0
+
+# Development Header (for RHEL libwows-depack-devel)
+apt install libwows-depack-dev
+````
+
 ## Build
 
 ```shell
