@@ -427,3 +427,17 @@ afl-fuzz -i "$INDEX_DIR" -o ./out -t 10000 -- ./wows-depack-cli -i '@@'
 ```
 
 Then wait for crashes to occur (hopefully this will be in vain).
+
+# Versions
+
+## 0.3.0
+
+* switch to libpcre2
+
+## 0.2.0
+
+* fix endianess & alignement issues when unpacking
+
+## 0.1.0
+
+* initial version
