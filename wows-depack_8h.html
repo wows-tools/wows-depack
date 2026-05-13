@@ -127,6 +127,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a272705b2fc60a492932d4e6a270b11b3" id="r_a272705b2fc60a492932d4e6a270b11b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a272705b2fc60a492932d4e6a270b11b3">wows_parse_index_buffer</a> (char *contents, size_t length, const char *index_file_path, int fd, <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context)</td></tr>
 <tr class="memdesc:a272705b2fc60a492932d4e6a270b11b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low level, parses a memory buffer directly.  <br /></td></tr>
 <tr class="separator:a272705b2fc60a492932d4e6a270b11b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42403cc54c052ab8dcfaa36c9e69c67" id="r_ab42403cc54c052ab8dcfaa36c9e69c67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#ab42403cc54c052ab8dcfaa36c9e69c67">wows_stat_path</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *path, <a class="el" href="struct_w_o_w_s___s_t_a_t.html">WOWS_STAT</a> *stat)</td></tr>
+<tr class="memdesc:ab42403cc54c052ab8dcfaa36c9e69c67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the type and size of a path in the archive.  <br /></td></tr>
+<tr class="separator:ab42403cc54c052ab8dcfaa36c9e69c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eb39d108f35efaa38c0c90a9fd74165" id="r_a4eb39d108f35efaa38c0c90a9fd74165"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a4eb39d108f35efaa38c0c90a9fd74165">wows_readdir</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *dir_path, int *entry_count, char ***entries)</td></tr>
+<tr class="memdesc:a4eb39d108f35efaa38c0c90a9fd74165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists the immediate children of a directory in the archive.  <br /></td></tr>
+<tr class="separator:a4eb39d108f35efaa38c0c90a9fd74165"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4098fe0c6fe5ca5bdda50f4ac48ad2c5" id="r_a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wows-depack_8h.html#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">wows_search</a> (<a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *context, char *pattern, int mode, int *result_count, char ***results)</td></tr>
 <tr class="memdesc:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.  <br /></td></tr>
 <tr class="separator:a4098fe0c6fe5ca5bdda50f4ac48ad2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,6 +164,9 @@ Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_w_o_w_s___s_t_a_t.html">WOWS_STAT</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stat structure returned by <a class="el" href="wows-depack_8h.html#ab42403cc54c052ab8dcfaa36c9e69c67" title="Returns the type and size of a path in the archive.">wows_stat_path()</a>.  <a href="struct_w_o_w_s___s_t_a_t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
@@ -709,6 +718,59 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a id="a4eb39d108f35efaa38c0c90a9fd74165" name="a4eb39d108f35efaa38c0c90a9fd74165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eb39d108f35efaa38c0c90a9fd74165">&#9670;&#160;</a></span>wows_readdir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_readdir </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>dir_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>entry_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char ***&#160;</td>
+          <td class="paramname"><em>entries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lists the immediate children of a directory in the archive. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> structure. </td></tr>
+    <tr><td class="paramname">dir_path</td><td>Path of the directory to list (use "/" for the root). </td></tr>
+    <tr><td class="paramname">entry_count</td><td>Set to the number of entries returned. </td></tr>
+    <tr><td class="paramname">entries</td><td>Allocated array of entry name strings (basenames only).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, WOWS_ERROR_NOT_A_DIR if the path is not a directory, WOWS_ERROR_NOT_FOUND if the path does not exist, or another error code on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The caller is responsible for freeing each string in the array and the array itself. </dd></dl>
+
+</div>
+</div>
 <a id="a4098fe0c6fe5ca5bdda50f4ac48ad2c5" name="a4098fe0c6fe5ca5bdda50f4ac48ad2c5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4098fe0c6fe5ca5bdda50f4ac48ad2c5">&#9670;&#160;</a></span>wows_search()</h2>
 
@@ -774,6 +836,51 @@ Macros</h2></td></tr>
 <p>This function searches recursively through the WOWS archive tree for files or directories that match the given PCRE regular expression pattern. The search can be restricted to files, directories, or the full path, depending on the value of the <code>mode</code> parameter. The names of the matching files or directories are stored in the <code>results</code> array, and the number of matches is stored in the <code>result_count</code> variable. The caller is responsible for freeing the memory allocated for the <code>results</code> array and its elements.</p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, or an error code if an error occurred.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>It's up to the caller to free each entry in the results array and free the array itself. </dd></dl>
+
+</div>
+</div>
+<a id="ab42403cc54c052ab8dcfaa36c9e69c67" name="ab42403cc54c052ab8dcfaa36c9e69c67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42403cc54c052ab8dcfaa36c9e69c67">&#9670;&#160;</a></span>wows_stat_path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int wows_stat_path </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_w_o_w_s___s_t_a_t.html">WOWS_STAT</a> *&#160;</td>
+          <td class="paramname"><em>stat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the type and size of a path in the archive. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html">WOWS_CONTEXT</a> structure. </td></tr>
+    <tr><td class="paramname">path</td><td>Path to query (e.g. "/res/vehicles/ship.model"). </td></tr>
+    <tr><td class="paramname">stat</td><td>Pointer to a <a class="el" href="struct_w_o_w_s___s_t_a_t.html" title="Stat structure returned by wows_stat_path().">WOWS_STAT</a> structure to fill in.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, WOWS_ERROR_NOT_FOUND if the path does not exist, or another error code on failure. </dd></dl>
 
 </div>
 </div>

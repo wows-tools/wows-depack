@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WoWs depack: Data Structures</title>
+<title>WoWs depack: WOWS_STAT Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -66,7 +66,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('annotated.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('struct_w_o_w_s___s_t_a_t.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -92,20 +92,66 @@ $(document).ready(function(){initNavTree('annotated.html',''); initResizable(); 
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Data Structures</div></div>
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
+  <div class="headertitle"><div class="title">WOWS_STAT Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock">Here are the data structures with brief descriptions:</div><div class="directory">
-<table class="directory">
-<tr id="row_0_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="struct_w_o_w_s___c_o_n_t_e_x_t.html" target="_self">WOWS_CONTEXT</a></td><td class="desc"></td></tr>
-<tr id="row_1_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="struct_w_o_w_s___s_t_a_t.html" target="_self">WOWS_STAT</a></td><td class="desc">Stat structure returned by <a class="el" href="wows-depack_8h.html#ab42403cc54c052ab8dcfaa36c9e69c67" title="Returns the type and size of a path in the archive.">wows_stat_path()</a> </td></tr>
+
+<p>Stat structure returned by <a class="el" href="wows-depack_8h.html#ab42403cc54c052ab8dcfaa36c9e69c67" title="Returns the type and size of a path in the archive.">wows_stat_path()</a>.  
+ <a href="struct_w_o_w_s___s_t_a_t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="wows-depack_8h_source.html">wows-depack.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a1d127017fb298b889f4ba24752d08b8e" id="r_a1d127017fb298b889f4ba24752d08b8e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_w_o_w_s___s_t_a_t.html#a1d127017fb298b889f4ba24752d08b8e">type</a></td></tr>
+<tr class="separator:a1d127017fb298b889f4ba24752d08b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c6b258f02add8fdf4cfc7c371dd772" id="r_ab2c6b258f02add8fdf4cfc7c371dd772"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_w_o_w_s___s_t_a_t.html#ab2c6b258f02add8fdf4cfc7c371dd772">size</a></td></tr>
+<tr class="separator:ab2c6b258f02add8fdf4cfc7c371dd772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- directory -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Stat structure returned by <a class="el" href="wows-depack_8h.html#ab42403cc54c052ab8dcfaa36c9e69c67" title="Returns the type and size of a path in the archive.">wows_stat_path()</a>. </p>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a id="ab2c6b258f02add8fdf4cfc7c371dd772" name="ab2c6b258f02add8fdf4cfc7c371dd772"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2c6b258f02add8fdf4cfc7c371dd772">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Uncompressed size in bytes; 0 for directories. </p>
+
+</div>
+</div>
+<a id="a1d127017fb298b889f4ba24752d08b8e" name="a1d127017fb298b889f4ba24752d08b8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d127017fb298b889f4ba24752d08b8e">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Inode type: WOWS_INODE_TYPE_DIR (0) or WOWS_INODE_TYPE_FILE (1). </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>inc/<a class="el" href="wows-depack_8h_source.html">wows-depack.h</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="struct_w_o_w_s___s_t_a_t.html">WOWS_STAT</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
