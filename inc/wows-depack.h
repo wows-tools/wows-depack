@@ -156,6 +156,43 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
 /* Archive exploration functions */
 
 /**
+ * @brief Stat structure returned by wows_stat_path().
+ */
+typedef struct {
+    uint8_t type;  /**< Inode type: WOWS_INODE_TYPE_DIR (0) or WOWS_INODE_TYPE_FILE (1). */
+    uint32_t size; /**< Uncompressed size in bytes; 0 for directories. */
+} WOWS_STAT;
+
+/**
+ * @brief Returns the type and size of a path in the archive.
+ *
+ * @param context  Pointer to a WOWS_CONTEXT structure.
+ * @param path     Path to query (e.g. "/res/vehicles/ship.model").
+ * @param stat     Pointer to a WOWS_STAT structure to fill in.
+ *
+ * @return 0 on success, WOWS_ERROR_NOT_FOUND if the path does not exist,
+ *         or another error code on failure.
+ */
+int wows_stat_path(WOWS_CONTEXT *context, char *path, WOWS_STAT *stat);
+
+/**
+ * @brief Lists the immediate children of a directory in the archive.
+ *
+ * @param context      Pointer to a WOWS_CONTEXT structure.
+ * @param dir_path     Path of the directory to list (use "/" for the root).
+ * @param entry_count  Set to the number of entries returned.
+ * @param entries      Allocated array of entry name strings (basenames only).
+ *
+ * @return 0 on success, WOWS_ERROR_NOT_A_DIR if the path is not a directory,
+ *         WOWS_ERROR_NOT_FOUND if the path does not exist, or another error
+ *         code on failure.
+ *
+ * @note The caller is responsible for freeing each string in the array and
+ *       the array itself.
+ */
+int wows_readdir(WOWS_CONTEXT *context, char *dir_path, int *entry_count, char ***entries);
+
+/**
  * @brief Recursively searches for files in the WOWS archive tree that match a PCRE regular expression pattern.
  *
  * @param context The WOWS_CONTEXT object representing the root of the archive tree.
@@ -184,14 +221,6 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
  *
  */
 int wows_search(WOWS_CONTEXT *context, char *pattern, int mode, int *result_count, char ***results);
-
-/* read the content of a directory */
-// Not implemented
-// int wows_readdir(WOWS_CONTEXT *context, char dir_path, char **result[]);
-
-// Not implemented
-/* give the stat of a given path (mainly if it's a directory or a file, and the file size) */
-// int wows_stat_path(WOWS_CONTEXT *context, char path);
 
 /* ---------- */
 

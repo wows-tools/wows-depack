@@ -1065,6 +1065,97 @@ void test_copy_data_with_offset_and_too_large_size(void) {
     fclose(out);
 }
 
+static bool entry_in_list(char **entries, int count, const char *name) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(entries[i], name) == 0)
+            return true;
+    }
+    return false;
+}
+
+void test_wows_stat_path(void) {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
+    CU_ASSERT_EQUAL_FATAL(ret, 0);
+
+    WOWS_STAT stat;
+
+    // Known file: type=FILE, size > 0
+    ret = wows_stat_path(context, "tests.c", &stat);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(stat.type, WOWS_INODE_TYPE_FILE);
+    CU_ASSERT(stat.size > 0);
+
+    // Known directory: type=DIR, size=0
+    ret = wows_stat_path(context, "data", &stat);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(stat.type, WOWS_INODE_TYPE_DIR);
+    CU_ASSERT_EQUAL(stat.size, 0);
+
+    // Root: type=DIR, size=0
+    ret = wows_stat_path(context, "/", &stat);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(stat.type, WOWS_INODE_TYPE_DIR);
+    CU_ASSERT_EQUAL(stat.size, 0);
+
+    // Nested file
+    ret = wows_stat_path(context, "data/fake2.idx", &stat);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(stat.type, WOWS_INODE_TYPE_FILE);
+    CU_ASSERT(stat.size > 0);
+
+    // Non-existent path
+    ret = wows_stat_path(context, "no_such_file", &stat);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_FOUND);
+
+    wows_free_context(context);
+}
+
+void test_wows_readdir(void) {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret = wows_parse_index_dir("./tests/data/", context);
+    CU_ASSERT_EQUAL_FATAL(ret, 0);
+
+    int entry_count;
+    char **entries;
+
+    // Root directory contains "d1234" and "h1234"
+    ret = wows_readdir(context, "/", &entry_count, &entries);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(entry_count, 2);
+    CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "d1234"));
+    CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "h1234"));
+    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    free(entries);
+
+    // Subdirectory "d1234" contains only "c1234"
+    ret = wows_readdir(context, "d1234", &entry_count, &entries);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(entry_count, 1);
+    CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "c1234"));
+    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    free(entries);
+
+    // Subdirectory "d1234/c1234" contains "a1234" and "b1234"
+    ret = wows_readdir(context, "d1234/c1234", &entry_count, &entries);
+    CU_ASSERT_EQUAL(ret, 0);
+    CU_ASSERT_EQUAL(entry_count, 2);
+    CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "a1234"));
+    CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "b1234"));
+    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    free(entries);
+
+    // Error: path is a file, not a directory
+    ret = wows_readdir(context, "d1234/c1234/a1234", &entry_count, &entries);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_DIR);
+
+    // Error: path does not exist
+    ret = wows_readdir(context, "nosuchdir", &entry_count, &entries);
+    CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_FOUND);
+
+    wows_free_context(context);
+}
+
 void test_open_file_with_parents(void) {
     /* Set up test input. */
     const char *filename = "test_folder/test_file.txt";
@@ -1121,6 +1212,10 @@ int main() {
     CU_add_test(suite, "test_extract_file", test_extract_file);
     CU_add_test(suite, "test_extract_dir", test_extract_dir);
     CU_add_test(suite, "test_extract_dir_failure", test_extract_dir_failure);
+
+    suite = CU_add_suite("stat Suite", NULL, NULL);
+    CU_add_test(suite, "test_wows_stat_path", test_wows_stat_path);
+    CU_add_test(suite, "test_wows_readdir", test_wows_readdir);
 
     suite = CU_add_suite("Utils Suite", NULL, NULL);
     CU_add_test(suite, "test_decompose_path_no_sep", test_decompose_path_no_sep);
