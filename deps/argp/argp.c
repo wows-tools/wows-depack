@@ -8,8 +8,7 @@
 #include "argp.h"
 
 void argp_usage(const struct argp_state *state) {
-    fprintf(stderr, "Try `%s --help' for more information.\n",
-            state->name ? state->name : "program");
+    fprintf(stderr, "Try `%s --help' for more information.\n", state->name ? state->name : "program");
     exit(1);
 }
 
@@ -24,8 +23,7 @@ void argp_error(const struct argp_state *state, const char *fmt, ...) {
 }
 
 static void print_help(const struct argp *ap, const char *prog_name) {
-    fprintf(stdout, "Usage: %s [OPTION...] %s\n",
-            prog_name, ap->args_doc ? ap->args_doc : "");
+    fprintf(stdout, "Usage: %s [OPTION...] %s\n", prog_name, ap->args_doc ? ap->args_doc : "");
     if (ap->doc && *ap->doc)
         fprintf(stdout, "%s\n", ap->doc);
     fprintf(stdout, "\n");
@@ -39,18 +37,14 @@ static void print_help(const struct argp *ap, const char *prog_name) {
             char left[40];
             if (opt->key > 32 && opt->key < 127) {
                 if (opt->arg)
-                    snprintf(left, sizeof(left), "-%c, --%s=%s",
-                             opt->key, opt->name ? opt->name : "", opt->arg);
+                    snprintf(left, sizeof(left), "-%c, --%s=%s", opt->key, opt->name ? opt->name : "", opt->arg);
                 else
-                    snprintf(left, sizeof(left), "-%c, --%s",
-                             opt->key, opt->name ? opt->name : "");
+                    snprintf(left, sizeof(left), "-%c, --%s", opt->key, opt->name ? opt->name : "");
             } else {
                 if (opt->arg)
-                    snprintf(left, sizeof(left), "    --%s=%s",
-                             opt->name ? opt->name : "", opt->arg);
+                    snprintf(left, sizeof(left), "    --%s=%s", opt->name ? opt->name : "", opt->arg);
                 else
-                    snprintf(left, sizeof(left), "    --%s",
-                             opt->name ? opt->name : "");
+                    snprintf(left, sizeof(left), "    --%s", opt->name ? opt->name : "");
             }
             fprintf(stdout, "  %-32s %s\n", left, opt->doc ? opt->doc : "");
         }
@@ -63,8 +57,7 @@ static void print_help(const struct argp *ap, const char *prog_name) {
         fprintf(stdout, "\nReport bugs to %s.\n", argp_program_bug_address);
 }
 
-error_t argp_parse(const struct argp *ap, int argc, char **argv,
-                   unsigned flags, int *arg_index, void *input) {
+error_t argp_parse(const struct argp *ap, int argc, char **argv, unsigned flags, int *arg_index, void *input) {
     /* Count entries that have an actual option key */
     int n = 0;
     for (const struct argp_option *o = ap->options; o->name || o->key || o->doc; o++) {
@@ -85,10 +78,10 @@ error_t argp_parse(const struct argp *ap, int argc, char **argv,
         if (!o->key)
             continue;
         if (o->name) {
-            long_opts[li].name    = o->name;
+            long_opts[li].name = o->name;
             long_opts[li].has_arg = o->arg ? required_argument : no_argument;
-            long_opts[li].flag    = NULL;
-            long_opts[li].val     = o->key;
+            long_opts[li].flag = NULL;
+            long_opts[li].val = o->key;
             li++;
         }
         short_opts[si++] = (char)o->key;
@@ -97,7 +90,7 @@ error_t argp_parse(const struct argp *ap, int argc, char **argv,
     }
 
     /* Add built-in --help and --version */
-    long_opts[li++] = (struct option){"help",    no_argument, NULL, 'h'};
+    long_opts[li++] = (struct option){"help", no_argument, NULL, 'h'};
     short_opts[si++] = 'h';
     if (argp_program_version) {
         long_opts[li++] = (struct option){"version", no_argument, NULL, 'V'};
@@ -106,9 +99,9 @@ error_t argp_parse(const struct argp *ap, int argc, char **argv,
     /* long_opts[li] already zeroed (terminator) */
 
     struct argp_state state = {0};
-    state.root_argp  = ap;
-    state.input      = input;
-    state.name       = argv[0];
+    state.root_argp = ap;
+    state.input = input;
+    state.name = argv[0];
     state.err_stream = stderr;
     state.out_stream = stdout;
 
@@ -130,14 +123,12 @@ error_t argp_parse(const struct argp *ap, int argc, char **argv,
             free(short_opts);
             exit(1);
         case ':':
-            fprintf(stderr, "%s: option requires an argument -- '%c'\n",
-                    argv[0], optopt);
+            fprintf(stderr, "%s: option requires an argument -- '%c'\n", argv[0], optopt);
             free(long_opts);
             free(short_opts);
             exit(1);
         case 'V':
-            fprintf(stdout, "%s\n",
-                    argp_program_version ? argp_program_version : "unknown");
+            fprintf(stdout, "%s\n", argp_program_version ? argp_program_version : "unknown");
             free(long_opts);
             free(short_opts);
             exit(0);
