@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
 // TODO clean-up this mess
 #include <string.h>
 #include <stddef.h>
@@ -16,6 +17,12 @@
 #include <sys/mman.h>
 #include <time.h>
 #include <zlib.h>
+
+#if defined(__linux__)
+#include <endian.h>
+#else
+#include <sys/endian.h>
+#endif
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -246,7 +253,7 @@ int wows_write_pkg(WOWS_CONTEXT *context, char *in_path, char *name_pkg, FILE *p
 
     // Setup header
     memcpy(index->header->magic, "ISFP", 4);
-    index->header->endianess = 0x2000000;
+    index->header->endianess = htole32(0x2000000);
     index->header->id = (uint32_t)rand();
     index->header->unknown_2 = 0x40;
     index->header->file_dir_count = writer->file_plus_dir_count;

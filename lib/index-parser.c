@@ -13,12 +13,15 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <libgen.h>
-#include <linux/limits.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#if defined(__linux__)
 #include <endian.h>
+#else
+#include <sys/endian.h>
+#endif
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -36,10 +39,13 @@ int get_pkg_filepath(WOWS_INDEX *index, char **out) {
     char *pkg_file_name = index->footer->_file_name;
     const int num_parents = 4;
 
+    // dirname(3) may return a pointer to static storage (POSIX), so we must
+    // strdup the result of each call and free the previous allocation.
     char *current_path = strdup(index->index_file_path);
-
     for (int i = 0; i < num_parents; i++) {
-        current_path = dirname(current_path);
+        char *parent = strdup(dirname(current_path));
+        free(current_path);
+        current_path = parent;
     }
 
     const char *fixed_path = "/res_packages/";
@@ -63,20 +69,22 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
 }
 
 uint32_t depk_datatoh32(char *data, size_t offset, WOWS_CONTEXT *context) {
-    uint32_t *ret = (uint32_t *)(data + offset);
+    uint32_t ret;
+    memcpy(&ret, data + offset, sizeof(ret));
     if (context->is_le) {
-        return le32toh(*ret);
+        return le32toh(ret);
     } else {
-        return be32toh(*ret);
+        return be32toh(ret);
     }
 }
 
 uint64_t depk_datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
-    uint64_t *ret = (uint64_t *)(data + offset);
+    uint64_t ret;
+    memcpy(&ret, data + offset, sizeof(ret));
     if (context->is_le) {
-        return le64toh(*ret);
+        return le64toh(ret);
     } else {
-        return be64toh(*ret);
+        return be64toh(ret);
     }
 }
 
@@ -101,9 +109,12 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
         return WOWS_ERROR_BAD_MAGIC;
     }
 
-    // Recover the endianess marker and set endianess in context
+    // Recover the endianess marker and set endianess in context.
+    // The LE marker is stored as raw bytes 00 00 00 02. On LE hosts this reads as
+    // 0x2000000; on BE hosts it reads as 2. le32toh normalises to 0x2000000 on
+    // both, making the check host-endian-independent.
     memcpy(&(header->endianess), contents + 4, sizeof(uint32_t));
-    context->is_le = (header->endianess == 0x2000000);
+    context->is_le = (le32toh(header->endianess) == 0x2000000);
 
     // Extract the header data
     header->id = depk_datatoh32(contents, 8, context);
