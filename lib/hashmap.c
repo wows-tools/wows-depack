@@ -433,11 +433,9 @@ bool hashmap_iter(struct hashmap *map, size_t *i, void **item) {
 //-----------------------------------------------------------------------------
 static uint64_t SIP64(const uint8_t *in, const size_t inlen, uint64_t seed0, uint64_t seed1) {
 #define U8TO64_LE(p)                                                                                                   \
-    {                                                                                                                  \
-        (((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8) | ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) |  \
-         ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) | ((uint64_t)((p)[6]) << 48) |                        \
-         ((uint64_t)((p)[7]) << 56))                                                                                   \
-    }
+    {(((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8) | ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) |     \
+      ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) | ((uint64_t)((p)[6]) << 48) |                           \
+      ((uint64_t)((p)[7]) << 56))}
 #define U64TO8_LE(p, v)                                                                                                \
     {                                                                                                                  \
         U32TO8_LE((p), (uint32_t)((v)));                                                                               \
@@ -768,9 +766,14 @@ static void all() {
 
     rand_alloc_fail = true;
 
-    // test sip and murmur hashes
-    assert(hashmap_sip("hello", 5, 1, 2) == 2957200328589801622);
-    assert(hashmap_murmur("hello", 5, 1, 2) == 1682575153221130884);
+    // test sip and murmur hashes (expected values differ on big-endian hosts)
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    assert(hashmap_sip("hello", 5, 1, 2) == 13259317225146458967ULL);
+    assert(hashmap_murmur("hello", 5, 1, 2) == 16979936755955905839ULL);
+#else
+    assert(hashmap_sip("hello", 5, 1, 2) == 2957200328589801622ULL);
+    assert(hashmap_murmur("hello", 5, 1, 2) == 1682575153221130884ULL);
+#endif
 
     int *vals;
     while (!(vals = xmalloc(N * sizeof(int)))) {
@@ -923,36 +926,33 @@ static void all() {
 }
 
 #define bench(name, N, code)                                                                                           \
-    {                                                                                                                  \
-        {                                                                                                              \
-            if (strlen(name) > 0) {                                                                                    \
-                printf("%-14s ", name);                                                                                \
-            }                                                                                                          \
-            size_t tmem = total_mem;                                                                                   \
-            size_t tallocs = total_allocs;                                                                             \
-            uint64_t bytes = 0;                                                                                        \
-            clock_t begin = clock();                                                                                   \
-            for (int i = 0; i < N; i++) {                                                                              \
-                (code);                                                                                                \
-            }                                                                                                          \
-            clock_t end = clock();                                                                                     \
-            double elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;                                              \
-            double bytes_sec = (double)bytes / elapsed_secs;                                                           \
-            printf("%d ops in %.3f secs, %.0f ns/op, %.0f op/sec", N, elapsed_secs, elapsed_secs / (double)N * 1e9,    \
-                   (double)N / elapsed_secs);                                                                          \
-            if (bytes > 0) {                                                                                           \
-                printf(", %.1f GB/sec", bytes_sec / 1024 / 1024 / 1024);                                               \
-            }                                                                                                          \
-            if (total_mem > tmem) {                                                                                    \
-                size_t used_mem = total_mem - tmem;                                                                    \
-                printf(", %.2f bytes/op", (double)used_mem / N);                                                       \
-            }                                                                                                          \
-            if (total_allocs > tallocs) {                                                                              \
-                size_t used_allocs = total_allocs - tallocs;                                                           \
-                printf(", %.2f allocs/op", (double)used_allocs / N);                                                   \
-            }                                                                                                          \
-            printf("\n");                                                                                              \
-        }                                                                                                              \
+    {{if (strlen(name) > 0){printf("%-14s ", name);                                                                    \
+    }                                                                                                                  \
+    size_t tmem = total_mem;                                                                                           \
+    size_t tallocs = total_allocs;                                                                                     \
+    uint64_t bytes = 0;                                                                                                \
+    clock_t begin = clock();                                                                                           \
+    for (int i = 0; i < N; i++) {                                                                                      \
+        (code);                                                                                                        \
+    }                                                                                                                  \
+    clock_t end = clock();                                                                                             \
+    double elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;                                                      \
+    double bytes_sec = (double)bytes / elapsed_secs;                                                                   \
+    printf("%d ops in %.3f secs, %.0f ns/op, %.0f op/sec", N, elapsed_secs, elapsed_secs / (double)N * 1e9,            \
+           (double)N / elapsed_secs);                                                                                  \
+    if (bytes > 0) {                                                                                                   \
+        printf(", %.1f GB/sec", bytes_sec / 1024 / 1024 / 1024);                                                       \
+    }                                                                                                                  \
+    if (total_mem > tmem) {                                                                                            \
+        size_t used_mem = total_mem - tmem;                                                                            \
+        printf(", %.2f bytes/op", (double)used_mem / N);                                                               \
+    }                                                                                                                  \
+    if (total_allocs > tallocs) {                                                                                      \
+        size_t used_allocs = total_allocs - tallocs;                                                                   \
+        printf(", %.2f allocs/op", (double)used_allocs / N);                                                           \
+    }                                                                                                                  \
+    printf("\n");                                                                                                      \
+    }                                                                                                                  \
     }
 
 static void benchmarks() {
