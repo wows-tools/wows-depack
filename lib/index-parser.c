@@ -62,7 +62,7 @@ WOWS_CONTEXT *wows_init_context(uint8_t debug_level) {
     return context;
 }
 
-uint32_t datatoh32(char *data, size_t offset, WOWS_CONTEXT *context) {
+uint32_t depk_datatoh32(char *data, size_t offset, WOWS_CONTEXT *context) {
     uint32_t *ret = (uint32_t *)(data + offset);
     if (context->is_le) {
         return le32toh(*ret);
@@ -71,7 +71,7 @@ uint32_t datatoh32(char *data, size_t offset, WOWS_CONTEXT *context) {
     }
 }
 
-uint64_t datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
+uint64_t depk_datatoh64(char *data, size_t offset, WOWS_CONTEXT *context) {
     uint64_t *ret = (uint64_t *)(data + offset);
     if (context->is_le) {
         return le64toh(*ret);
@@ -106,14 +106,14 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     context->is_le = (header->endianess == 0x2000000);
 
     // Extract the header data
-    header->id = datatoh32(contents, 8, context);
-    header->unknown_2 = datatoh32(contents, 12, context);
-    header->file_dir_count = datatoh32(contents, 16, context);
-    header->file_count = datatoh32(contents, 20, context);
-    header->unknown_3 = datatoh32(contents, 24, context);
-    header->header_size = datatoh64(contents, 32, context);
-    header->offset_idx_data_section = datatoh64(contents, 40, context);
-    header->offset_idx_footer_section = datatoh64(contents, 48, context);
+    header->id = depk_datatoh32(contents, 8, context);
+    header->unknown_2 = depk_datatoh32(contents, 12, context);
+    header->file_dir_count = depk_datatoh32(contents, 16, context);
+    header->file_count = depk_datatoh32(contents, 20, context);
+    header->unknown_3 = depk_datatoh32(contents, 24, context);
+    header->header_size = depk_datatoh64(contents, 32, context);
+    header->offset_idx_data_section = depk_datatoh64(contents, 40, context);
+    header->offset_idx_footer_section = depk_datatoh64(contents, 48, context);
 
     if (header->file_dir_count > WOWS_FILE_DIR_MAX) {
         return WOWS_ERROR_MAX_FILE;
@@ -132,10 +132,10 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     index->metadata = metadata;
     for (int i = 0; i < header->file_dir_count; i++) {
         size_t offset = i * SIZE_WOWS_INDEX_METADATA_ENTRY;
-        metadata[i].file_name_size = datatoh64(metadata_section + offset, 0, context);
-        metadata[i].offset_idx_file_name = datatoh64(metadata_section + offset, 8, context);
-        metadata[i].id = datatoh64(metadata_section + offset, 16, context);
-        metadata[i].parent_id = datatoh64(metadata_section + offset, 24, context);
+        metadata[i].file_name_size = depk_datatoh64(metadata_section + offset, 0, context);
+        metadata[i].offset_idx_file_name = depk_datatoh64(metadata_section + offset, 8, context);
+        metadata[i].id = depk_datatoh64(metadata_section + offset, 16, context);
+        metadata[i].parent_id = depk_datatoh64(metadata_section + offset, 24, context);
         if (metadata[i].file_name_size > WOWS_PATH_MAX) {
             return WOWS_ERROR_PATH_TOO_LONG;
         }
@@ -160,13 +160,13 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
 
     for (int i = 0; i < header->file_count; i++) {
         size_t offset = i * SIZE_WOWS_INDEX_DATA_FILE_ENTRY;
-        data_file_entry[i].metadata_id = datatoh64(data_file_entry_section + offset, 0, context);
-        data_file_entry[i].footer_id = datatoh64(data_file_entry_section + offset, 8, context);
-        data_file_entry[i].offset_pkg_data = datatoh64(data_file_entry_section + offset, 16, context);
-        data_file_entry[i].type_1 = datatoh32(data_file_entry_section + offset, 24, context);
-        data_file_entry[i].type_2 = datatoh32(data_file_entry_section + offset, 28, context);
-        data_file_entry[i].size_pkg_data = datatoh32(data_file_entry_section + offset, 32, context);
-        data_file_entry[i].id_pkg_data = datatoh64(data_file_entry_section + offset, 36, context);
+        data_file_entry[i].metadata_id = depk_datatoh64(data_file_entry_section + offset, 0, context);
+        data_file_entry[i].footer_id = depk_datatoh64(data_file_entry_section + offset, 8, context);
+        data_file_entry[i].offset_pkg_data = depk_datatoh64(data_file_entry_section + offset, 16, context);
+        data_file_entry[i].type_1 = depk_datatoh32(data_file_entry_section + offset, 24, context);
+        data_file_entry[i].type_2 = depk_datatoh32(data_file_entry_section + offset, 28, context);
+        data_file_entry[i].size_pkg_data = depk_datatoh32(data_file_entry_section + offset, 32, context);
+        data_file_entry[i].id_pkg_data = depk_datatoh64(data_file_entry_section + offset, 36, context);
     }
 
     // Get the footer section
@@ -177,9 +177,9 @@ int map_index_file(char *contents, size_t length, WOWS_INDEX **index_in, WOWS_CO
     WOWS_INDEX_FOOTER *footer = calloc(sizeof(WOWS_INDEX_FOOTER), 1);
     index->footer = footer;
 
-    footer->pkg_file_name_size = datatoh64(footer_src, 0, context);
-    footer->unknown_7 = datatoh64(footer_src, 8, context);
-    footer->id = datatoh64(footer_src, 16, context);
+    footer->pkg_file_name_size = depk_datatoh64(footer_src, 0, context);
+    footer->unknown_7 = depk_datatoh64(footer_src, 8, context);
+    footer->id = depk_datatoh64(footer_src, 16, context);
     if (footer->pkg_file_name_size > WOWS_PATH_MAX) {
         return WOWS_ERROR_PATH_TOO_LONG;
     }
