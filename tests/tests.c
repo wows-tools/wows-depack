@@ -1,14 +1,22 @@
 #define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include <zlib.h>
+#if defined(__linux__)
+#include <endian.h>
+#else
+#include <sys/endian.h>
+#endif
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
 
 #define TEST_DATA_SIZE 2048
+
+static bool entry_in_list(char **entries, int count, const char *name);
 
 #pragma pack(push, 1)
 typedef struct {
@@ -219,31 +227,33 @@ static void test_map_index_file() {
     char contents[TEST_DATA_SIZE] = {0};
     WOWS_INDEX *index;
 
-    // Prepare test data
+    // Prepare test data (all integers in little-endian, matching the WoWS binary format)
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                 .endianess = 0x2000000,
-                                 .file_dir_count = 2,
-                                 .file_count = 2,
-                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                 .offset_idx_data_section = 512,
-                                 .offset_idx_footer_section = 1024};
-    TWOWS_INDEX_METADATA_ENTRY metadata = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 1, .parent_id = 0};
-    TWOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 16, .id = 2, .parent_id = 0};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                   .footer_id = 42,
-                                                   .offset_pkg_data = 1024,
-                                                   .type_1 = 1,
-                                                   .type_2 = 2,
-                                                   .size_pkg_data = 100,
-                                                   .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
-                                                    .footer_id = 42,
-                                                    .offset_pkg_data = 1024,
-                                                    .type_1 = 1,
-                                                    .type_2 = 2,
-                                                    .size_pkg_data = 100,
-                                                    .id_pkg_data = 1};
-    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
+                                 .endianess = htole32(0x2000000),
+                                 .file_dir_count = htole32(2),
+                                 .file_count = htole32(2),
+                                 .header_size = htole64(sizeof(TWOWS_INDEX_HEADER)),
+                                 .offset_idx_data_section = htole64(512),
+                                 .offset_idx_footer_section = htole64(1024)};
+    TWOWS_INDEX_METADATA_ENTRY metadata = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(16), .id = htole64(1), .parent_id = htole64(0)};
+    TWOWS_INDEX_METADATA_ENTRY metadata2 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(16), .id = htole64(2), .parent_id = htole64(0)};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = htole64(1),
+                                                   .footer_id = htole64(42),
+                                                   .offset_pkg_data = htole64(1024),
+                                                   .type_1 = htole32(1),
+                                                   .type_2 = htole32(2),
+                                                   .size_pkg_data = htole32(100),
+                                                   .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = htole64(2),
+                                                    .footer_id = htole64(42),
+                                                    .offset_pkg_data = htole64(1024),
+                                                    .type_1 = htole32(1),
+                                                    .type_2 = htole32(2),
+                                                    .size_pkg_data = htole32(100),
+                                                    .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = htole64(5), .id = htole64(42)};
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
     memcpy(contents + sizeof(TWOWS_INDEX_HEADER), &metadata, sizeof(TWOWS_INDEX_METADATA_ENTRY));
     memcpy(contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY), &metadata2,
@@ -305,27 +315,33 @@ void test_wows_parse_index_buffer() {
 
     char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
 
-    // Prepare test data
+    // Prepare test data (all integers in little-endian, matching the WoWS binary format)
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                 .endianess = 0x2000000,
-                                 .file_dir_count = 5,
-                                 .file_count = 2,
-                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                 .offset_idx_data_section = 512,
-                                 .offset_idx_footer_section = 1024};
+                                 .endianess = htole32(0x2000000),
+                                 .file_dir_count = htole32(5),
+                                 .file_count = htole32(2),
+                                 .header_size = htole64(sizeof(TWOWS_INDEX_HEADER)),
+                                 .offset_idx_data_section = htole64(512),
+                                 .offset_idx_footer_section = htole64(1024)};
 
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
 
-    TWOWS_INDEX_METADATA_ENTRY metadata1 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 1, .parent_id = 3};
+    TWOWS_INDEX_METADATA_ENTRY metadata1 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(1), .parent_id = htole64(3)};
     char *offset_metadata1 = contents + sizeof(TWOWS_INDEX_HEADER);
-    TWOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 2, .parent_id = 3};
+    TWOWS_INDEX_METADATA_ENTRY metadata2 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(2), .parent_id = htole64(3)};
     char *offset_metadata2 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY);
-    TWOWS_INDEX_METADATA_ENTRY metadata3 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 3, .parent_id = 4};
+    TWOWS_INDEX_METADATA_ENTRY metadata3 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(3), .parent_id = htole64(4)};
     char *offset_metadata3 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 2;
-    TWOWS_INDEX_METADATA_ENTRY metadata4 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 4, .parent_id = 5};
+    TWOWS_INDEX_METADATA_ENTRY metadata4 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(4), .parent_id = htole64(5)};
     char *offset_metadata4 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 3;
-    TWOWS_INDEX_METADATA_ENTRY metadata5 = {
-        .file_name_size = 6, .offset_idx_file_name = 256, .id = 5, .parent_id = 1111};
+    TWOWS_INDEX_METADATA_ENTRY metadata5 = {.file_name_size = htole64(6),
+                                            .offset_idx_file_name = htole64(256),
+                                            .id = htole64(5),
+                                            .parent_id = htole64(1111)};
     char *offset_metadata5 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 3;
 
     memcpy(offset_metadata1, &metadata1, sizeof(TWOWS_INDEX_METADATA_ENTRY));
@@ -345,21 +361,21 @@ void test_wows_parse_index_buffer() {
     memcpy(offset_metadata4 + 256, name4, strlen(name4));
     memcpy(offset_metadata5 + 256, name5, strlen(name5));
 
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                   .footer_id = 42,
-                                                   .offset_pkg_data = 1024,
-                                                   .type_1 = 1,
-                                                   .type_2 = 2,
-                                                   .size_pkg_data = 100,
-                                                   .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
-                                                    .footer_id = 42,
-                                                    .offset_pkg_data = 1024,
-                                                    .type_1 = 1,
-                                                    .type_2 = 2,
-                                                    .size_pkg_data = 100,
-                                                    .id_pkg_data = 1};
-    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = htole64(1),
+                                                   .footer_id = htole64(42),
+                                                   .offset_pkg_data = htole64(1024),
+                                                   .type_1 = htole32(1),
+                                                   .type_2 = htole32(2),
+                                                   .size_pkg_data = htole32(100),
+                                                   .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = htole64(2),
+                                                    .footer_id = htole64(42),
+                                                    .offset_pkg_data = htole64(1024),
+                                                    .type_1 = htole32(1),
+                                                    .type_2 = htole32(2),
+                                                    .size_pkg_data = htole32(100),
+                                                    .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = htole64(5), .id = htole64(42)};
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512 + sizeof(TWOWS_INDEX_DATA_FILE_ENTRY), &data_file_entry2,
            sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
@@ -445,7 +461,7 @@ void test_wows_dump_index_to_file(void) {
     CU_ASSERT_EQUAL(ret, 0);
 
     WOWS_INDEX_HEADER *buf_header = (WOWS_INDEX_HEADER *)buf;
-    CU_ASSERT_STRING_EQUAL(buf_header->magic, "WoWS");
+    CU_ASSERT_NSTRING_EQUAL(buf_header->magic, "WoWS", 4);
     CU_ASSERT_EQUAL(buf_header->file_dir_count, 2);
     CU_ASSERT_EQUAL(buf_header->file_count, 3);
 
@@ -743,25 +759,31 @@ void test_get_pkg_filepath() {
     // Prepare test data
     char *contents = calloc(sizeof(char) * TEST_DATA_SIZE, 1);
     TWOWS_INDEX_HEADER header = {.magic = {'I', 'S', 'F', 'P'},
-                                 .endianess = 0x2000000,
-                                 .file_dir_count = 5,
-                                 .file_count = 2,
-                                 .header_size = sizeof(TWOWS_INDEX_HEADER),
-                                 .offset_idx_data_section = 512,
-                                 .offset_idx_footer_section = 1024};
+                                 .endianess = htole32(0x2000000),
+                                 .file_dir_count = htole32(5),
+                                 .file_count = htole32(2),
+                                 .header_size = htole64(sizeof(TWOWS_INDEX_HEADER)),
+                                 .offset_idx_data_section = htole64(512),
+                                 .offset_idx_footer_section = htole64(1024)};
 
     memcpy(contents, &header, sizeof(TWOWS_INDEX_HEADER));
 
-    TWOWS_INDEX_METADATA_ENTRY metadata1 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 1, .parent_id = 3};
+    TWOWS_INDEX_METADATA_ENTRY metadata1 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(1), .parent_id = htole64(3)};
     char *offset_metadata1 = contents + sizeof(TWOWS_INDEX_HEADER);
-    TWOWS_INDEX_METADATA_ENTRY metadata2 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 2, .parent_id = 3};
+    TWOWS_INDEX_METADATA_ENTRY metadata2 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(2), .parent_id = htole64(3)};
     char *offset_metadata2 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY);
-    TWOWS_INDEX_METADATA_ENTRY metadata3 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 3, .parent_id = 4};
+    TWOWS_INDEX_METADATA_ENTRY metadata3 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(3), .parent_id = htole64(4)};
     char *offset_metadata3 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 2;
-    TWOWS_INDEX_METADATA_ENTRY metadata4 = {.file_name_size = 6, .offset_idx_file_name = 256, .id = 4, .parent_id = 5};
+    TWOWS_INDEX_METADATA_ENTRY metadata4 = {
+        .file_name_size = htole64(6), .offset_idx_file_name = htole64(256), .id = htole64(4), .parent_id = htole64(5)};
     char *offset_metadata4 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 3;
-    TWOWS_INDEX_METADATA_ENTRY metadata5 = {
-        .file_name_size = 6, .offset_idx_file_name = 256, .id = 5, .parent_id = 1111};
+    TWOWS_INDEX_METADATA_ENTRY metadata5 = {.file_name_size = htole64(6),
+                                            .offset_idx_file_name = htole64(256),
+                                            .id = htole64(5),
+                                            .parent_id = htole64(1111)};
     char *offset_metadata5 = contents + sizeof(TWOWS_INDEX_HEADER) + sizeof(TWOWS_INDEX_METADATA_ENTRY) * 3;
 
     memcpy(offset_metadata1, &metadata1, sizeof(TWOWS_INDEX_METADATA_ENTRY));
@@ -781,21 +803,21 @@ void test_get_pkg_filepath() {
     memcpy(offset_metadata4 + 256, name4, strlen(name4));
     memcpy(offset_metadata5 + 256, name5, strlen(name5));
 
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = 1,
-                                                   .footer_id = 42,
-                                                   .offset_pkg_data = 1024,
-                                                   .type_1 = 1,
-                                                   .type_2 = 2,
-                                                   .size_pkg_data = 100,
-                                                   .id_pkg_data = 1};
-    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = 2,
-                                                    .footer_id = 42,
-                                                    .offset_pkg_data = 1024,
-                                                    .type_1 = 1,
-                                                    .type_2 = 2,
-                                                    .size_pkg_data = 100,
-                                                    .id_pkg_data = 1};
-    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = 5, .id = 42};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry = {.metadata_id = htole64(1),
+                                                   .footer_id = htole64(42),
+                                                   .offset_pkg_data = htole64(1024),
+                                                   .type_1 = htole32(1),
+                                                   .type_2 = htole32(2),
+                                                   .size_pkg_data = htole32(100),
+                                                   .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_DATA_FILE_ENTRY data_file_entry2 = {.metadata_id = htole64(2),
+                                                    .footer_id = htole64(42),
+                                                    .offset_pkg_data = htole64(1024),
+                                                    .type_1 = htole32(1),
+                                                    .type_2 = htole32(2),
+                                                    .size_pkg_data = htole32(100),
+                                                    .id_pkg_data = htole64(1)};
+    TWOWS_INDEX_FOOTER footer = {.pkg_file_name_size = htole64(5), .id = htole64(42)};
     memcpy(contents + MAGIC_SECTION_OFFSET + 512, &data_file_entry, sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
     memcpy(contents + MAGIC_SECTION_OFFSET + 512 + sizeof(TWOWS_INDEX_DATA_FILE_ENTRY), &data_file_entry2,
            sizeof(TWOWS_INDEX_DATA_FILE_ENTRY));
@@ -853,9 +875,9 @@ void test_wows_search_file(void) {
     // Check number of matching files
     CU_ASSERT_EQUAL_FATAL(result_count, expected_result_count);
 
-    // Check file names
-    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234/b1234");
-    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/a1234");
+    // Check file names (order is hash-map dependent, check for presence instead)
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/b1234"));
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/a1234"));
 
     // Free memory
     for (int i = 0; i < result_count; i++) {
@@ -877,9 +899,9 @@ void test_wows_search_file(void) {
     // Check number of matching files
     CU_ASSERT_EQUAL(result_count, expected_result_count);
 
-    // Check file names
-    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234");
-    CU_ASSERT_STRING_EQUAL(results[1], "h1234/g1234");
+    // Check file names (order is hash-map dependent, check for presence instead)
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234"));
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "h1234/g1234"));
 
     // Free memory
     for (int i = 0; i < result_count; i++) {
@@ -901,9 +923,9 @@ void test_wows_search_file(void) {
     // Check number of matching files
     CU_ASSERT_EQUAL(result_count, expected_result_count);
 
-    // Check file names
-    CU_ASSERT_STRING_EQUAL(results[0], "d1234/c1234/b1234");
-    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/a1234");
+    // Check file names (order is hash-map dependent, check for presence instead)
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/b1234"));
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/a1234"));
 
     // Free memory
     for (int i = 0; i < result_count; i++) {
@@ -925,10 +947,10 @@ void test_wows_search_file(void) {
     // Check number of matching files
     CU_ASSERT_EQUAL(result_count, expected_result_count);
 
-    // Check file names
-    CU_ASSERT_STRING_EQUAL(results[0], "d1234");
-    CU_ASSERT_STRING_EQUAL(results[1], "d1234/c1234/b1234");
-    CU_ASSERT_STRING_EQUAL(results[2], "d1234/c1234/a1234");
+    // Check file names (order is hash-map dependent, check for presence instead)
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234"));
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/b1234"));
+    CU_ASSERT_TRUE(entry_in_list(results, result_count, "d1234/c1234/a1234"));
 
     // Free memory
     for (int i = 0; i < result_count; i++) {
@@ -1125,7 +1147,8 @@ void test_wows_readdir(void) {
     CU_ASSERT_EQUAL(entry_count, 2);
     CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "d1234"));
     CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "h1234"));
-    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    for (int i = 0; i < entry_count; i++)
+        free(entries[i]);
     free(entries);
 
     // Subdirectory "d1234" contains only "c1234"
@@ -1133,7 +1156,8 @@ void test_wows_readdir(void) {
     CU_ASSERT_EQUAL(ret, 0);
     CU_ASSERT_EQUAL(entry_count, 1);
     CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "c1234"));
-    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    for (int i = 0; i < entry_count; i++)
+        free(entries[i]);
     free(entries);
 
     // Subdirectory "d1234/c1234" contains "a1234" and "b1234"
@@ -1142,7 +1166,8 @@ void test_wows_readdir(void) {
     CU_ASSERT_EQUAL(entry_count, 2);
     CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "a1234"));
     CU_ASSERT_TRUE(entry_in_list(entries, entry_count, "b1234"));
-    for (int i = 0; i < entry_count; i++) free(entries[i]);
+    for (int i = 0; i < entry_count; i++)
+        free(entries[i]);
     free(entries);
 
     // Error: path is a file, not a directory
