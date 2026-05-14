@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['build_0',['build',['../index.html#autotoc_md6',1,'']]]
+  ['also_20the_20coverage_20tests_0',['run also the coverage tests',['../index.html#autotoc_md10',1,'']]]
 ];

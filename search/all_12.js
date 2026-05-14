@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['pkg_20entry_0',['PKG Entry',['../md__f_o_r_m_a_t.html#autotoc_md42',1,'']]],
-  ['pkg_20format_1',['PKG format',['../md__f_o_r_m_a_t.html#autotoc_md41',1,'']]],
-  ['pkg_20idx_20format_2',['WoWs .pkg &amp; .idx Format',['../md__f_o_r_m_a_t.html',1,'']]],
-  ['pkg_20pointers_3',['File &quot;.pkg&quot; pointers',['../md__f_o_r_m_a_t.html#autotoc_md35',1,'']]],
-  ['pointers_4',['File &quot;.pkg&quot; pointers',['../md__f_o_r_m_a_t.html#autotoc_md35',1,'']]],
-  ['project_20dir_5',['git clone + go in project dir',['../index.html#autotoc_md5',1,'']]]
+  ['on_20time_0',['cmake run (on time)',['../index.html#autotoc_md8',1,'']]],
+  ['or_20with_20gdb_3a_1',['or with gdb:',['../index.html#autotoc_md12',1,'']]],
+  ['os_2',['Mac OS',['../index.html#autotoc_md14',1,'']]]
 ];

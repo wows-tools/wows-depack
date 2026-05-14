@@ -42,41 +42,42 @@ var NAVTREE =
     [ "Mac OS", "index.html#autotoc_md14", null ],
     [ "Replace with your WoWs install directory", "index.html#autotoc_md15", null ],
     [ "Versions", "index.html#autotoc_md16", [
-      [ "0.3.0", "index.html#autotoc_md17", null ],
-      [ "0.2.0", "index.html#autotoc_md18", null ],
-      [ "0.1.0", "index.html#autotoc_md19", null ]
+      [ "0.4.0", "index.html#autotoc_md17", null ],
+      [ "0.3.0", "index.html#autotoc_md18", null ],
+      [ "0.2.0", "index.html#autotoc_md19", null ],
+      [ "0.1.0", "index.html#autotoc_md20", null ]
     ] ],
     [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
-      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md21", null ],
-      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md22", null ],
-      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md23", null ],
-      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md24", null ],
-      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md25", [
-        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md26", null ],
-        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md27", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md28", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md29", null ]
+      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md22", null ],
+      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md23", null ],
+      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md24", null ],
+      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md25", null ],
+      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md26", [
+        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md27", null ],
+        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md28", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md29", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md30", null ]
         ] ],
-        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md30", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md31", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md32", null ]
+        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md31", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md32", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md33", null ]
         ] ],
-        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md33", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md34", null ]
+        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md34", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md35", null ]
         ] ],
-        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md35", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md36", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md37", null ]
+        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md36", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md37", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md38", null ]
         ] ],
-        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md38", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md39", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md40", null ]
+        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md39", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md40", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md41", null ]
         ] ]
       ] ],
-      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md41", [
-        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md42", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md43", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md44", null ]
+      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md42", [
+        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md43", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md44", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md45", null ]
         ] ]
       ] ]
     ] ],
