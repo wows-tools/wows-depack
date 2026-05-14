@@ -449,6 +449,14 @@ Then wait for crashes to occur (hopefully this will be in vain).
 
 # Versions
 
+
+## 0.4.0
+
+* fix portability & endianess issues (target OpenBSD Sparc)
+* add #pragma once in header
+* fix too generic le/be reader helper function names
+* implement wows_readdir and wows_stat_path
+
 ## 0.3.0
 
 * switch to libpcre2
