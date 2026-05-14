@@ -22,6 +22,29 @@ find_package(ZLIB REQUIRED)
 find_package(PCRE2 REQUIRED)
 find_library(CUNIT_LIBRARY cunit)
 
+# Detect argp: glibc provides it in libc; macOS/BSD need an external library or our bundled one
+include(CheckIncludeFile)
+check_include_file("argp.h" HAVE_ARGP_H)
+if(HAVE_ARGP_H)
+  # argp.h found — it may live in libc (Linux) or need -largp (macOS with brew)
+  find_library(_ARGP_SYSTEM_LIB argp)
+  if(_ARGP_SYSTEM_LIB)
+    set(ARGP_LIBRARIES ${_ARGP_SYSTEM_LIB})
+  else()
+    set(ARGP_LIBRARIES "")
+  endif()
+  set(ARGP_INCLUDE_DIRS "")
+  message(STATUS "Using system argp")
+else()
+  # No system argp — build bundled implementation from deps/argp/
+  message(STATUS "System argp not found, building bundled argp from deps/argp/")
+  add_library(argp_bundled STATIC deps/argp/argp.c)
+  target_include_directories(argp_bundled PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIR}/deps/argp)
+  set(ARGP_LIBRARIES argp_bundled)
+  set(ARGP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/deps/argp)
+endif()
+
 set(wows-depack_VERSION
     ${wows-depack_VERSION_MAJOR}.${wows-depack_VERSION_MINOR}.${wows-depack_VERSION_PATCH}
 )
@@ -50,11 +73,9 @@ if(DEBUG)
   set(CMAKE_BUILD_TYPE Debug)
 endif(DEBUG)
 
-# Build external dependancies if we are on OSX
+# macOS may need -liconv for some libraries
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  # Mac OS X specific code
   set(EXTERNAL_ICONV "iconv")
-  set(EXTERNAL_ARGP "argp")
   add_definitions(-DDARWIN)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
@@ -77,10 +98,11 @@ set_target_properties(
 
 # Compile the executable
 add_executable(wows-depack-cli wows-depack.c)
+target_include_directories(wows-depack-cli PRIVATE ${ARGP_INCLUDE_DIRS})
 target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY})
 
 target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
-                      ${PCRE2_LIBRARY})
+                      ${PCRE2_LIBRARY} ${ARGP_LIBRARIES})
 
 if(BUILD_TESTS)
   if(CUNIT_LIBRARY)
