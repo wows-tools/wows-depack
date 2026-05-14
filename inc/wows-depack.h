@@ -4,6 +4,8 @@
  * @brief Header file for the wows-depack library.
  */
 
+#pragma once
+
 #include <stdint.h>
 #include <stdbool.h>
 
