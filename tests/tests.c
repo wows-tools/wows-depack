@@ -1199,6 +1199,20 @@ void test_open_file_with_parents(void) {
     rmdir("test_folder");
 }
 
+void test_parse_corrupted_index_000(void) {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret = wows_parse_index_file("./tests/corrupted/corrupted_000.idx", context);
+    CU_ASSERT_NOT_EQUAL(ret, 0);
+    wows_free_context(context);
+}
+
+void test_parse_corrupted_index_001(void) {
+    WOWS_CONTEXT *context = wows_init_context(0);
+    int ret = wows_parse_index_file("./tests/corrupted/corrupted_001.idx", context);
+    CU_ASSERT_NOT_EQUAL(ret, 0);
+    wows_free_context(context);
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("test_index_file_read_write", NULL, NULL);
@@ -1255,6 +1269,10 @@ int main() {
     CU_add_test(suite, "test_copy_data_with_offset_and_size", test_copy_data_with_offset_and_size);
     CU_add_test(suite, "test_copy_data_with_offset_and_too_large_size", test_copy_data_with_offset_and_too_large_size);
     CU_add_test(suite, "test_open_file_with_parents", test_open_file_with_parents);
+
+    suite = CU_add_suite("Corrupted Input Suite", NULL, NULL);
+    CU_add_test(suite, "test_parse_corrupted_index_000", test_parse_corrupted_index_000);
+    CU_add_test(suite, "test_parse_corrupted_index_001", test_parse_corrupted_index_001);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
