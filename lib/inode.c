@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/mman.h>
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"

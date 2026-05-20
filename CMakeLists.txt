@@ -20,7 +20,29 @@ endif(STATIC)
 
 find_package(ZLIB REQUIRED)
 find_package(PCRE2 REQUIRED)
+# vcpkg Config mode exports a pcre2::pcre2-8 target rather than PCRE2_LIBRARY;
+# normalize so the rest of the file can use PCRE2_LIBRARY unconditionally.
+if(NOT PCRE2_LIBRARY)
+  if(TARGET pcre2::pcre2-8)
+    set(PCRE2_LIBRARY pcre2::pcre2-8)
+  elseif(PCRE2_LIBRARIES)
+    set(PCRE2_LIBRARY ${PCRE2_LIBRARIES})
+  endif()
+endif()
 find_library(CUNIT_LIBRARY cunit)
+
+if(WIN32)
+  find_library(MMAN_LIBRARY mman)
+  if(MMAN_LIBRARY)
+    set(MMAN_LIBRARIES ${MMAN_LIBRARY})
+    message(STATUS "Using mman-win32: ${MMAN_LIBRARY}")
+  else()
+    message(WARNING "mman library not found; mmap will not work on Windows")
+    set(MMAN_LIBRARIES "")
+  endif()
+else()
+  set(MMAN_LIBRARIES "")
+endif()
 
 # Detect argp: glibc provides it in libc; macOS/BSD need an external library or our bundled one
 include(CheckIncludeFile)
@@ -99,10 +121,10 @@ set_target_properties(
 # Compile the executable
 add_executable(wows-depack-cli wows-depack.c)
 target_include_directories(wows-depack-cli PRIVATE ${ARGP_INCLUDE_DIRS})
-target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY})
+target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY} ${MMAN_LIBRARIES})
 
 target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
-                      ${PCRE2_LIBRARY} ${ARGP_LIBRARIES})
+                      ${PCRE2_LIBRARY} ${ARGP_LIBRARIES} ${MMAN_LIBRARIES})
 
 if(BUILD_TESTS)
   if(CUNIT_LIBRARY)

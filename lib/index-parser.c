@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#if defined(__linux__)
+#if defined(__linux__) || defined(_WIN32)
 #include <endian.h>
 #else
 #include <sys/endian.h>

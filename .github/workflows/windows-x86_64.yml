@@ -1,0 +1,57 @@
+
+name: Windows-x86_64
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  VCPKG_DEFAULT_BINARY_CACHE: C:\vcpkg-cache
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-cmake
+          mingw-w64-ucrt-x86_64-ninja
+
+    - name: Bootstrap vcpkg
+      run: ./deps/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+    - name: Cache vcpkg packages
+      uses: actions/cache@v4
+      with:
+        path: C:\vcpkg-cache
+        key: vcpkg-x64-mingw-dynamic-${{ hashFiles('vcpkg.json') }}
+        restore-keys: vcpkg-x64-mingw-dynamic-
+
+    - name: Create vcpkg binary cache dir
+      run: mkdir -p /c/vcpkg-cache
+
+    - name: Configure CMake
+      run: |
+        cmake -G Ninja -DBUILD_TESTS=ON \
+          -DCMAKE_TOOLCHAIN_FILE=./deps/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic .
+
+    - name: Build
+      run: ninja
+
+    - name: Test
+      run: ctest --output-on-failure

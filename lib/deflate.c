@@ -18,7 +18,7 @@
 #include <time.h>
 #include <zlib.h>
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(_WIN32)
 #include <endian.h>
 #else
 #include <sys/endian.h>
