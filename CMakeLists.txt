@@ -129,6 +129,12 @@ target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY} ${MMAN_LIBR
 
 target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
                       ${PCRE2_LIBRARY} ${ARGP_LIBRARIES} ${MMAN_LIBRARIES})
+# The bundled argp getopt.c also defines the public getopt/getopt_long symbols
+# that UCRT already provides.  Allow duplicates so the linker does not error;
+# the bundled versions are functionally identical for this use case.
+if(WIN32)
+  target_link_options(wows-depack-cli PRIVATE -Wl,--allow-multiple-definition)
+endif()
 
 if(BUILD_TESTS)
   if(CUNIT_LIBRARY)

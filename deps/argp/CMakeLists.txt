@@ -154,11 +154,12 @@ set(
     src/argp-xinl.c
 )
 
-# UCRT64/MinGW already ships getopt and getopt_long; bundling our own copy
-# causes conflicting-types errors against the system declarations.
-if(NOT WIN32)
-    list(APPEND SRCS src/getopt.c src/getopt1.c)
-endif()
+# argp-parse.c requires the reentrant _getopt_long_r / _getopt_long_only_r
+# that are only available in the bundled getopt implementation, so always
+# compile getopt.c and getopt1.c.  The public getopt/getopt_long symbols they
+# also define may duplicate system ones; the caller must link with
+# -Wl,--allow-multiple-definition on Windows (see top-level CMakeLists.txt).
+list(APPEND SRCS src/getopt.c src/getopt1.c)
 
 ##############################################
 #   Lib
