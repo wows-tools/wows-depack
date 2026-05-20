@@ -13,6 +13,7 @@
 #include <zlib.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include "posix_compat.h"
 #include "wows-depack.h"
 #include "wows-depack-private.h"
 #include "hashmap.h"

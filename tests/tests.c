@@ -6,18 +6,8 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include <zlib.h>
-#if defined(__linux__)
-#include <endian.h>
-#elif defined(_WIN32)
-#define htole16(x) (x)
-#define htole32(x) (x)
-#define htole64(x) (x)
-#define le16toh(x) (x)
-#define le32toh(x) (x)
-#define le64toh(x) (x)
-#else
-#include <sys/endian.h>
-#endif
+#include "posix_compat.h"
+#include <fmem.h>
 #include "wows-depack.h" // replace with the name of your header file
 #include "../lib/wows-depack-private.h"
 
@@ -455,14 +445,17 @@ void test_wows_dump_index_to_file(void) {
 
     WOWS_INDEX index = {.header = &header, .metadata = metadata, .data_file_entry = data_files, .footer = &footer};
 
-    // Open a file for writing
+    // Open a memory-backed file for writing
+    fmem fm;
+    fmem_init(&fm);
     char *buf = NULL;
     size_t buf_size = 0;
-    FILE *f = open_memstream(&buf, &buf_size);
+    FILE *f = fmem_open(&fm, "w+");
     CU_ASSERT_PTR_NOT_NULL_FATAL(f);
 
     // Call the function being tested
     int ret = wows_dump_index_to_file(&index, f);
+    fmem_mem(&fm, (void **)&buf, &buf_size);
     fclose(f);
 
     CU_ASSERT_EQUAL(ret, 0);
@@ -472,8 +465,7 @@ void test_wows_dump_index_to_file(void) {
     CU_ASSERT_EQUAL(buf_header->file_dir_count, 2);
     CU_ASSERT_EQUAL(buf_header->file_count, 3);
 
-    // Close the file
-    free(buf);
+    fmem_term(&fm);
 }
 
 pcre2_code *re;
@@ -580,15 +572,20 @@ void test_decompose_path_only_dir() {
 
 void test_compress() {
     WOWS_CONTEXT *context = wows_init_context(0);
+    fmem fm_idx, fm_pkg;
+    fmem_init(&fm_idx);
+    fmem_init(&fm_pkg);
     char *buf_idx = NULL;
     size_t buf_idx_size = 0;
-    FILE *nfd_idx = open_memstream(&buf_idx, &buf_idx_size);
+    FILE *nfd_idx = fmem_open(&fm_idx, "w+");
 
     char *buf_pkg = NULL;
     size_t buf_pkg_size = 0;
-    FILE *nfd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    FILE *nfd_pkg = fmem_open(&fm_pkg, "w+");
 
     int result = wows_write_pkg(context, "./tests", "stuff.pkg", nfd_pkg, nfd_idx);
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
+    fmem_mem(&fm_idx, (void **)&buf_idx, &buf_idx_size);
     fclose(nfd_pkg);
     fclose(nfd_idx);
 
@@ -596,8 +593,8 @@ void test_compress() {
     CU_ASSERT_EQUAL_FATAL(result, 0);
     CU_ASSERT_NOT_EQUAL(buf_idx_size, 0);
     CU_ASSERT_NOT_EQUAL(buf_pkg_size, 0);
-    free(buf_idx);
-    free(buf_pkg);
+    fmem_term(&fm_idx);
+    fmem_term(&fm_pkg);
     wows_free_context(context);
 }
 
@@ -611,9 +608,11 @@ void test_extract() {
         printf("Error: %s\n", err_msg);
     }
 
+    fmem fm_pkg;
+    fmem_init(&fm_pkg);
     char *buf_pkg = NULL;
     size_t buf_pkg_size = 0;
-    FILE *fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    FILE *fd_pkg = fmem_open(&fm_pkg, "w+");
 
     ret = wows_extract_file_fp(context, "tests.c", fd_pkg);
     CU_ASSERT_EQUAL(ret, 0);
@@ -622,6 +621,7 @@ void test_extract() {
         printf("Error: %s\n", err_msg);
     }
 
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
     uint64_t crc = crc32(0, NULL, 0);
     crc = crc32(crc, (const Bytef *)buf_pkg, strlen(buf_pkg)); // update CRC-64 with string data
@@ -630,35 +630,31 @@ void test_extract() {
     CU_ASSERT_EQUAL(buf_pkg_size, 32393);
     CU_ASSERT_EQUAL(crc, 0xFF3F3136);
 
-    free(buf_pkg);
-
-    buf_pkg_size = 0;
-    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    fd_pkg = fmem_open(&fm_pkg, "w+");
     ret = wows_extract_file_fp(context, "doesnotexist.c", fd_pkg);
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
-    free(buf_pkg);
     CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_FOUND);
 
-    buf_pkg_size = 0;
-    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    fd_pkg = fmem_open(&fm_pkg, "w+");
     ret = wows_extract_file_fp(context, "data/", fd_pkg);
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
-    free(buf_pkg);
     CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_FILE);
 
-    buf_pkg_size = 0;
-    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    fd_pkg = fmem_open(&fm_pkg, "w+");
     ret = wows_extract_file_fp(context, "data", fd_pkg);
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
-    free(buf_pkg);
     CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_FILE);
 
-    buf_pkg_size = 0;
-    fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    fd_pkg = fmem_open(&fm_pkg, "w+");
     ret = wows_extract_file_fp(context, "/data/fake2.idx/test", fd_pkg);
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
-    free(buf_pkg);
     CU_ASSERT_EQUAL(ret, WOWS_ERROR_NOT_A_DIR);
+
+    fmem_term(&fm_pkg);
 
     wows_free_context(context);
 }
@@ -670,9 +666,11 @@ void test_extract_dir() {
     ret = wows_parse_index_dir("wows_sim_dir/bin/2234567/idx/", context);
     CU_ASSERT_EQUAL(ret, 0);
 
+    fmem fm_pkg;
+    fmem_init(&fm_pkg);
     char *buf_pkg = NULL;
     size_t buf_pkg_size = 0;
-    FILE *fd_pkg = open_memstream(&buf_pkg, &buf_pkg_size);
+    FILE *fd_pkg = fmem_open(&fm_pkg, "w+");
 
     ret = internal_wows_extract_dir(context, "/", "./out", fd_pkg);
     if (ret != 0) {
@@ -680,13 +678,14 @@ void test_extract_dir() {
         printf("Error: %s\n", err_msg);
     }
 
+    fmem_mem(&fm_pkg, (void **)&buf_pkg, &buf_pkg_size);
     fclose(fd_pkg);
     uint64_t crc = crc32(0, NULL, 0);
     crc = crc32(crc, (const Bytef *)buf_pkg, strlen(buf_pkg)); // update CRC-64 with string data
     CU_ASSERT_EQUAL(buf_pkg_size, 33059);
     CU_ASSERT_EQUAL(crc, 0x64EAE135);
 
-    free(buf_pkg);
+    fmem_term(&fm_pkg);
     wows_free_context(context);
 }
 

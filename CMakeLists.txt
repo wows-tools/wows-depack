@@ -31,15 +31,22 @@ if(NOT PCRE2_LIBRARY)
 endif()
 find_library(CUNIT_LIBRARY cunit)
 
+# deps/compat provides posix_compat.h (endian + Windows POSIX shims) on all platforms.
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/compat)
+
+# fmem: portable open_memstream-like API (used by tests).
+add_subdirectory(deps/fmem)
+
 if(WIN32)
   # Bundled mmap shim (mman-win32) — provides sys/mman.h and mmap/munmap via Win32 API.
-  # __USE_MINGW_ANSI_STDIO enables MinGW-w64's POSIX stdio layer (open_memstream, etc.).
   set(MMAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32/mmap.c)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32)
-  add_compile_definitions(__USE_MINGW_ANSI_STDIO=1)
+  # POSIX compat implementations (realpath, open_memstream, fclose wrapper).
+  set(COMPAT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/deps/compat/posix_compat.c)
   set(MMAN_LIBRARIES "")
 else()
   set(MMAN_SOURCES "")
+  set(COMPAT_SOURCES "")
   set(MMAN_LIBRARIES "")
 endif()
 
@@ -112,7 +119,7 @@ include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS}
                     /usr/include/ /sw/include/)
 
 file(GLOB WOWS_SOURCES lib/*.c)
-add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES})
+add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES} ${COMPAT_SOURCES})
 set_target_properties(
   wows-depack PROPERTIES VERSION ${wows-depack_VERSION}
                          SOVERSION ${wows-depack_VERSION_MAJOR})
@@ -138,7 +145,7 @@ if(BUILD_TESTS)
     set_target_properties(hashmap-test PROPERTIES COMPILE_FLAGS
                                                   "-DHASHMAP_TEST")
     target_link_libraries(wows-depack-test wows-depack ${ZLIB_LIBRARIES}
-                          ${PCRE2_LIBRARY} ${CUNIT_LIBRARY})
+                          ${PCRE2_LIBRARY} ${CUNIT_LIBRARY} fmem::fmem)
 
     # Add the test target
     add_custom_target(
