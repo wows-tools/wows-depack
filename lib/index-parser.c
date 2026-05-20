@@ -300,6 +300,10 @@ int wows_parse_index_buffer(char *contents, size_t length, const char *index_fil
     int err = map_index_file(contents, length, &index, context);
     if (err != 0) {
         wows_free_index(index, 0);
+        if (fd >= 0) {
+            munmap(contents, length);
+            close(fd);
+        }
         return err;
     }
 

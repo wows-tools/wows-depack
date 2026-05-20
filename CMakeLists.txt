@@ -64,13 +64,13 @@ if(HAVE_ARGP_H)
   set(ARGP_INCLUDE_DIRS "")
   message(STATUS "Using system argp")
 else()
-  # No system argp — build bundled implementation from deps/argp/
+  # No system argp — build bundled argp-standalone via its own CMakeLists.txt.
   message(STATUS "System argp not found, building bundled argp from deps/argp/")
-  add_library(argp_bundled STATIC deps/argp/argp.c)
-  target_include_directories(argp_bundled PUBLIC
-      ${CMAKE_CURRENT_SOURCE_DIR}/deps/argp)
-  set(ARGP_LIBRARIES argp_bundled)
-  set(ARGP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/deps/argp)
+  add_subdirectory(deps/argp)
+  set(ARGP_LIBRARIES argp-standalone)
+  # deps/argp/include/argp.h is a thin wrapper that re-exports argp-standalone.h
+  # so consumers can use the standard #include <argp.h>.
+  set(ARGP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/deps/argp/include)
 endif()
 
 set(wows-depack_VERSION

@@ -86,3 +86,4 @@ inc/html/
 inc/latex/
 latex/
 docs/doxygen-awesome-css
+build/
