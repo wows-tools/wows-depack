@@ -176,7 +176,9 @@ extern int __posix_getopt (int ___argc, char *const *___argv,
 #  endif
 # endif
 #else /* not __GNU_LIBRARY__ */
-extern int getopt ();
+/* GCC 16+ treats () as (void) in C23 mode; use a full prototype to avoid
+ * conflicting-types errors against the system getopt declaration. */
+extern int getopt (int, char * const *, const char *);
 #endif /* __GNU_LIBRARY__ */
 
 #ifndef __need_getopt

@@ -152,9 +152,13 @@ set(
     src/argp-pv.c
     src/argp-pvh.c
     src/argp-xinl.c
-    src/getopt.c
-    src/getopt1.c
 )
+
+# UCRT64/MinGW already ships getopt and getopt_long; bundling our own copy
+# causes conflicting-types errors against the system declarations.
+if(NOT WIN32)
+    list(APPEND SRCS src/getopt.c src/getopt1.c)
+endif()
 
 ##############################################
 #   Lib
