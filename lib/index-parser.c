@@ -17,8 +17,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#if defined(__linux__) || defined(_WIN32)
+#if defined(__linux__)
 #include <endian.h>
+#elif defined(_WIN32)
+#define htole16(x) (x)
+#define htole32(x) (x)
+#define htole64(x) (x)
+#define le16toh(x) (x)
+#define le32toh(x) (x)
+#define le64toh(x) (x)
 #else
 #include <sys/endian.h>
 #endif

@@ -85,6 +85,19 @@ void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
         free(context->err_msg);
         context->err_msg = NULL;
     }
+#ifdef _WIN32
+    va_list args, args2;
+    va_start(args, fmt);
+    va_copy(args2, args);
+    int len = vsnprintf(NULL, 0, fmt, args);
+    va_end(args);
+    if (len >= 0) {
+        context->err_msg = malloc((size_t)len + 1);
+        if (context->err_msg)
+            vsnprintf(context->err_msg, (size_t)len + 1, fmt, args2);
+    }
+    va_end(args2);
+#else
     FILE *stream;
     size_t len;
     stream = open_memstream(&context->err_msg, &len);
@@ -94,4 +107,5 @@ void wows_set_error_details(WOWS_CONTEXT *context, char *fmt, ...) {
     va_end(args);
     fflush(stream);
     fclose(stream);
+#endif
 }
