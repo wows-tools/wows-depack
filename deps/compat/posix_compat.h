@@ -51,5 +51,10 @@ char *realpath(const char *path, char *resolved);
 #endif
 #define mkdir(path, mode) _mkdir(path)
 
+/* fmemopen: in the UCRT runtime but its declaration is suppressed by
+ * __STRICT_ANSI__ when compiling with -std=c11.  Re-declare it explicitly. */
+#include <stddef.h>
+FILE *fmemopen(void *buf, size_t size, const char *mode);
+
 #endif /* _WIN32 */
 #endif /* POSIX_COMPAT_H */

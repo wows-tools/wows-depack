@@ -83,11 +83,9 @@ add_custom_target(
           "tagging version ${wows-depack_VERSION}"
   COMMAND git push origin ${wows-depack_VERSION})
 
-# set version as a definition
-set(CMAKE_C_FLAGS
-    "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${wows-depack_VERSION}\"'")
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -DBFD_VERSION='\"${wows-depack_VERSION}\"'")
+# Expose version string to all targets.  add_compile_definitions handles
+# quoting correctly on all platforms (no shell single-quote tricks needed).
+add_compile_definitions(BFD_VERSION="${wows-depack_VERSION}")
 
 # Options
 option(DEBUG "compile with debug symbol" OFF)
