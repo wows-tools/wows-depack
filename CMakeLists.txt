@@ -32,15 +32,14 @@ endif()
 find_library(CUNIT_LIBRARY cunit)
 
 if(WIN32)
-  find_library(MMAN_LIBRARY mman)
-  if(MMAN_LIBRARY)
-    set(MMAN_LIBRARIES ${MMAN_LIBRARY})
-    message(STATUS "Using mman-win32: ${MMAN_LIBRARY}")
-  else()
-    message(WARNING "mman library not found; mmap will not work on Windows")
-    set(MMAN_LIBRARIES "")
-  endif()
+  # Bundled mmap shim (mman-win32) — provides sys/mman.h and mmap/munmap via Win32 API.
+  # __USE_MINGW_ANSI_STDIO enables MinGW-w64's POSIX stdio layer (open_memstream, etc.).
+  set(MMAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32/mmap.c)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32)
+  add_compile_definitions(__USE_MINGW_ANSI_STDIO=1)
+  set(MMAN_LIBRARIES "")
 else()
+  set(MMAN_SOURCES "")
   set(MMAN_LIBRARIES "")
 endif()
 
@@ -113,7 +112,7 @@ include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS}
                     /usr/include/ /sw/include/)
 
 file(GLOB WOWS_SOURCES lib/*.c)
-add_library(wows-depack ${SHARED} ${WOWS_SOURCES})
+add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES})
 set_target_properties(
   wows-depack PROPERTIES VERSION ${wows-depack_VERSION}
                          SOVERSION ${wows-depack_VERSION_MAJOR})

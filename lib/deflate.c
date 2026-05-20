@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/mman.h>
 #include <time.h>
 #include <zlib.h>
 
