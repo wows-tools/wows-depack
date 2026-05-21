@@ -110,11 +110,19 @@ if(UNIX)
 endif(UNIX)
 
 # linking directories
-link_directories(${CMAKE_BINARY_DIR}/ /usr/local/lib /usr/lib/)
+if(WIN32)
+  link_directories(${CMAKE_BINARY_DIR}/)
+else()
+  link_directories(${CMAKE_BINARY_DIR}/ /usr/local/lib /usr/lib/)
+endif()
 
 # headers directories
-include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS}
-                    /usr/include/ /sw/include/)
+if(WIN32)
+  include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS})
+else()
+  include_directories(./inc/ ${ZLIB_INCLUDE_DIRS} ${PCRE2_INCLUDE_DIRS}
+                      /usr/include/ /sw/include/)
+endif()
 
 file(GLOB WOWS_SOURCES lib/*.c)
 add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES} ${COMPAT_SOURCES})

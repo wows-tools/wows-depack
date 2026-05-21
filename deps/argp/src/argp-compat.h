@@ -8,9 +8,9 @@
 #define ARGP_COMPAT_H_INCLUDED
 
 #if defined(_WIN32)
-/* Spell Windows.h all lowercase for MinGW on case sensitive systems. */
+/* Spell headers all lowercase for MinGW on case-sensitive systems. */
 #include <windows.h>
-#include <BaseTsd.h>
+#include <basetsd.h>
 #endif
 #include <stddef.h>
 

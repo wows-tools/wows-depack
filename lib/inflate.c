@@ -125,7 +125,7 @@ int extract_file_inode(WOWS_CONTEXT *context, WOWS_FILE_INODE *file_inode, FILE 
     char *pkg_file_path;
     get_pkg_filepath(index, &pkg_file_path);
 
-    FILE *fd_pkg = fopen(pkg_file_path, "r");
+    FILE *fd_pkg = fopen(pkg_file_path, "rb");
     if (!fd_pkg) {
         wows_set_error_details(context, "error with opening pkg file '%s'", pkg_file_path);
         free(pkg_file_path);
@@ -234,7 +234,7 @@ FILE *open_file_with_parents(const char *filename) {
     }
 
     /* Open the file for writing. */
-    FILE *file = fopen(filename, "w+");
+    FILE *file = fopen(filename, "w+b");
     if (!file) {
         return NULL;
     }
@@ -323,7 +323,7 @@ int wows_extract_file_fp(WOWS_CONTEXT *context, char *file_path, FILE *dest) {
 }
 
 int wows_extract_file(WOWS_CONTEXT *context, char *file_path, char *out_path) {
-    FILE *fd = fopen(out_path, "w+");
+    FILE *fd = fopen(out_path, "w+b");
     if (fd <= 0) {
         wows_set_error_details(context, "error with output file '%s', %s", out_path, strerror(errno));
         return WOWS_ERROR_FILE_OPEN_FAILURE;

@@ -95,6 +95,8 @@ void fmem_mem(fmem *file, void **mem, size_t *size)
     if (!cv.impl->file)
         return;
 
+    fflush(cv.impl->file);
+
     HANDLE handle = (HANDLE) _get_osfhandle(_fileno(cv.impl->file));
 
     DWORD filesize = GetFileSize(handle, NULL);
