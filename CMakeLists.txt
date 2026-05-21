@@ -31,14 +31,16 @@ if(NOT PCRE2_LIBRARY)
 endif()
 find_library(CUNIT_LIBRARY cunit)
 
-# deps/compat provides posix_compat.h (endian + Windows POSIX shims) on all platforms.
+# deps/compat provides posix_compat.h (endian + Windows POSIX shims) on all
+# platforms.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/compat)
 
 # fmem: portable open_memstream-like API (used by tests).
 add_subdirectory(deps/fmem)
 
 if(WIN32)
-  # Bundled mmap shim (mman-win32) — provides sys/mman.h and mmap/munmap via Win32 API.
+  # Bundled mmap shim (mman-win32) — provides sys/mman.h and mmap/munmap via
+  # Win32 API.
   set(MMAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32/mmap.c)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/mman-win32)
   # POSIX compat implementations (realpath, open_memstream, fclose wrapper).
@@ -50,7 +52,8 @@ else()
   set(MMAN_LIBRARIES "")
 endif()
 
-# Detect argp: glibc provides it in libc; macOS/BSD need an external library or our bundled one
+# Detect argp: glibc provides it in libc; macOS/BSD need an external library or
+# our bundled one
 include(CheckIncludeFile)
 check_include_file("argp.h" HAVE_ARGP_H)
 if(HAVE_ARGP_H)
@@ -83,8 +86,8 @@ add_custom_target(
           "tagging version ${wows-depack_VERSION}"
   COMMAND git push origin ${wows-depack_VERSION})
 
-# Expose version string to all targets.  add_compile_definitions handles
-# quoting correctly on all platforms (no shell single-quote tricks needed).
+# Expose version string to all targets.  add_compile_definitions handles quoting
+# correctly on all platforms (no shell single-quote tricks needed).
 add_compile_definitions(BFD_VERSION="${wows-depack_VERSION}")
 
 # Options
@@ -125,7 +128,8 @@ else()
 endif()
 
 file(GLOB WOWS_SOURCES lib/*.c)
-add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES} ${COMPAT_SOURCES})
+add_library(wows-depack ${SHARED} ${WOWS_SOURCES} ${MMAN_SOURCES}
+                        ${COMPAT_SOURCES})
 set_target_properties(
   wows-depack PROPERTIES VERSION ${wows-depack_VERSION}
                          SOVERSION ${wows-depack_VERSION_MAJOR})
@@ -133,7 +137,8 @@ set_target_properties(
 # Compile the executable
 add_executable(wows-depack-cli wows-depack.c)
 target_include_directories(wows-depack-cli PRIVATE ${ARGP_INCLUDE_DIRS})
-target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY} ${MMAN_LIBRARIES})
+target_link_libraries(wows-depack ${ZLIB_LIBRARIES} ${PCRE2_LIBRARY}
+                      ${MMAN_LIBRARIES})
 
 target_link_libraries(wows-depack-cli wows-depack ${ZLIB_LIBRARIES}
                       ${PCRE2_LIBRARY} ${ARGP_LIBRARIES} ${MMAN_LIBRARIES})

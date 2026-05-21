@@ -14,24 +14,21 @@ union fmem_conv {
     struct fmem_impl *impl;
 };
 
-void fmem_init(fmem *file)
-{
-    union fmem_conv cv = { .fm = file };
-    memset(cv.impl, 0, sizeof (*cv.impl));
+void fmem_init(fmem *file) {
+    union fmem_conv cv = {.fm = file};
+    memset(cv.impl, 0, sizeof(*cv.impl));
 }
 
-void fmem_term(fmem *file)
-{
-    union fmem_conv cv = { .fm = file };
+void fmem_term(fmem *file) {
+    union fmem_conv cv = {.fm = file};
 
     if (cv.impl->buf) {
         free(cv.impl->buf);
     }
 }
 
-FILE *fmem_open(fmem *file, const char *mode)
-{
-    union fmem_conv cv = { .fm = file };
+FILE *fmem_open(fmem *file, const char *mode) {
+    union fmem_conv cv = {.fm = file};
     FILE *f = tmpfile();
     if (f) {
         if (cv.impl->buf) {
@@ -42,9 +39,8 @@ FILE *fmem_open(fmem *file, const char *mode)
     return f;
 }
 
-void fmem_mem(fmem *file, void **mem, size_t *size)
-{
-    union fmem_conv cv = { .fm = file };
+void fmem_mem(fmem *file, void **mem, size_t *size) {
+    union fmem_conv cv = {.fm = file};
     *mem = NULL;
     *size = 0;
 

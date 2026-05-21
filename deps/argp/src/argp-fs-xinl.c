@@ -19,7 +19,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+#include <config.h>
 #endif
 
 #define ARGP_FS_EI
@@ -30,7 +30,7 @@
 #if 0
 /* Not exported.  */
 /* Add weak aliases.  */
-#if _LIBC - 0 && !defined (ARGP_FMTSTREAM_USE_LINEWRAP) && defined (weak_alias)
+#if _LIBC - 0 && !defined(ARGP_FMTSTREAM_USE_LINEWRAP) && defined(weak_alias)
 
 weak_alias (__argp_fmtstream_putc, argp_fmtstream_putc)
 weak_alias (__argp_fmtstream_puts, argp_fmtstream_puts)

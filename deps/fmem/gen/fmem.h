@@ -28,7 +28,7 @@ FMEM_API void fmem_init(fmem *file);
 /**
  * Cleans up an fmem structure.
  *
- * This function releases any resources held by the fmem structure. 
+ * This function releases any resources held by the fmem structure.
  * It should be called when you are finished with the structure to prevent memory leaks.
  *
  * @param file A pointer to an fmem structure.
@@ -60,7 +60,6 @@ FMEM_API FILE *fmem_open(fmem *file, const char *mode);
  * @param size A pointer to a size_t where the size of the buffer will be stored.
  */
 FMEM_API void fmem_mem(fmem *file, void **mem, size_t *size);
-
 
 #ifdef __cplusplus
 }

@@ -20,29 +20,26 @@ union fmem_conv {
     struct fmem_winimpl *impl;
 };
 
-void fmem_init(fmem *file)
-{
-    union fmem_conv cv = { .fm = file };
-    memset(cv.impl, 0, sizeof (*cv.impl));
+void fmem_init(fmem *file) {
+    union fmem_conv cv = {.fm = file};
+    memset(cv.impl, 0, sizeof(*cv.impl));
 }
 
-void fmem_term(fmem *file)
-{
-    union fmem_conv cv = { .fm = file };
+void fmem_term(fmem *file) {
+    union fmem_conv cv = {.fm = file};
     if (cv.impl->mapping != NULL) {
         UnmapViewOfFile(cv.impl->base);
         CloseHandle(cv.impl->mapping);
     }
 }
 
-FILE *fmem_open(fmem *file, const char *mode)
-{
-    union fmem_conv cv = { .fm = file };
+FILE *fmem_open(fmem *file, const char *mode) {
+    union fmem_conv cv = {.fm = file};
     char path[MAX_PATH];
 
-    DWORD rc = GetTempPathA(sizeof (path), path);
+    DWORD rc = GetTempPathA(sizeof(path), path);
     errno = ENAMETOOLONG;
-    if (rc > sizeof (path))
+    if (rc > sizeof(path))
         return NULL;
 
     errno = EIO;
@@ -64,16 +61,11 @@ FILE *fmem_open(fmem *file, const char *mode)
             return NULL;
         }
 
-        handle = CreateFileA(path,
-                GENERIC_READ | GENERIC_WRITE,
-                0,
-                NULL,
-                CREATE_NEW,
-                FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
-                NULL);
+        handle = CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW,
+                             FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
     } while (handle == INVALID_HANDLE_VALUE);
 
-    int fd = _open_osfhandle((intptr_t) handle, _O_RDWR);
+    int fd = _open_osfhandle((intptr_t)handle, _O_RDWR);
     if (fd == -1) {
         CloseHandle(handle);
         return NULL;
@@ -86,9 +78,8 @@ FILE *fmem_open(fmem *file, const char *mode)
     return f;
 }
 
-void fmem_mem(fmem *file, void **mem, size_t *size)
-{
-    union fmem_conv cv = { .fm = file };
+void fmem_mem(fmem *file, void **mem, size_t *size) {
+    union fmem_conv cv = {.fm = file};
     *mem = NULL;
     *size = 0;
 
@@ -97,7 +88,7 @@ void fmem_mem(fmem *file, void **mem, size_t *size)
 
     fflush(cv.impl->file);
 
-    HANDLE handle = (HANDLE) _get_osfhandle(_fileno(cv.impl->file));
+    HANDLE handle = (HANDLE)_get_osfhandle(_fileno(cv.impl->file));
 
     DWORD filesize = GetFileSize(handle, NULL);
     if (filesize == INVALID_FILE_SIZE)

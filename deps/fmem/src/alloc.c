@@ -4,8 +4,7 @@
 #include <string.h>
 #include "alloc.h"
 
-static inline size_t golden_growth_ceil(size_t n)
-{
+static inline size_t golden_growth_ceil(size_t n) {
     /* This effectively is a return ceil(n * φ).
        φ is approximatively 207 / (2^7), so we shift our result by
        6, then perform our ceil by adding the remainder of the last division
@@ -16,8 +15,7 @@ static inline size_t golden_growth_ceil(size_t n)
     return n;
 }
 
-int fmemi_grow(struct fmem_stream *stream, size_t required)
-{
+int fmemi_grow(struct fmem_stream *stream, size_t required) {
     if (stream->cursor > SIZE_MAX - required) {
         errno = EOVERFLOW;
         return -1;
@@ -42,8 +40,7 @@ int fmemi_grow(struct fmem_stream *stream, size_t required)
     return 0;
 }
 
-int fmemi_cursor(struct fmemi_buf *buf, struct fmem_stream *from)
-{
+int fmemi_cursor(struct fmemi_buf *buf, struct fmem_stream *from) {
     if (from->buf->size < from->cursor) {
         return -1;
     }
@@ -53,8 +50,7 @@ int fmemi_cursor(struct fmemi_buf *buf, struct fmem_stream *from)
     return 0;
 }
 
-size_t fmemi_copy(struct fmemi_buf *to, struct fmemi_buf *from)
-{
+size_t fmemi_copy(struct fmemi_buf *to, struct fmemi_buf *from) {
     size_t copied = from->size < to->size ? from->size : to->size;
     memcpy(to->mem, from->mem, copied);
     return copied;
