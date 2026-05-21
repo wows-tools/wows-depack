@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['names_20section_0',['File names section',['../md__f_o_r_m_a_t.html#autotoc_md34',1,'']]]
+  ['of_20warships_20resource_20files_0',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]]
 ];

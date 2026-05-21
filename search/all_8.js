@@ -1,13 +1,13 @@
 var searchData=
 [
-  ['debian_20ubuntu_0',['debian ubuntu',['../index.html#autotoc_md13',1,'Debian/Ubuntu'],['../index.html#autotoc_md4',1,'Install deps Debian/Ubuntu']]],
-  ['debug_5flevel_1',['debug_level',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#ae75c1ab19ff77896df24af10974f6b85',1,'WOWS_CONTEXT']]],
+  ['debug_5flevel_0',['debug_level',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#ae75c1ab19ff77896df24af10974f6b85',1,'WOWS_CONTEXT']]],
+  ['debugging_1',['Error Handling &amp; Debugging',['../index.html#autotoc_md20',1,'']]],
   ['depack_2',['WoWs depack',['../index.html',1,'']]],
-  ['deps_20debian_20ubuntu_3',['Install deps Debian/Ubuntu',['../index.html#autotoc_md4',1,'']]],
-  ['descriptions_4',['descriptions',['../md__f_o_r_m_a_t.html#autotoc_md30',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md33',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md38',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md41',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md45',1,'Field descriptions']]],
-  ['destdir_20for_20system_20installation_5',['Remove DESTDIR for system installation',['../index.html#autotoc_md7',1,'']]],
-  ['dir_6',['git clone + go in project dir',['../index.html#autotoc_md5',1,'']]],
-  ['directly_3a_7',['directly:',['../index.html#autotoc_md11',1,'']]],
-  ['directory_8',['Replace with your WoWs install directory',['../index.html#autotoc_md15',1,'']]],
-  ['disclaimer_9',['Disclaimer',['../md__f_o_r_m_a_t.html#autotoc_md23',1,'']]]
+  ['dependencies_3',['Dependencies',['../index.html#autotoc_md23',1,'']]],
+  ['descriptions_4',['descriptions',['../md__f_o_r_m_a_t.html#autotoc_md43',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md46',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md51',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md54',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md58',1,'Field descriptions']]],
+  ['development_5',['Build &amp; development',['../index.html#autotoc_md22',1,'']]],
+  ['directories_6',['Searching files/directories',['../index.html#autotoc_md17',1,'']]],
+  ['directory_7',['Extract a whole directory',['../index.html#autotoc_md10',1,'']]],
+  ['disclaimer_8',['Disclaimer',['../md__f_o_r_m_a_t.html#autotoc_md36',1,'']]],
+  ['documentation_9',['documentation',['../index.html#autotoc_md14',1,'API documentation'],['../index.html#autotoc_md27',1,'Documentation']]]
 ];

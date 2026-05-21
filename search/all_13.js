@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['pkg_20entry_0',['PKG Entry',['../md__f_o_r_m_a_t.html#autotoc_md43',1,'']]],
-  ['pkg_20format_1',['PKG format',['../md__f_o_r_m_a_t.html#autotoc_md42',1,'']]],
-  ['pkg_20idx_20format_2',['WoWs .pkg &amp; .idx Format',['../md__f_o_r_m_a_t.html',1,'']]],
-  ['pkg_20pointers_3',['File &quot;.pkg&quot; pointers',['../md__f_o_r_m_a_t.html#autotoc_md36',1,'']]],
-  ['pointers_4',['File &quot;.pkg&quot; pointers',['../md__f_o_r_m_a_t.html#autotoc_md36',1,'']]],
-  ['project_20dir_5',['git clone + go in project dir',['../index.html#autotoc_md5',1,'']]]
+  ['readme_2emd_0',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['resource_20files_1',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]],
+  ['root_2',['root',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#a01e12a21f0063f6a987cb7a8f22d4829',1,'WOWS_CONTEXT']]]
 ];
