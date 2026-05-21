@@ -1,16 +1,12 @@
 var searchData=
 [
-  ['field_20descriptions_0',['field descriptions',['../md__f_o_r_m_a_t.html#autotoc_md58',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md54',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md51',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md46',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md43',1,'Field descriptions']]],
-  ['file_1',['file',['../index.html#autotoc_md9',1,'Extract a single file'],['../md__f_o_r_m_a_t.html#autotoc_md39',1,'Index file']]],
-  ['file_20metadata_2',['File metadata',['../md__f_o_r_m_a_t.html#autotoc_md44',1,'']]],
-  ['file_20names_20section_3',['File names section',['../md__f_o_r_m_a_t.html#autotoc_md47',1,'']]],
-  ['file_20pkg_20pointers_4',['File &quot;.pkg&quot; pointers',['../md__f_o_r_m_a_t.html#autotoc_md49',1,'']]],
-  ['file_20s_5',['Parse Specific index file(s)',['../index.html#autotoc_md12',1,'']]],
-  ['file_5fmap_6',['file_map',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#ac605229da25f685ba8031d09de966978',1,'WOWS_CONTEXT']]],
-  ['files_7',['files',['../index.html#autotoc_md11',1,'Extract every World of Warships resource files'],['../index.html#autotoc_md18',1,'Extracting Files'],['../index.html#autotoc_md16',1,'Initialize Context &amp; Parse Index Files'],['../index.html#autotoc_md7',1,'Print all files']]],
-  ['files_20directories_8',['Searching files/directories',['../index.html#autotoc_md17',1,'']]],
-  ['footer_9',['Footer',['../md__f_o_r_m_a_t.html#autotoc_md52',1,'']]],
-  ['format_10',['format',['../md__f_o_r_m_a_t.html#autotoc_md40',1,'General format'],['../md__f_o_r_m_a_t.html#autotoc_md55',1,'PKG format'],['../md__f_o_r_m_a_t.html',1,'WoWs .pkg &amp; .idx Format']]],
-  ['format_2emd_11',['FORMAT.md',['../_f_o_r_m_a_t_8md.html',1,'']]],
-  ['fuzzing_12',['Fuzzing',['../index.html#autotoc_md28',1,'']]]
+  ['entry_0',['PKG Entry',['../md__f_o_r_m_a_t.html#autotoc_md57',1,'']]],
+  ['err_5fmsg_1',['err_msg',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#af85e5d3f4ccadd94e0f588533aae0f2d',1,'WOWS_CONTEXT']]],
+  ['error_20handling_20debugging_2',['Error Handling &amp; Debugging',['../index.html#autotoc_md20',1,'']]],
+  ['every_20world_20of_20warships_20resource_20files_3',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]],
+  ['examples_4',['Usage examples',['../index.html#autotoc_md15',1,'']]],
+  ['extract_20a_20single_20file_5',['Extract a single file',['../index.html#autotoc_md9',1,'']]],
+  ['extract_20a_20whole_20directory_6',['Extract a whole directory',['../index.html#autotoc_md10',1,'']]],
+  ['extract_20every_20world_20of_20warships_20resource_20files_7',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]],
+  ['extracting_20files_8',['Extracting Files',['../index.html#autotoc_md18',1,'']]]
 ];

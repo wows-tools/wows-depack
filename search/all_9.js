@@ -1,12 +1,13 @@
 var searchData=
 [
-  ['entry_0',['PKG Entry',['../md__f_o_r_m_a_t.html#autotoc_md56',1,'']]],
-  ['err_5fmsg_1',['err_msg',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#af85e5d3f4ccadd94e0f588533aae0f2d',1,'WOWS_CONTEXT']]],
-  ['error_20handling_20debugging_2',['Error Handling &amp; Debugging',['../index.html#autotoc_md20',1,'']]],
-  ['every_20world_20of_20warships_20resource_20files_3',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]],
-  ['examples_4',['Usage examples',['../index.html#autotoc_md15',1,'']]],
-  ['extract_20a_20single_20file_5',['Extract a single file',['../index.html#autotoc_md9',1,'']]],
-  ['extract_20a_20whole_20directory_6',['Extract a whole directory',['../index.html#autotoc_md10',1,'']]],
-  ['extract_20every_20world_20of_20warships_20resource_20files_7',['Extract every World of Warships resource files',['../index.html#autotoc_md11',1,'']]],
-  ['extracting_20files_8',['Extracting Files',['../index.html#autotoc_md18',1,'']]]
+  ['debug_5flevel_0',['debug_level',['../struct_w_o_w_s___c_o_n_t_e_x_t.html#ae75c1ab19ff77896df24af10974f6b85',1,'WOWS_CONTEXT']]],
+  ['debugging_1',['Error Handling &amp; Debugging',['../index.html#autotoc_md20',1,'']]],
+  ['depack_2',['WoWs depack',['../index.html',1,'']]],
+  ['dependencies_3',['Dependencies',['../index.html#autotoc_md23',1,'']]],
+  ['descriptions_4',['descriptions',['../md__f_o_r_m_a_t.html#autotoc_md44',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md47',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md52',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md55',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md59',1,'Field descriptions']]],
+  ['development_5',['Build &amp; development',['../index.html#autotoc_md22',1,'']]],
+  ['directories_6',['Searching files/directories',['../index.html#autotoc_md17',1,'']]],
+  ['directory_7',['Extract a whole directory',['../index.html#autotoc_md10',1,'']]],
+  ['disclaimer_8',['Disclaimer',['../md__f_o_r_m_a_t.html#autotoc_md37',1,'']]],
+  ['documentation_9',['documentation',['../index.html#autotoc_md14',1,'API documentation'],['../index.html#autotoc_md27',1,'Documentation']]]
 ];

@@ -59,42 +59,43 @@ var NAVTREE =
       [ "Fuzzing", "index.html#autotoc_md28", null ]
     ] ],
     [ "Versions", "index.html#autotoc_md29", [
-      [ "0.4.0", "index.html#autotoc_md30", null ],
-      [ "0.3.0", "index.html#autotoc_md31", null ],
-      [ "0.2.0", "index.html#autotoc_md32", null ],
-      [ "0.1.0", "index.html#autotoc_md33", null ]
+      [ "0.5.0", "index.html#autotoc_md30", null ],
+      [ "0.4.0", "index.html#autotoc_md31", null ],
+      [ "0.3.0", "index.html#autotoc_md32", null ],
+      [ "0.2.0", "index.html#autotoc_md33", null ],
+      [ "0.1.0", "index.html#autotoc_md34", null ]
     ] ],
     [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
-      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md35", null ],
-      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md36", null ],
-      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md37", null ],
-      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md38", null ],
-      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md39", [
-        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md40", null ],
-        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md41", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md42", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md43", null ]
+      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md36", null ],
+      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md37", null ],
+      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md38", null ],
+      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md39", null ],
+      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md40", [
+        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md41", null ],
+        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md42", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md43", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md44", null ]
         ] ],
-        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md44", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md45", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md46", null ]
+        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md45", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md46", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md47", null ]
         ] ],
-        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md47", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md48", null ]
+        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md48", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md49", null ]
         ] ],
-        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md49", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md50", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md51", null ]
+        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md50", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md51", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md52", null ]
         ] ],
-        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md52", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md53", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md54", null ]
+        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md53", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md54", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md55", null ]
         ] ]
       ] ],
-      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md55", [
-        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md56", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md57", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md58", null ]
+      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md56", [
+        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md57", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md58", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md59", null ]
         ] ]
       ] ]
     ] ],
