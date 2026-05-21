@@ -16,25 +16,6 @@ Interesting links:
 
 # Usage
 
-## Install
-
-Packages are available for most major distributions in [this repository](https://github.com/kakwa/kakwalab-pkg/blob/main/README.md).
-
-Follow the instructions to setup the repository and install the following packages:
-
-```bash
-# Switch to dnf on RHEL
-
-# CLI Tool
-apt install wows-depack-cli
-
-# Library
-apt install libwows-depack0
-
-# Development Header (for RHEL libwows-depack-devel)
-apt install libwows-depack-dev
-````
-
 ## Build
 
 ```shell
@@ -48,6 +29,32 @@ cd wows-depack/
 # build
 cmake .
 make
+```
+
+## Windows Build
+
+First-time setup (elevated PowerShell):
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\misc\windows-bootstrap.ps1
+```
+
+Build (MSYS2 MinGW64 shell):
+
+```bash
+INSTALLED=$(pwd)/vcpkg_installed/x64-mingw-static
+cmake . -G "MinGW Makefiles" \
+  -DCMAKE_TOOLCHAIN_FILE=deps/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DVCPKG_TARGET_TRIPLET=x64-mingw-static \
+  -DVCPKG_OVERLAY_TRIPLETS=deps/vcpkg/triplets/community \
+  -DSTATIC=ON \
+  -DZLIB_ROOT="$INSTALLED" \
+  -DZLIB_INCLUDE_DIR="$INSTALLED/include" \
+  -DZLIB_LIBRARY="$INSTALLED/lib/libzs.a" \
+  -DPCRE2_ROOT="$INSTALLED" \
+  -DVCPKG_APPLOCAL_DEPS=OFF
+mingw32-make -j$(nproc)
 ```
 
 ## CLI tool
