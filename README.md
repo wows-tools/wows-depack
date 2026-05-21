@@ -456,6 +456,10 @@ Then wait for crashes to occur (hopefully this will be in vain).
 
 # Versions
 
+## 0.5.0
+
+* Windows support
+* Automated releases
 
 ## 0.4.0
 
