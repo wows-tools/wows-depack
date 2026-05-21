@@ -94,6 +94,9 @@ jobs:
         cp wows-depack-cli.exe dist/
         cp libwows-depack.dll dist/ 2>/dev/null || true
         cp deps/vcpkg/installed/x64-mingw-dynamic/bin/*.dll dist/ 2>/dev/null || true
+        ldd libwows-depack.dll wows-depack-cli.exe 2>/dev/null \
+          | grep '/ucrt64/bin' | awk '{print $3}' \
+          | xargs -I{} cp {} dist/ 2>/dev/null || true
         cp LICENSE README.md dist/
         cd dist && zip -r ../wows-depack-windows-x86_64.zip . && cd ..
 
