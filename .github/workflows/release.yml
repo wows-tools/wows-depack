@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install packages
+      run: |
+        sudo apt update
+        sudo apt install -y cmake zlib1g-dev libpcre2-dev clang
+
+    - name: Configure CMake
+      run: cmake -DCMAKE_BUILD_TYPE=Release .
+
+    - name: Build
+      run: make
+
+    - name: Package
+      run: |
+        mkdir -p dist
+        cp wows-depack-cli dist/wows-depack-cli-linux-x86_64
+        cp -P libwows-depack.so* dist/ 2>/dev/null || true
+        cp LICENSE README.md dist/
+        tar -czf wows-depack-linux-x86_64.tar.gz -C dist .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-x86_64
+        path: wows-depack-linux-x86_64.tar.gz
+
+  build-windows:
+    runs-on: windows-latest
+    env:
+      VCPKG_DEFAULT_BINARY_CACHE: C:\vcpkg-cache
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-cmake
+          mingw-w64-ucrt-x86_64-ninja
+          zip
+
+    - name: Create vcpkg binary cache dir
+      run: mkdir -p /c/vcpkg-cache
+
+    - name: Cache vcpkg packages
+      uses: actions/cache@v4
+      with:
+        path: C:\vcpkg-cache
+        key: vcpkg-x64-mingw-dynamic-${{ hashFiles('vcpkg.json') }}
+        restore-keys: vcpkg-x64-mingw-dynamic-
+
+    - name: Bootstrap vcpkg
+      run: ./deps/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+    - name: Configure CMake
+      run: |
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_TOOLCHAIN_FILE=./deps/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic .
+
+    - name: Build
+      run: ninja
+
+    - name: Package
+      run: |
+        mkdir -p dist
+        cp wows-depack-cli.exe dist/
+        cp libwows-depack.dll dist/ 2>/dev/null || true
+        cp deps/vcpkg/installed/x64-mingw-dynamic/bin/*.dll dist/ 2>/dev/null || true
+        cp LICENSE README.md dist/
+        cd dist && zip -r ../wows-depack-windows-x86_64.zip . && cd ..
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-x86_64
+        path: wows-depack-windows-x86_64.zip
+
+  publish:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts/
+        merge-multiple: true
+
+    - name: Publish versioned release
+      if: github.ref_type == 'tag'
+      uses: softprops/action-gh-release@v2
+      with:
+        generate_release_notes: true
+        make_latest: true
+        files: |
+          artifacts/wows-depack-linux-x86_64.tar.gz
+          artifacts/wows-depack-windows-x86_64.zip
+
+    - name: Publish latest pre-release
+      if: github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest
+        name: Latest build (main branch)
+        prerelease: true
+        make_latest: false
+        files: |
+          artifacts/wows-depack-linux-x86_64.tar.gz
+          artifacts/wows-depack-windows-x86_64.zip
