@@ -4,10 +4,10 @@ var searchData=
   ['debugging_1',['Error Handling &amp; Debugging',['../index.html#autotoc_md20',1,'']]],
   ['depack_2',['WoWs depack',['../index.html',1,'']]],
   ['dependencies_3',['Dependencies',['../index.html#autotoc_md23',1,'']]],
-  ['descriptions_4',['descriptions',['../md__f_o_r_m_a_t.html#autotoc_md44',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md47',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md52',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md55',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md59',1,'Field descriptions']]],
+  ['descriptions_4',['descriptions',['../md__f_o_r_m_a_t.html#autotoc_md45',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md48',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md53',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md56',1,'Field descriptions'],['../md__f_o_r_m_a_t.html#autotoc_md60',1,'Field descriptions']]],
   ['development_5',['Build &amp; development',['../index.html#autotoc_md22',1,'']]],
   ['directories_6',['Searching files/directories',['../index.html#autotoc_md17',1,'']]],
   ['directory_7',['Extract a whole directory',['../index.html#autotoc_md10',1,'']]],
-  ['disclaimer_8',['Disclaimer',['../md__f_o_r_m_a_t.html#autotoc_md37',1,'']]],
+  ['disclaimer_8',['Disclaimer',['../md__f_o_r_m_a_t.html#autotoc_md38',1,'']]],
   ['documentation_9',['documentation',['../index.html#autotoc_md14',1,'API documentation'],['../index.html#autotoc_md27',1,'Documentation']]]
 ];
