@@ -456,6 +456,10 @@ Then wait for crashes to occur (hopefully this will be in vain).
 
 # Versions
 
+## 0.5.1
+
+* CI/CD fix missing DLLs for Windows build, they are now compiled statically libwows-depack.dll 
+
 ## 0.5.0
 
 * Windows support
