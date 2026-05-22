@@ -1,7 +1,9 @@
 # WoWs depack
 
 [![Ubuntu-x86_64](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml/badge.svg)](https://github.com/kakwa/wows-depack/actions/workflows/ubuntu-x86_64.yml)
+[![Windows-x86_64](https://github.com/kakwa/wows-depack/actions/workflows/windows-x86_64.yml/badge.svg)](https://github.com/kakwa/wows-depack/actions/workflows/windows-x86_64.yml)
 [![codecov](https://codecov.io/gh/wows-tools/wows-depack/branch/main/graph/badge.svg?token=GU98T1VKIH)](https://codecov.io/gh/wows-tools/wows-depack)
+[![Release](https://img.shields.io/github/v/release/kakwa/wows-depack)](https://github.com/kakwa/wows-depack/releases)
 
 Open-Source World of Warships resource files unpacker.
 
