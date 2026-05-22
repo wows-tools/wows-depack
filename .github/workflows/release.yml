@@ -73,8 +73,8 @@ jobs:
       uses: actions/cache@v4
       with:
         path: C:\vcpkg-cache
-        key: vcpkg-x64-mingw-dynamic-${{ hashFiles('vcpkg.json') }}
-        restore-keys: vcpkg-x64-mingw-dynamic-
+        key: vcpkg-x64-mingw-static-${{ hashFiles('vcpkg.json') }}
+        restore-keys: vcpkg-x64-mingw-static-
 
     - name: Bootstrap vcpkg
       run: ./deps/vcpkg/bootstrap-vcpkg.sh -disableMetrics
@@ -83,7 +83,11 @@ jobs:
       run: |
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_TOOLCHAIN_FILE=./deps/vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic .
+          -DVCPKG_TARGET_TRIPLET=x64-mingw-static \
+          -DCMAKE_FIND_LIBRARY_SUFFIXES=".a" \
+          -DZLIB_USE_STATIC_LIBS=ON \
+          -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc" \
+          -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc" .
 
     - name: Build
       run: ninja
@@ -93,10 +97,6 @@ jobs:
         mkdir -p dist
         cp wows-depack-cli.exe dist/
         cp libwows-depack.dll dist/ 2>/dev/null || true
-        cp deps/vcpkg/installed/x64-mingw-dynamic/bin/*.dll dist/ 2>/dev/null || true
-        ldd libwows-depack.dll wows-depack-cli.exe 2>/dev/null \
-          | grep '/ucrt64/bin' | awk '{print $3}' \
-          | xargs -I{} cp {} dist/ 2>/dev/null || true
         cp LICENSE README.md dist/
         cd dist && zip -r ../wows-depack-windows-x86_64.zip . && cd ..
 
