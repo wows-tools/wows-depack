@@ -87,3 +87,8 @@ inc/latex/
 latex/
 docs/doxygen-awesome-css
 build/
+
+dist/
+wows-depack-linux-x86_64.tar.gz
+wows-depack/
+

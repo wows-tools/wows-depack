@@ -460,6 +460,10 @@ Then wait for crashes to occur (hopefully this will be in vain).
 
 # Versions
 
+## 0.5.2
+
+* Better bundling of deps for the linux release
+
 ## 0.5.1
 
 * CI/CD fix missing DLLs for Windows build, they are now compiled statically libwows-depack.dll 
