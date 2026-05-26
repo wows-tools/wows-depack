@@ -20,7 +20,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install -y cmake zlib1g-dev libpcre2-dev clang
+        sudo apt install -y cmake zlib1g-dev libpcre2-dev clang patchelf
 
     - name: Configure CMake
       run: cmake -DCMAKE_BUILD_TYPE=Release .
@@ -29,12 +29,7 @@ jobs:
       run: make
 
     - name: Package
-      run: |
-        mkdir -p dist
-        cp wows-depack-cli dist/wows-depack-cli-linux-x86_64
-        cp -P libwows-depack.so* dist/ 2>/dev/null || true
-        cp LICENSE README.md dist/
-        tar -czf wows-depack-linux-x86_64.tar.gz -C dist .
+      run: bash misc/linux-dist.sh
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
