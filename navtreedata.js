@@ -59,44 +59,45 @@ var NAVTREE =
       [ "Fuzzing", "index.html#autotoc_md28", null ]
     ] ],
     [ "Versions", "index.html#autotoc_md29", [
-      [ "0.5.1", "index.html#autotoc_md30", null ],
-      [ "0.5.0", "index.html#autotoc_md31", null ],
-      [ "0.4.0", "index.html#autotoc_md32", null ],
-      [ "0.3.0", "index.html#autotoc_md33", null ],
-      [ "0.2.0", "index.html#autotoc_md34", null ],
-      [ "0.1.0", "index.html#autotoc_md35", null ]
+      [ "0.5.2", "index.html#autotoc_md30", null ],
+      [ "0.5.1", "index.html#autotoc_md31", null ],
+      [ "0.5.0", "index.html#autotoc_md32", null ],
+      [ "0.4.0", "index.html#autotoc_md33", null ],
+      [ "0.3.0", "index.html#autotoc_md34", null ],
+      [ "0.2.0", "index.html#autotoc_md35", null ],
+      [ "0.1.0", "index.html#autotoc_md36", null ]
     ] ],
     [ "WoWs .pkg & .idx Format", "md__f_o_r_m_a_t.html", [
-      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md37", null ],
-      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md38", null ],
-      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md39", null ],
-      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md40", null ],
-      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md41", [
-        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md42", null ],
-        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md43", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md44", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md45", null ]
+      [ "Introduction", "md__f_o_r_m_a_t.html#autotoc_md38", null ],
+      [ "Disclaimer", "md__f_o_r_m_a_t.html#autotoc_md39", null ],
+      [ "Convention", "md__f_o_r_m_a_t.html#autotoc_md40", null ],
+      [ "Misc", "md__f_o_r_m_a_t.html#autotoc_md41", null ],
+      [ "Index file", "md__f_o_r_m_a_t.html#autotoc_md42", [
+        [ "General format", "md__f_o_r_m_a_t.html#autotoc_md43", null ],
+        [ "Header", "md__f_o_r_m_a_t.html#autotoc_md44", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md45", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md46", null ]
         ] ],
-        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md46", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md47", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md48", null ]
+        [ "File metadata", "md__f_o_r_m_a_t.html#autotoc_md47", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md48", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md49", null ]
         ] ],
-        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md49", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md50", null ]
+        [ "File names section", "md__f_o_r_m_a_t.html#autotoc_md50", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md51", null ]
         ] ],
-        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md51", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md52", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md53", null ]
+        [ "File \".pkg\" pointers", "md__f_o_r_m_a_t.html#autotoc_md52", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md53", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md54", null ]
         ] ],
-        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md54", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md55", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md56", null ]
+        [ "Footer", "md__f_o_r_m_a_t.html#autotoc_md55", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md56", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md57", null ]
         ] ]
       ] ],
-      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md57", [
-        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md58", [
-          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md59", null ],
-          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md60", null ]
+      [ "PKG format", "md__f_o_r_m_a_t.html#autotoc_md58", [
+        [ "PKG Entry", "md__f_o_r_m_a_t.html#autotoc_md59", [
+          [ "Layout", "md__f_o_r_m_a_t.html#autotoc_md60", null ],
+          [ "Field descriptions", "md__f_o_r_m_a_t.html#autotoc_md61", null ]
         ] ]
       ] ]
     ] ],
